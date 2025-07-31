@@ -14,12 +14,19 @@ const PORT = process.env.PORT || 3000;
 
 // Google Drive API設定
 const FOLDER_ID = process.env.GOOGLE_DRIVE_FOLDER_ID || '1xx-N4rKwFTk83iIxSOCEhctJQv-3rZrC';
+const SPREADSHEET_ID = process.env.GOOGLE_SPREADSHEET_ID || '14uI1FoXUWg_deV-ZGSYY85JREyLyZY4YVqpKka35sZw';
+const SHEET_NAME = process.env.GOOGLE_SHEET_NAME || 'シート1';
+
 const auth = new google.auth.GoogleAuth({
   keyFile: process.env.GOOGLE_APPLICATION_CREDENTIALS || './credentials.json',
-  scopes: ['https://www.googleapis.com/auth/drive.file']
+  scopes: [
+    'https://www.googleapis.com/auth/drive.file',
+    'https://www.googleapis.com/auth/spreadsheets'
+  ]
 });
 
 const drive = google.drive({ version: 'v3', auth });
+const sheets = google.sheets({ version: 'v4', auth });
 
 // ミドルウェア
 app.use(cors());
@@ -33,9 +40,99 @@ const upload = multer({
   limits: { fileSize: 50 * 1024 * 1024 } // 50MB制限
 });
 
-// データストア（本番環境ではMongoDB等を使用）
+// データストア（Google Sheetsから読み込み）
 let posts = [];
 let nextId = 1;
+
+// Google Sheetsからデータを読み込み
+async function loadDataFromSheets() {
+  try {
+    const response = await sheets.spreadsheets.values.get({
+      spreadsheetId: SPREADSHEET_ID,
+      range: `${SHEET_NAME}!A2:T`
+    });
+
+    const rows = response.data.values || [];
+    posts = rows.map((row, index) => ({
+      id: Number(row[0]) || (index + 1),
+      grade: String(row[1] || ''),
+      year: String(row[2] || ''),
+      type: String(row[3] || ''),
+      subject: String(row[4] || ''),
+      stream: String(row[5] || ''),
+      contentType: String(row[6] || ''),
+      format: String(row[7] || ''),
+      comment: String(row[8] || ''),
+      url: String(row[9] || ''),
+      date: String(row[10] || ''),
+      likes: Number(row[11]) || 0,
+      bad: Number(row[12]) || 0,
+      publicIP: String(row[13] || ''),
+      privateIP: String(row[14] || ''),
+      userAgent: String(row[15] || ''),
+      platform: String(row[16] || ''),
+      screenResolution: String(row[17] || ''),
+      windowSize: String(row[18] || ''),
+      fileSize: Number(row[19]) || 0
+    }));
+
+    // 最大IDを設定
+    if (posts.length > 0) {
+      nextId = Math.max(...posts.map(p => p.id)) + 1;
+    }
+
+    console.log(`${posts.length}件のデータをGoogle Sheetsから読み込みました`);
+  } catch (error) {
+    console.error('Google Sheetsからのデータ読み込みエラー:', error);
+    // エラーの場合は空の配列で開始
+    posts = [];
+    nextId = 1;
+  }
+}
+
+// Google Sheetsにデータを書き込み
+async function saveDataToSheets() {
+  try {
+    const values = posts.map(post => [
+      post.id,
+      post.grade,
+      post.year,
+      post.type,
+      post.subject,
+      post.stream,
+      post.contentType,
+      post.format,
+      post.comment,
+      post.url,
+      post.date,
+      post.likes,
+      post.bad,
+      post.publicIP,
+      post.privateIP,
+      post.userAgent,
+      post.platform,
+      post.screenResolution,
+      post.windowSize,
+      post.fileSize
+    ]);
+
+    await sheets.spreadsheets.values.update({
+      spreadsheetId: SPREADSHEET_ID,
+      range: `${SHEET_NAME}!A2:T${posts.length + 1}`,
+      valueInputOption: 'RAW',
+      requestBody: {
+        values: values
+      }
+    });
+
+    console.log('データをGoogle Sheetsに保存しました');
+  } catch (error) {
+    console.error('Google Sheetsへのデータ保存エラー:', error);
+  }
+}
+
+// サーバー起動時にデータを読み込み
+loadDataFromSheets();
 
 // メール送信設定
 const transporter = nodemailer.createTransporter({
@@ -46,8 +143,10 @@ const transporter = nodemailer.createTransporter({
   }
 });
 
-// 管理者パスワード（本番環境では環境変数から取得）
-const ADMIN_PASSWORDS = ['admin123', 'password123', 'secure456'];
+// 管理者パスワード（環境変数から取得、カンマ区切りで複数設定可能）
+const ADMIN_PASSWORDS = process.env.ADMIN_PASSWORDS ? 
+  process.env.ADMIN_PASSWORDS.split(',').map(p => p.trim()) : 
+  ['admin123', 'password123', 'secure456'];
 
 // Google Driveにファイルをアップロード
 async function uploadToGoogleDrive(fileBuffer, fileName, mimeType) {
@@ -147,6 +246,9 @@ app.post('/api/upload', upload.single('file'), async (req, res) => {
 
     posts.push(post);
 
+    // Google Sheetsに保存
+    await saveDataToSheets();
+
     // メール通知
     try {
       await transporter.sendMail({
@@ -194,11 +296,12 @@ User-Agent: ${deviceInfo.userAgent || req.get('User-Agent')}
 });
 
 // いいね増加
-app.post('/api/like/:id', (req, res) => {
+app.post('/api/like/:id', async (req, res) => {
   const id = parseInt(req.params.id);
   const post = posts.find(p => p.id === id);
   if (post) {
     post.likes++;
+    await saveDataToSheets();
     res.json({ likes: post.likes });
   } else {
     res.status(404).json({ error: '投稿が見つかりません' });
@@ -206,11 +309,12 @@ app.post('/api/like/:id', (req, res) => {
 });
 
 // いいね取り消し
-app.post('/api/unlike/:id', (req, res) => {
+app.post('/api/unlike/:id', async (req, res) => {
   const id = parseInt(req.params.id);
   const post = posts.find(p => p.id === id);
   if (post) {
     post.likes = Math.max(0, post.likes - 1);
+    await saveDataToSheets();
     res.json({ likes: post.likes });
   } else {
     res.status(404).json({ error: '投稿が見つかりません' });
@@ -218,11 +322,12 @@ app.post('/api/unlike/:id', (req, res) => {
 });
 
 // バッド増加
-app.post('/api/bad/:id', (req, res) => {
+app.post('/api/bad/:id', async (req, res) => {
   const id = parseInt(req.params.id);
   const post = posts.find(p => p.id === id);
   if (post) {
     post.bad++;
+    await saveDataToSheets();
     res.json({ bad: post.bad });
   } else {
     res.status(404).json({ error: '投稿が見つかりません' });
@@ -230,11 +335,12 @@ app.post('/api/bad/:id', (req, res) => {
 });
 
 // バッド取り消し
-app.post('/api/unbad/:id', (req, res) => {
+app.post('/api/unbad/:id', async (req, res) => {
   const id = parseInt(req.params.id);
   const post = posts.find(p => p.id === id);
   if (post) {
     post.bad = Math.max(0, post.bad - 1);
+    await saveDataToSheets();
     res.json({ bad: post.bad });
   } else {
     res.status(404).json({ error: '投稿が見つかりません' });
@@ -259,6 +365,7 @@ app.delete('/api/post/:id', async (req, res) => {
     }
     
     posts.splice(postIndex, 1);
+    await saveDataToSheets();
     res.json({ success: true });
   } else {
     res.status(404).json({ error: '投稿が見つかりません' });
@@ -293,7 +400,7 @@ app.get('/api/admin/data', (req, res) => {
 });
 
 // 投稿更新
-app.put('/api/admin/post/:id', (req, res) => {
+app.put('/api/admin/post/:id', async (req, res) => {
   const token = req.headers.authorization?.split(' ')[1];
   if (!token) {
     return res.status(401).json({ error: 'トークンが必要です' });
@@ -307,6 +414,7 @@ app.put('/api/admin/post/:id', (req, res) => {
     if (postIndex !== -1) {
       const updatedPost = { ...posts[postIndex], ...req.body };
       posts[postIndex] = updatedPost;
+      await saveDataToSheets();
       res.json({ success: true });
     } else {
       res.status(404).json({ error: '投稿が見つかりません' });
@@ -346,6 +454,7 @@ app.delete('/api/admin/posts', async (req, res) => {
           posts.splice(postIndex, 1);
         }
       }
+      await saveDataToSheets();
       res.json({ success: true });
     } else {
       res.status(400).json({ error: '無効なリクエストです' });
@@ -370,9 +479,30 @@ function extractFileIdFromUrl(url) {
 // 静的ファイル配信
 app.use('/uploads', express.static('uploads'));
 
-// フロントエンドファイル配信
+// HTMLファイルの配信
+app.get('/admin.html', (req, res) => {
+  res.sendFile(path.join(__dirname, 'admin.html'));
+});
+
+app.get('/upload.html', (req, res) => {
+  res.sendFile(path.join(__dirname, 'upload.html'));
+});
+
+app.get('/search.html', (req, res) => {
+  res.sendFile(path.join(__dirname, 'search.html'));
+});
+
+app.get('/share.html', (req, res) => {
+  res.sendFile(path.join(__dirname, 'share.html'));
+});
+
+app.get('/ph-index.html', (req, res) => {
+  res.sendFile(path.join(__dirname, 'ph-index.html'));
+});
+
+// フロントエンドファイル配信（デフォルト）
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+  res.sendFile(path.join(__dirname, 'index.html'));
 });
 
 app.listen(PORT, () => {

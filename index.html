@@ -1072,7 +1072,7 @@
     const adminPinSubmit = document.getElementById('adminPinSubmit');
     const adminPinCancel = document.getElementById('adminPinCancel');
     const adminPinBtns = document.querySelectorAll('.pin-btn');
-    const adminUrl = 'https://script.google.com/macros/s/AKfycbwEAhdiJOtbf44ifY-BoAFhLI7eQl_uIJKm9NDTexoWZD7U8l-7wsrT9ufRCZ9d8lZf/exec?page=admin';
+    const adminUrl = 'http://localhost:3000/admin.html';
     let pinValue = '';
     function openAdminModal() {
       adminLoginModal.style.display = 'flex';
@@ -1149,7 +1149,7 @@
         // 少し遅延してリダイレクト
         setTimeout(function() {
           if (!location.pathname.endsWith('ph-index.html')) {
-            location.href = 'https://script.google.com/macros/s/AKfycbwEAhdiJOtbf44ifY-BoAFhLI7eQl_uIJKm9NDTexoWZD7U8l-7wsrT9ufRCZ9d8lZf/exec?page=ph-index';
+            location.href = 'http://localhost:3000/ph-index.html';
           }
         }, 5);
       } else {

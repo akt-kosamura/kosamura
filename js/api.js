@@ -245,11 +245,13 @@ window.google = {
         };
       },
       
-      // 管理者機能
+      // 管理者機能（GAS運用時と同じ動作）
       checkAdminPassword: function(password) {
         return new Promise((resolve) => {
           kosamuraAPI.adminAuth(password)
             .then(result => {
+              // GAS運用時と同じlocalStorage管理
+              localStorage.setItem('admin_auth', 'ok');
               localStorage.setItem('adminToken', result.token);
               resolve('ok');
             })
