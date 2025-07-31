@@ -1,4 +1,4 @@
-// API クライアントライブラリ
+// GAS運用時と同じAPIクライアントライブラリ
 class KosamuraAPI {
   constructor(baseURL = null) {
     // ベースURLを動的に決定
@@ -8,21 +8,14 @@ class KosamuraAPI {
       // 現在のページのプロトコルとホストを使用
       this.baseURL = window.location.origin;
     }
-    // GAS互換APIも初期化
+    // GAS互換APIのみを使用
     this.gasAPI = new GASCompatibleAPI(this.baseURL);
   }
 
-  // データ取得
+  // データ取得（GAS運用時と同じ）
   async getData() {
     try {
-      // まずGAS互換APIを試す
-      const gasData = await this.gasAPI.getData();
-      if (gasData && gasData.length > 0) {
-        return gasData;
-      }
-      
-      // フォールバック: 通常のAPI
-      const response = await fetch(`${this.baseURL}/api/data`);
+      const response = await fetch(`${this.baseURL}/exec?function=getData`);
       if (!response.ok) throw new Error('データ取得に失敗しました');
       return await response.json();
     } catch (error) {
@@ -31,18 +24,10 @@ class KosamuraAPI {
     }
   }
 
-  // ファイルアップロード
+  // ファイルアップロード（GAS運用時と同じ）
   async uploadFileAndRecord(grade, year, type, subject, stream, contentType, fileFormat, comment, filename, base64, deviceInfo, fileSizeMB) {
     try {
-      // まずGAS互換APIを試す
-      try {
-        const gasResult = await this.gasAPI.uploadFileAndRecord(grade, year, type, subject, stream, contentType, fileFormat, comment, filename, base64, deviceInfo, fileSizeMB);
-        return gasResult;
-      } catch (gasError) {
-        console.log('GAS互換APIでエラー、通常のAPIにフォールバック:', gasError);
-      }
-      
-      // フォールバック: 通常のAPI
+      // Base64をBlobに変換
       const byteCharacters = atob(base64);
       const byteNumbers = new Array(byteCharacters.length);
       for (let i = 0; i < byteCharacters.length; i++) {
@@ -64,7 +49,7 @@ class KosamuraAPI {
       formData.append('fileSizeMB', fileSizeMB);
       formData.append('deviceInfo', JSON.stringify(deviceInfo));
 
-      const response = await fetch(`${this.baseURL}/api/upload`, {
+      const response = await fetch(`${this.baseURL}/exec?function=uploadFileAndRecord`, {
         method: 'POST',
         body: formData
       });
@@ -77,11 +62,15 @@ class KosamuraAPI {
     }
   }
 
-  // いいね増加
+  // いいね増加（GAS運用時と同じ）
   async like(id) {
     try {
-      const response = await fetch(`${this.baseURL}/api/like/${id}`, {
-        method: 'POST'
+      const formData = new FormData();
+      formData.append('id', id);
+
+      const response = await fetch(`${this.baseURL}/exec?function=like`, {
+        method: 'POST',
+        body: formData
       });
       if (!response.ok) throw new Error('いいねの処理に失敗しました');
       return await response.json();
@@ -91,11 +80,15 @@ class KosamuraAPI {
     }
   }
 
-  // いいね取り消し
+  // いいね取り消し（GAS運用時と同じ）
   async unlike(id) {
     try {
-      const response = await fetch(`${this.baseURL}/api/unlike/${id}`, {
-        method: 'POST'
+      const formData = new FormData();
+      formData.append('id', id);
+
+      const response = await fetch(`${this.baseURL}/exec?function=unlike`, {
+        method: 'POST',
+        body: formData
       });
       if (!response.ok) throw new Error('いいね取り消しに失敗しました');
       return await response.json();
@@ -105,11 +98,15 @@ class KosamuraAPI {
     }
   }
 
-  // バッド増加
+  // バッド増加（GAS運用時と同じ）
   async bad(id) {
     try {
-      const response = await fetch(`${this.baseURL}/api/bad/${id}`, {
-        method: 'POST'
+      const formData = new FormData();
+      formData.append('id', id);
+
+      const response = await fetch(`${this.baseURL}/exec?function=bad`, {
+        method: 'POST',
+        body: formData
       });
       if (!response.ok) throw new Error('バッドの処理に失敗しました');
       return await response.json();
@@ -119,11 +116,15 @@ class KosamuraAPI {
     }
   }
 
-  // バッド取り消し
+  // バッド取り消し（GAS運用時と同じ）
   async unbad(id) {
     try {
-      const response = await fetch(`${this.baseURL}/api/unbad/${id}`, {
-        method: 'POST'
+      const formData = new FormData();
+      formData.append('id', id);
+
+      const response = await fetch(`${this.baseURL}/exec?function=unbad`, {
+        method: 'POST',
+        body: formData
       });
       if (!response.ok) throw new Error('バッド取り消しに失敗しました');
       return await response.json();
@@ -133,48 +134,34 @@ class KosamuraAPI {
     }
   }
 
-  // 管理者認証
-  async adminAuth(password) {
+  // 管理者認証（GAS運用時と同じ）
+  async checkAdminPassword(password) {
     try {
-      const response = await fetch(`${this.baseURL}/api/admin/auth`, {
+      const formData = new FormData();
+      formData.append('password', password);
+
+      const response = await fetch(`${this.baseURL}/exec?function=checkAdminPassword`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ password })
+        body: formData
       });
       if (!response.ok) throw new Error('認証に失敗しました');
-      return await response.json();
+      const result = await response.json();
+      return result.result === 'ok';
     } catch (error) {
-      console.error('adminAuth error:', error);
-      throw error;
+      console.error('checkAdminPassword error:', error);
+      return false;
     }
   }
 
-  // 管理者用データ取得
-  async getAdminData(token) {
+  // 投稿削除（GAS運用時と同じ）
+  async deletePost(id) {
     try {
-      const response = await fetch(`${this.baseURL}/api/admin/data`, {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
-      if (!response.ok) throw new Error('データ取得に失敗しました');
-      return await response.json();
-    } catch (error) {
-      console.error('getAdminData error:', error);
-      throw error;
-    }
-  }
+      const formData = new FormData();
+      formData.append('id', id);
 
-  // 投稿削除
-  async deletePost(id, token) {
-    try {
-      const response = await fetch(`${this.baseURL}/api/post/${id}`, {
-        method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
+      const response = await fetch(`${this.baseURL}/exec?function=deletePost`, {
+        method: 'POST',
+        body: formData
       });
       if (!response.ok) throw new Error('削除に失敗しました');
       return await response.json();
@@ -184,16 +171,15 @@ class KosamuraAPI {
     }
   }
 
-  // 投稿更新
-  async updatePost(id, postData, token) {
+  // 投稿更新（GAS運用時と同じ）
+  async updatePost(postData) {
     try {
-      const response = await fetch(`${this.baseURL}/api/admin/post/${id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify(postData)
+      const formData = new FormData();
+      formData.append('postData', JSON.stringify(postData));
+
+      const response = await fetch(`${this.baseURL}/exec?function=updatePost`, {
+        method: 'POST',
+        body: formData
       });
       if (!response.ok) throw new Error('更新に失敗しました');
       return await response.json();
@@ -203,16 +189,15 @@ class KosamuraAPI {
     }
   }
 
-  // 複数投稿削除
-  async deletePostsBulk(ids, token) {
+  // 複数投稿削除（GAS運用時と同じ）
+  async deletePostsBulk(ids) {
     try {
-      const response = await fetch(`${this.baseURL}/api/admin/posts`, {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({ ids })
+      const formData = new FormData();
+      formData.append('ids', JSON.stringify(ids));
+
+      const response = await fetch(`${this.baseURL}/exec?function=deletePostsBulk`, {
+        method: 'POST',
+        body: formData
       });
       if (!response.ok) throw new Error('一括削除に失敗しました');
       return await response.json();
@@ -226,7 +211,7 @@ class KosamuraAPI {
 // グローバルAPIインスタンス
 window.kosamuraAPI = new KosamuraAPI();
 
-// Google Apps Script互換性レイヤー
+// Google Apps Script互換性レイヤー（GAS運用時と同じ）
 window.google = {
   script: {
     run: {
@@ -271,36 +256,30 @@ window.google = {
       // 管理者機能（GAS運用時と同じ動作）
       checkAdminPassword: function(password) {
         return new Promise((resolve) => {
-          kosamuraAPI.adminAuth(password)
+          kosamuraAPI.checkAdminPassword(password)
             .then(result => {
               // GAS運用時と同じlocalStorage管理
-              localStorage.setItem('admin_auth', 'ok');
-              localStorage.setItem('adminToken', result.token);
-              resolve('ok');
+              if (result) {
+                localStorage.setItem('admin_auth', 'ok');
+                resolve('ok');
+              } else {
+                resolve('ng');
+              }
             })
             .catch(() => resolve('ng'));
         });
       },
       
       deletePost: function(id) {
-        const token = localStorage.getItem('adminToken');
-        if (token) {
-          kosamuraAPI.deletePost(id, token).catch(console.error);
-        }
+        kosamuraAPI.deletePost(id).catch(console.error);
       },
       
       updatePost: function(postData) {
-        const token = localStorage.getItem('adminToken');
-        if (token) {
-          kosamuraAPI.updatePost(postData.id, postData, token).catch(console.error);
-        }
+        kosamuraAPI.updatePost(postData).catch(console.error);
       },
       
       deletePostsBulk: function(ids) {
-        const token = localStorage.getItem('adminToken');
-        if (token) {
-          kosamuraAPI.deletePostsBulk(ids, token).catch(console.error);
-        }
+        kosamuraAPI.deletePostsBulk(ids).catch(console.error);
       }
     }
   }

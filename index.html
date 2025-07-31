@@ -879,7 +879,7 @@
           秋高考査村を友達やクラス、学校に広めよう！
         </div>
         <div style="margin:1.2em 0 0.5em 0; display:flex; gap:0.5em; align-items:center; justify-content:center; flex-wrap:wrap;">
-          <input type="text" id="siteUrl" class="share-url-input" value="https://script.google.com/macros/s/AKfycbwEAhdiJOtbf44ifY-BoAFhLI7eQl_uIJKm9NDTexoWZD7U8l-7wsrT9ufRCZ9d8lZf/exec?page=index" readonly style="width:18em; max-width:90vw; font-size:1.05em; padding:0.5em 0.7em; border:1px solid #d1d1d6; border-radius:8px; background:#f9f9fb; color:#333;">
+          <input type="text" id="siteUrl" class="share-url-input" value="https://akt-kosamura.github.io/kosamura/" readonly style="width:18em; max-width:90vw; font-size:1.05em; padding:0.5em 0.7em; border:1px solid #d1d1d6; border-radius:8px; background:#f9f9fb; color:#333;">
         </div>
         <div style="display:flex; justify-content:center; margin-bottom:0.5em;">
           <button class="copy-btn" id="copyBtn" onclick="copyButton('siteUrl')" style="background:var(--accent); color:#fff; border:none; border-radius:8px; padding:0.5em 1.2em; font-size:1em; cursor:pointer; transition:background 0.2s; margin-left:0.2em; display:flex; align-items:center; gap:0.5em;"><i class="fa-regular fa-copy"></i> コピー</button>
@@ -1073,7 +1073,7 @@
     const adminPinSubmit = document.getElementById('adminPinSubmit');
     const adminPinCancel = document.getElementById('adminPinCancel');
     const adminPinBtns = document.querySelectorAll('.pin-btn');
-    const adminUrl = 'http://localhost:3000/admin.html';
+    const adminUrl = '/admin.html';
     let pinValue = '';
     function openAdminModal() {
       adminLoginModal.style.display = 'flex';
@@ -1150,7 +1150,7 @@
         // 少し遅延してリダイレクト
         setTimeout(function() {
           if (!location.pathname.endsWith('ph-index.html')) {
-            location.href = 'http://localhost:3000/ph-index.html';
+            location.href = '/ph-index.html';
           }
         }, 5);
       } else {

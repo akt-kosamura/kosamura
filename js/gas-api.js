@@ -1,4 +1,4 @@
-// GAS互換APIクライアント
+// GAS互換APIクライアント（GAS運用時と同じ）
 class GASCompatibleAPI {
   constructor(baseURL = null) {
     // ベースURLを動的に決定
@@ -148,6 +148,60 @@ class GASCompatibleAPI {
     } catch (error) {
       console.error('checkAdminPassword error:', error);
       return false;
+    }
+  }
+
+  // 投稿削除（GAS互換）
+  async deletePost(id) {
+    try {
+      const formData = new FormData();
+      formData.append('id', id);
+
+      const response = await fetch(`${this.baseURL}/exec?function=deletePost`, {
+        method: 'POST',
+        body: formData
+      });
+      if (!response.ok) throw new Error('削除に失敗しました');
+      return await response.json();
+    } catch (error) {
+      console.error('deletePost error:', error);
+      throw error;
+    }
+  }
+
+  // 投稿更新（GAS互換）
+  async updatePost(postData) {
+    try {
+      const formData = new FormData();
+      formData.append('postData', JSON.stringify(postData));
+
+      const response = await fetch(`${this.baseURL}/exec?function=updatePost`, {
+        method: 'POST',
+        body: formData
+      });
+      if (!response.ok) throw new Error('更新に失敗しました');
+      return await response.json();
+    } catch (error) {
+      console.error('updatePost error:', error);
+      throw error;
+    }
+  }
+
+  // 複数投稿削除（GAS互換）
+  async deletePostsBulk(ids) {
+    try {
+      const formData = new FormData();
+      formData.append('ids', JSON.stringify(ids));
+
+      const response = await fetch(`${this.baseURL}/exec?function=deletePostsBulk`, {
+        method: 'POST',
+        body: formData
+      });
+      if (!response.ok) throw new Error('一括削除に失敗しました');
+      return await response.json();
+    } catch (error) {
+      console.error('deletePostsBulk error:', error);
+      throw error;
     }
   }
 }
