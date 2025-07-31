@@ -1,12 +1,27 @@
 // API クライアントライブラリ
 class KosamuraAPI {
-  constructor(baseURL = 'http://localhost:3000') {
-    this.baseURL = baseURL;
+  constructor(baseURL = null) {
+    // ベースURLを動的に決定
+    if (baseURL) {
+      this.baseURL = baseURL;
+    } else {
+      // 現在のページのプロトコルとホストを使用
+      this.baseURL = window.location.origin;
+    }
+    // GAS互換APIも初期化
+    this.gasAPI = new GASCompatibleAPI(this.baseURL);
   }
 
   // データ取得
   async getData() {
     try {
+      // まずGAS互換APIを試す
+      const gasData = await this.gasAPI.getData();
+      if (gasData && gasData.length > 0) {
+        return gasData;
+      }
+      
+      // フォールバック: 通常のAPI
       const response = await fetch(`${this.baseURL}/api/data`);
       if (!response.ok) throw new Error('データ取得に失敗しました');
       return await response.json();
@@ -19,7 +34,15 @@ class KosamuraAPI {
   // ファイルアップロード
   async uploadFileAndRecord(grade, year, type, subject, stream, contentType, fileFormat, comment, filename, base64, deviceInfo, fileSizeMB) {
     try {
-      // Base64をBlobに変換
+      // まずGAS互換APIを試す
+      try {
+        const gasResult = await this.gasAPI.uploadFileAndRecord(grade, year, type, subject, stream, contentType, fileFormat, comment, filename, base64, deviceInfo, fileSizeMB);
+        return gasResult;
+      } catch (gasError) {
+        console.log('GAS互換APIでエラー、通常のAPIにフォールバック:', gasError);
+      }
+      
+      // フォールバック: 通常のAPI
       const byteCharacters = atob(base64);
       const byteNumbers = new Array(byteCharacters.length);
       for (let i = 0; i < byteCharacters.length; i++) {

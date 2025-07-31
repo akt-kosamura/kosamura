@@ -31,7 +31,7 @@ const sheets = google.sheets({ version: 'v4', auth });
 // ミドルウェア
 app.use(cors());
 app.use(express.json());
-app.use(express.static('public'));
+app.use(express.static('.')); // ルートディレクトリを静的ファイルとして提供
 
 // ファイルアップロード設定（一時保存用）
 const storage = multer.memoryStorage();
@@ -464,6 +464,146 @@ app.delete('/api/admin/posts', async (req, res) => {
   }
 });
 
+// GAS互換のヘルパー関数
+async function handleUpload(req, res) {
+  try {
+    const {
+      grade, year, type, subject, stream, contentType, fileFormat, comment, fileSizeMB
+    } = req.body;
+
+    const file = req.file;
+    if (!file) {
+      return res.status(400).json({ error: 'ファイルがアップロードされていません' });
+    }
+
+    // デバイス情報を解析
+    const deviceInfo = req.body.deviceInfo ? JSON.parse(req.body.deviceInfo) : {};
+
+    // 新しいファイル名を作成
+    const extension = path.extname(file.originalname);
+    const newFileName = `${grade}_${year}_${type}_${subject}_${stream}_${contentType}${extension}`;
+
+    // Google Driveにアップロード
+    const driveResult = await uploadToGoogleDrive(
+      file.buffer,
+      newFileName,
+      file.mimetype
+    );
+
+    const uploadDate = new Date().toLocaleString('ja-JP');
+
+    const post = {
+      id: nextId++,
+      grade,
+      year,
+      type,
+      subject,
+      stream,
+      contentType,
+      format: fileFormat,
+      comment,
+      url: driveResult.url,
+      date: uploadDate,
+      likes: 0,
+      bad: 0,
+      publicIP: deviceInfo.publicIP || req.ip,
+      privateIP: deviceInfo.privateIP || req.ip,
+      userAgent: deviceInfo.userAgent || req.get('User-Agent'),
+      platform: deviceInfo.platform || req.get('User-Agent'),
+      screenResolution: deviceInfo.screenResolution || 'Unknown',
+      windowSize: deviceInfo.windowSize || 'Unknown',
+      fileSize: parseFloat(fileSizeMB) || 0
+    };
+
+    posts.push(post);
+
+    // Google Sheetsに保存
+    await saveDataToSheets();
+
+    // メール通知
+    try {
+      await transporter.sendMail({
+        from: process.env.EMAIL_USER || 'kosamura.akita@gmail.com',
+        to: 'kosamura.akita@gmail.com',
+        subject: `【考査村】新しい投稿が追加されました (ID: ${post.id})`,
+        text: `
+新しい投稿が考査村に追加されました。
+
+【投稿詳細】
+ID: ${post.id}
+学年: ${grade}
+年度: ${year}
+種類: ${type}
+科目: ${subject}
+文理区分: ${stream}
+内容: ${contentType}
+ファイル形式: ${fileFormat}
+ファイルサイズ: ${fileSizeMB} MB
+コメント: ${comment || 'なし'}
+アップロード日時: ${uploadDate}
+ファイルURL: ${driveResult.url}
+
+【デバイス情報】
+公開IPアドレス: ${deviceInfo.publicIP || req.ip}
+プライベートIPアドレス: ${deviceInfo.privateIP || req.ip}
+User-Agent: ${deviceInfo.userAgent || req.get('User-Agent')}
+プラットフォーム: ${deviceInfo.platform || req.get('User-Agent')}
+画面解像度: ${deviceInfo.screenResolution || 'Unknown'}
+ウィンドウサイズ: ${deviceInfo.windowSize || 'Unknown'}
+
+---
+このメールは考査村の自動通知システムから送信されています。
+        `
+      });
+    } catch (emailError) {
+      console.error('メール送信エラー:', emailError);
+    }
+
+    res.json({ url: driveResult.url, id: post.id });
+  } catch (error) {
+    console.error('アップロードエラー:', error);
+    res.status(500).json({ error: 'アップロードに失敗しました' });
+  }
+}
+
+async function handleLike(id, delta) {
+  const postIndex = posts.findIndex(p => p.id === parseInt(id));
+  if (postIndex !== -1) {
+    posts[postIndex].likes = Math.max(0, posts[postIndex].likes + delta);
+    await saveDataToSheets();
+    return posts[postIndex].likes;
+  }
+  throw new Error('ID が見つかりません: ' + id);
+}
+
+async function handleBad(id, delta) {
+  const postIndex = posts.findIndex(p => p.id === parseInt(id));
+  if (postIndex !== -1) {
+    posts[postIndex].bad = Math.max(0, posts[postIndex].bad + delta);
+    await saveDataToSheets();
+    return posts[postIndex].bad;
+  }
+  throw new Error('ID が見つかりません: ' + id);
+}
+
+async function checkAdminPassword(input) {
+  const adminPasswords = process.env.ADMIN_PASSWORDS ? 
+    process.env.ADMIN_PASSWORDS.split(',').map(p => p.trim()) : 
+    ['admin123', 'password123', 'secure456'];
+  
+  // ハッシュ認証（GAS互換）
+  const crypto = require('crypto');
+  const hash = crypto.createHash('sha256').update(input).digest('hex');
+  
+  // 管理者パスワードのハッシュ値と比較
+  // 注意: 実際の運用では、ハッシュ値を環境変数で管理することを推奨
+  const validHashes = adminPasswords.map(pwd => 
+    crypto.createHash('sha256').update(pwd).digest('hex')
+  );
+  
+  return validHashes.includes(hash) ? 'ok' : 'ng';
+}
+
 // Google DriveのURLからファイルIDを抽出
 function extractFileIdFromUrl(url) {
   if (!url) return null;
@@ -475,6 +615,67 @@ function extractFileIdFromUrl(url) {
   if (m2 && m2[1]) return m2[1];
   return null;
 }
+
+// GAS互換エンドポイント
+app.get('/exec', (req, res) => {
+  const { function: funcName } = req.query;
+  
+  switch (funcName) {
+    case 'getData':
+      res.json(posts);
+      break;
+    case 'uploadFileAndRecord':
+      // この関数はPOSTで処理されるため、GETではエラー
+      res.status(405).json({ error: 'Method not allowed' });
+      break;
+    default:
+      res.status(404).json({ error: 'Function not found' });
+  }
+});
+
+// GAS互換のPOSTエンドポイント
+app.post('/exec', upload.single('file'), async (req, res) => {
+  const { function: funcName } = req.query;
+  
+  try {
+    switch (funcName) {
+      case 'uploadFileAndRecord':
+        // 既存のアップロード処理を呼び出し
+        const uploadResult = await handleUpload(req, res);
+        return uploadResult;
+      case 'like':
+        const likeId = req.body.id;
+        const likeResult = await handleLike(likeId, 1);
+        res.json(likeResult);
+        break;
+      case 'unlike':
+        const unlikeId = req.body.id;
+        const unlikeResult = await handleLike(unlikeId, -1);
+        res.json(unlikeResult);
+        break;
+      case 'bad':
+        const badId = req.body.id;
+        const badResult = await handleBad(badId, 1);
+        res.json(badResult);
+        break;
+      case 'unbad':
+        const unbadId = req.body.id;
+        const unbadResult = await handleBad(unbadId, -1);
+        res.json(unbadResult);
+        break;
+      case 'checkAdminPassword':
+        const password = req.body.password;
+        const authResult = await checkAdminPassword(password);
+        res.json({ result: authResult });
+        break;
+      default:
+        res.status(404).json({ error: 'Function not found' });
+    }
+  } catch (error) {
+    console.error('GAS互換エンドポイントエラー:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
 
 // 静的ファイル配信
 app.use('/uploads', express.static('uploads'));

@@ -1,0 +1,57 @@
+# 依存関係
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# 環境変数
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Google Cloud認証情報
+credentials.json
+*.json
+
+# ログファイル
+logs
+*.log
+
+# ランタイムデータ
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# カバレッジディレクトリ
+coverage/
+.nyc_output
+
+# 依存関係ロックファイル
+package-lock.json
+yarn.lock
+
+# エディタ設定
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS生成ファイル
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# 一時ファイル
+tmp/
+temp/
+
+# アップロードファイル（本番環境ではGoogle Driveを使用）
+uploads/ 

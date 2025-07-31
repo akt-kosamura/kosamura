@@ -1,210 +1,255 @@
 # 考査村 (Kosamura)
 
-秋高秋高考査村のWebアプリケーションです。以前はGoogle Apps Script (GAS) で運用していましたが、フロントエンドをGitに移行しました。
+考査村は、教育関係者が試験問題や教材を共有するためのプラットフォームです。
 
-## 🔄 GAS運用時との互換性
+## 🚀 本番環境デプロイ
 
-### ✅ 完全互換機能
-- **ファイルアップロード**: 同じパラメータ構造とGoogle Drive保存
-- **データ管理**: Google Sheetsとの完全連携
-- **管理者機能**: 同じパスワード認証システム
-- **いいね・バッド機能**: 同じ動作とデータ構造
-- **検索・フィルタ機能**: 同じUIと動作
-- **デバイス情報表示**: 同じフィールドと表示形式
+### 対応プラットフォーム
+- **Heroku**
+- **Railway**
+- **Render**
+- **Vercel** (Serverless Functions)
+- **Google Cloud Run**
+- **AWS Elastic Beanstalk**
 
-### 🔧 変更点
-- **バックエンド**: GAS → Express.js
-- **認証**: Googleアカウント → JWT + パスワード
-- **ファイル保存**: Google Drive（変更なし）
-- **データ保存**: Google Sheets（変更なし）
+### デプロイ手順
 
-## 🚀 セットアップ手順
+1. **リポジトリをGitにプッシュ**
+   ```bash
+   git add .
+   git commit -m "本番環境対応"
+   git push origin main
+   ```
 
-### 1. 依存関係のインストール
-```bash
-npm install
+2. **環境変数の設定**
+   各プラットフォームの管理画面で以下の環境変数を設定：
+   ```
+   GOOGLE_DRIVE_FOLDER_ID=your-folder-id
+   GOOGLE_SPREADSHEET_ID=14uI1FoXUWg_deV-ZGSYY85JREyLyZY4YVqpKka35sZw
+   GOOGLE_SHEET_NAME=シート1
+   EMAIL_USER=kosamura.akita@gmail.com
+   EMAIL_PASS=your-app-password
+   ADMIN_PASSWORDS=your-admin-passwords
+   PORT=8080
+   ```
+
+3. **Google Cloud認証情報の設定**
+   - `credentials.json` ファイルをプラットフォームにアップロード
+   - または環境変数 `GOOGLE_APPLICATION_CREDENTIALS_JSON` として設定
+
+4. **デプロイ実行**
+   プラットフォームの指示に従ってデプロイを実行
+
+### 重要な注意事項
+
+- **HTTPS対応**: 本番環境では自動的にHTTPSが有効になります
+- **CORS設定**: 本番環境のドメインに合わせてCORS設定を調整
+- **ファイルサイズ制限**: 50MBまで対応
+- **同時接続数**: プラットフォームの制限に注意
+
+## 特徴
+
+- **GAS互換性**: 既存のGASコードと同じAPIエンドポイントを提供
+- **Google Drive連携**: ファイルの自動アップロードとセキュリティ設定
+- **Google Sheets連携**: データの永続化と管理
+- **メール通知**: 新規投稿時の自動通知機能
+- **管理者機能**: パスワード認証による管理画面
+- **レスポンシブデザイン**: モダンなUI/UX
+
+## セットアップ
+
+詳細なセットアップ手順は [SETUP.md](SETUP.md) を参照してください。
+
+### クイックスタート
+
+1. **依存関係のインストール**
+   ```bash
+   npm install
+   ```
+
+2. **環境変数の設定**
+   ```bash
+   cp env.example .env
+   # .envファイルを編集して必要な設定を行ってください
+   ```
+
+3. **Google Cloud Platform設定**
+   - Google Drive API と Google Sheets API を有効化
+   - サービスアカウントを作成し、credentials.json をダウンロード
+   - プロジェクトルートに credentials.json を配置
+
+4. **サーバー起動**
+   ```bash
+   npm run dev  # 開発モード
+   # または
+   npm start    # 本番モード
+   ```
+
+## 主要機能
+
+### 1. ファイルアップロード
+- 複数のファイル形式に対応（PDF, Word, Excel, 画像等）
+- 自動的なファイル名生成（学年_年度_種類_科目_文理区分_内容）
+- Google Driveへの自動アップロード
+- セキュリティ設定（ダウンロード・印刷制限）
+
+### 2. データ管理
+- Google Sheetsでのデータ永続化
+- 詳細なメタデータ記録（デバイス情報、IPアドレス等）
+- いいね・バッド機能
+- 検索・フィルタリング機能
+
+### 3. 管理者機能
+- パスワード認証
+- 投稿の編集・削除
+- 一括削除機能
+- 統計情報の表示
+
+### 4. 通知機能
+- 新規投稿時のメール通知
+- 詳細な投稿情報とデバイス情報を含む
+
+## API仕様
+
+### GAS互換エンドポイント
+
+#### データ取得
+```
+GET /exec?function=getData
 ```
 
-### 2. 環境変数の設定
-`.env` ファイルを作成し、以下の設定を追加してください：
-
-```env
-# サーバー設定
-PORT=3000
-
-# Google Drive API設定
-GOOGLE_DRIVE_FOLDER_ID=1xx-N4rKwFTk83iIxSOCEhctJQv-3rZrC
-GOOGLE_APPLICATION_CREDENTIALS=./credentials.json
-
-# Google Sheets設定
-GOOGLE_SPREADSHEET_ID=your-spreadsheet-id
-GOOGLE_SHEET_NAME=シート1
-
-# メール設定
-EMAIL_USER=kosamura.akita@gmail.com
-EMAIL_PASS=your-app-password
-
-# JWT設定
-JWT_SECRET=your-secret-key
-
-# 管理者パスワード（複数設定可能、カンマ区切り）
-ADMIN_PASSWORDS=admin123,password123,secure456
+#### ファイルアップロード
+```
+POST /exec?function=uploadFileAndRecord
 ```
 
-### 3. Google Cloud Console設定
-1. [Google Cloud Console](https://console.cloud.google.com/) でプロジェクトを作成
-2. Google Drive APIを有効化
-3. Google Sheets APIを有効化
-4. サービスアカウントを作成
-5. 認証情報（JSON）をダウンロードし、`credentials.json` として保存
-6. Google Driveのフォルダにサービスアカウントのメールアドレスを共有設定で追加
-7. Google Sheetsにサービスアカウントのメールアドレスを共有設定で追加
-
-### 4. サーバーの起動
-```bash
-# 開発モード
-npm run dev
-
-# 本番モード
-npm start
+#### いいね機能
+```
+POST /exec?function=like
+POST /exec?function=unlike
 ```
 
-## 📁 ファイル構成
+#### バッド機能
+```
+POST /exec?function=bad
+POST /exec?function=unbad
+```
+
+#### 管理者認証
+```
+POST /exec?function=checkAdminPassword
+```
+
+### 通常のREST API
+
+#### データ取得
+```
+GET /api/data
+```
+
+#### ファイルアップロード
+```
+POST /api/upload
+```
+
+#### いいね・バッド
+```
+POST /api/like/:id
+POST /api/unlike/:id
+POST /api/bad/:id
+POST /api/unbad/:id
+```
+
+## ファイル構成
 
 ```
 kosamura/
+├── server.js              # メインサーバーファイル
+├── package.json           # 依存関係定義
+├── env.example           # 環境変数設定例
+├── SETUP.md              # 詳細セットアップ手順
+├── credentials.json      # Google Cloud認証情報（要配置）
+├── .env                  # 環境変数（要作成）
 ├── js/
-│   ├── api.js          # APIクライアントライブラリ（GAS互換）
-│   └── code.gs.js      # 元のGASコード（参考用）
-├── server.js           # Express.jsサーバー
-├── package.json        # 依存関係
-├── .env               # 環境変数（要作成）
-├── credentials.json   # Google API認証情報（要作成）
-├── GAS運用時のファイル/  # 元のファイル（参考用）
-└── HTMLファイル群
-    ├── index.html      # ホームページ
-    ├── upload.html     # アップロードページ
-    ├── search.html     # 検索ページ
-    ├── admin.html      # 管理ページ
-    └── ...
+│   ├── api.js           # メインAPIクライアント
+│   └── gas-api.js       # GAS互換APIクライアント
+├── GAS運用時のファイル/   # 元のGASコード
+├── index.html           # メインページ
+├── upload.html          # アップロードページ
+├── search.html          # 検索ページ
+├── share.html           # 共有ページ
+├── admin.html           # 管理者ページ
+└── ph-index.html        # モバイル版メインページ
 ```
 
-## 🔄 移行の主な変更点
+## 環境変数
 
-### 1. バックエンド
-- **GAS → Express.js**: Google Apps ScriptからNode.js/Express.jsに変更
-- **Google Drive API**: ファイル保存をGoogle Driveに統合（変更なし）
-- **Google Sheets API**: データ管理をGoogle Sheetsに統合（変更なし）
-- **認証システム**: Googleアカウント認証からJWT + パスワード認証に変更
+| 変数名 | 説明 | 必須 |
+|--------|------|------|
+| `GOOGLE_DRIVE_FOLDER_ID` | Google DriveフォルダID | ○ |
+| `GOOGLE_SPREADSHEET_ID` | Google SheetsスプレッドシートID | ○ |
+| `GOOGLE_SHEET_NAME` | 使用するシート名 | ○ |
+| `GOOGLE_APPLICATION_CREDENTIALS` | 認証情報ファイルパス | ○ |
+| `EMAIL_USER` | メール送信元アドレス | ○ |
+| `EMAIL_PASS` | Gmailアプリパスワード | ○ |
+| `ADMIN_PASSWORDS` | 管理者パスワード（カンマ区切り） | ○ |
+| `PORT` | サーバーポート | × |
 
-### 2. フロントエンド
-- **API互換性レイヤー**: `google.script.run` の呼び出しを維持
-- **ファイルアップロード**: Base64エンコードからFormDataに変更（内部処理のみ）
-- **エラーハンドリング**: より詳細なエラー処理を追加
+## トラブルシューティング
 
-### 3. データストア
-- **Google Sheets**: 元のスプレッドシートを継続使用
-- **リアルタイム同期**: サーバー起動時にデータ読み込み、変更時に自動保存
+### よくある問題
 
-## ⚠️ 注意点
+1. **Google Drive API エラー**
+   - サービスアカウントの権限を確認
+   - APIが有効化されているか確認
+   - credentials.json ファイルが正しく配置されているか確認
 
-### 1. データの永続化
-- Google Sheetsを使用しているため、データは永続化されます
-- サーバー再起動時もデータは失われません
+2. **Google Sheets API エラー**
+   - スプレッドシートIDが正しいか確認
+   - サービスアカウントに編集権限が付与されているか確認
 
-### 2. セキュリティ
-- 管理者パスワードは環境変数で管理
-- JWTシークレットキーは強力なものを使用
-- Google Drive APIの認証情報は適切に管理
+3. **メール送信エラー**
+   - Gmailのアプリパスワードが正しく設定されているか確認
+   - 2段階認証が有効化されているか確認
 
-### 3. ファイルサイズ制限
-- 現在50MBまで対応
-- 必要に応じて調整可能
+4. **ファイルアップロードエラー**
+   - ファイルサイズ制限（50MB）を確認
+   - フォルダIDが正しく設定されているか確認
 
-## 🐛 トラブルシューティング
+## GAS版との違い
 
-### 1. Google Drive APIエラー
-```
-Google Driveアップロードエラー: [Error]
-```
-- 認証情報ファイルが正しく設定されているか確認
-- Google Drive APIが有効化されているか確認
-- フォルダの共有設定を確認
+### 1. 認証方式
+- **GAS版**: Googleアカウントでの自動認証
+- **Node.js版**: サービスアカウントによる認証
 
-### 2. Google Sheets APIエラー
-```
-Google Sheetsからのデータ読み込みエラー: [Error]
-```
-- Google Sheets APIが有効化されているか確認
-- スプレッドシートの共有設定を確認
-- スプレッドシートIDが正しいか確認
+### 2. エンドポイント
+- **GAS版**: `/exec?function=関数名`
+- **Node.js版**: `/exec?function=関数名` (互換性維持)
 
-### 3. メール送信エラー
-```
-メール送信エラー: [Error]
-```
-- Gmailのアプリパスワードが正しく設定されているか確認
-- 2段階認証が有効化されているか確認
+### 3. セキュリティ
+- **GAS版**: Googleのセキュリティ機能を利用
+- **Node.js版**: 独自のセキュリティ設定が必要
 
-### 4. 管理者認証エラー
-```
-認証に失敗しました
-```
-- 環境変数のADMIN_PASSWORDSが正しく設定されているか確認
-- パスワードがカンマ区切りで設定されているか確認
+## 開発
 
-## 📝 開発者向け情報
-
-### API エンドポイント
-- `GET /api/data` - データ取得
-- `POST /api/upload` - ファイルアップロード
-- `POST /api/like/:id` - いいね増加
-- `POST /api/unlike/:id` - いいね取り消し
-- `POST /api/bad/:id` - バッド増加
-- `POST /api/unbad/:id` - バッド取り消し
-- `DELETE /api/post/:id` - 投稿削除
-- `POST /api/admin/auth` - 管理者認証
-- `GET /api/admin/data` - 管理者用データ取得
-- `PUT /api/admin/post/:id` - 投稿更新
-- `DELETE /api/admin/posts` - 複数投稿削除
-
-### 互換性レイヤー
-`js/api.js` でGoogle Apps Script互換性レイヤーを提供しています：
-
-```javascript
-// 従来のGAS呼び出し（変更不要）
-google.script.run.withSuccessHandler(callback).getData();
-google.script.run.withSuccessHandler(success).withFailureHandler(error).uploadFileAndRecord(...);
-google.script.run.checkAdminPassword(password);
+### 開発モードでの起動
+```bash
+npm run dev
 ```
 
-### データ構造
-Google Sheetsの列構造（A〜T列）：
-- A: ID
-- B: 学年
-- C: 年度
-- D: 種類
-- E: 科目
-- F: 文理区分
-- G: 内容タイプ
-- H: ファイル形式
-- I: コメント
-- J: URL
-- K: 日付
-- L: likes
-- M: bad
-- N: 公開IPアドレス
-- O: プライベートIPアドレス
-- P: User-Agent
-- Q: プラットフォーム
-- R: 画面解像度
-- S: ウィンドウサイズ
-- T: ファイルサイズ
+### 本番環境へのデプロイ
+詳細は [SETUP.md](SETUP.md) の「本番環境へのデプロイ」セクションを参照してください。
 
-## 🤝 貢献
-
-バグ報告や機能要望は、GitHubのIssuesでお知らせください。
-
-## 📄 ライセンス
+## ライセンス
 
 MIT License
+
+## サポート
+
+問題が発生した場合は、以下を確認してください：
+1. ログファイルの確認
+2. 環境変数の設定確認
+3. Google Cloud ConsoleでのAPI使用量確認
+4. サービスアカウントの権限確認
+
+詳細なセットアップ手順は [SETUP.md](SETUP.md) を参照してください。
