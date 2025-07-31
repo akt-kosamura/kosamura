@@ -17,16 +17,39 @@ class KosamuraAPI {
   }
 
   // ファイルアップロード
-  async uploadFile(formData) {
+  async uploadFileAndRecord(grade, year, type, subject, stream, contentType, fileFormat, comment, filename, base64, deviceInfo, fileSizeMB) {
     try {
+      // Base64をBlobに変換
+      const byteCharacters = atob(base64);
+      const byteNumbers = new Array(byteCharacters.length);
+      for (let i = 0; i < byteCharacters.length; i++) {
+        byteNumbers[i] = byteCharacters.charCodeAt(i);
+      }
+      const byteArray = new Uint8Array(byteNumbers);
+      const blob = new Blob([byteArray], { type: 'application/octet-stream' });
+
+      const formData = new FormData();
+      formData.append('file', blob, filename);
+      formData.append('grade', grade);
+      formData.append('year', year);
+      formData.append('type', type);
+      formData.append('subject', subject);
+      formData.append('stream', stream);
+      formData.append('contentType', contentType);
+      formData.append('fileFormat', fileFormat);
+      formData.append('comment', comment);
+      formData.append('fileSizeMB', fileSizeMB);
+      formData.append('deviceInfo', JSON.stringify(deviceInfo));
+
       const response = await fetch(`${this.baseURL}/api/upload`, {
         method: 'POST',
         body: formData
       });
       if (!response.ok) throw new Error('アップロードに失敗しました');
-      return await response.json();
+      const result = await response.json();
+      return result.url; // GASの戻り値と合わせる
     } catch (error) {
-      console.error('uploadFile error:', error);
+      console.error('uploadFileAndRecord error:', error);
       throw error;
     }
   }
@@ -184,7 +207,7 @@ window.kosamuraAPI = new KosamuraAPI();
 window.google = {
   script: {
     run: {
-      // データ取得
+      // データ取得（withSuccessHandler対応）
       withSuccessHandler: function(callback) {
         return {
           getData: function() {
@@ -193,7 +216,7 @@ window.google = {
         };
       },
       
-      // いいね・バッド
+      // いいね・バッド（直接呼び出し対応）
       like: function(id) {
         kosamuraAPI.like(id).catch(console.error);
       },
@@ -207,11 +230,29 @@ window.google = {
         kosamuraAPI.unbad(id).catch(console.error);
       },
       
+      // ファイルアップロード（withSuccessHandler/withFailureHandler対応）
+      withSuccessHandler: function(successCallback) {
+        return {
+          withFailureHandler: function(failureCallback) {
+            return {
+              uploadFileAndRecord: function(grade, year, type, subject, stream, contentType, fileFormat, comment, filename, base64, deviceInfo, fileSizeMB) {
+                kosamuraAPI.uploadFileAndRecord(grade, year, type, subject, stream, contentType, fileFormat, comment, filename, base64, deviceInfo, fileSizeMB)
+                  .then(successCallback)
+                  .catch(failureCallback);
+              }
+            };
+          }
+        };
+      },
+      
       // 管理者機能
       checkAdminPassword: function(password) {
         return new Promise((resolve) => {
           kosamuraAPI.adminAuth(password)
-            .then(result => resolve('ok'))
+            .then(result => {
+              localStorage.setItem('adminToken', result.token);
+              resolve('ok');
+            })
             .catch(() => resolve('ng'));
         });
       },

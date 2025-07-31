@@ -6,39 +6,34 @@ const jwt = require('jsonwebtoken');
 const nodemailer = require('nodemailer');
 const path = require('path');
 const fs = require('fs');
+const { google } = require('googleapis');
 require('dotenv').config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+// Google Drive API設定
+const FOLDER_ID = process.env.GOOGLE_DRIVE_FOLDER_ID || '1xx-N4rKwFTk83iIxSOCEhctJQv-3rZrC';
+const auth = new google.auth.GoogleAuth({
+  keyFile: process.env.GOOGLE_APPLICATION_CREDENTIALS || './credentials.json',
+  scopes: ['https://www.googleapis.com/auth/drive.file']
+});
+
+const drive = google.drive({ version: 'v3', auth });
 
 // ミドルウェア
 app.use(cors());
 app.use(express.json());
 app.use(express.static('public'));
 
-// ファイルアップロード設定
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    const uploadDir = 'uploads/';
-    if (!fs.existsSync(uploadDir)) {
-      fs.mkdirSync(uploadDir, { recursive: true });
-    }
-    cb(null, uploadDir);
-  },
-  filename: function (req, file, cb) {
-    const { grade, year, type, subject, stream, contentType } = req.body;
-    const extension = path.extname(file.originalname);
-    const newFileName = `${grade}_${year}_${type}_${subject}_${stream}_${contentType}${extension}`;
-    cb(null, newFileName);
-  }
-});
-
+// ファイルアップロード設定（一時保存用）
+const storage = multer.memoryStorage();
 const upload = multer({ 
   storage: storage,
   limits: { fileSize: 50 * 1024 * 1024 } // 50MB制限
 });
 
-// インメモリデータストア（本番環境ではMongoDB等を使用）
+// データストア（本番環境ではMongoDB等を使用）
 let posts = [];
 let nextId = 1;
 
@@ -54,6 +49,44 @@ const transporter = nodemailer.createTransporter({
 // 管理者パスワード（本番環境では環境変数から取得）
 const ADMIN_PASSWORDS = ['admin123', 'password123', 'secure456'];
 
+// Google Driveにファイルをアップロード
+async function uploadToGoogleDrive(fileBuffer, fileName, mimeType) {
+  try {
+    const fileMetadata = {
+      name: fileName,
+      parents: [FOLDER_ID]
+    };
+
+    const media = {
+      mimeType: mimeType,
+      body: require('stream').Readable.from(fileBuffer)
+    };
+
+    const file = await drive.files.create({
+      requestBody: fileMetadata,
+      media: media,
+      fields: 'id,webViewLink'
+    });
+
+    // 共有設定：閲覧のみ許可
+    await drive.permissions.create({
+      fileId: file.data.id,
+      requestBody: {
+        role: 'reader',
+        type: 'anyone'
+      }
+    });
+
+    return {
+      fileId: file.data.id,
+      url: file.data.webViewLink
+    };
+  } catch (error) {
+    console.error('Google Driveアップロードエラー:', error);
+    throw error;
+  }
+}
+
 // API エンドポイント
 
 // データ取得
@@ -65,7 +98,7 @@ app.get('/api/data', (req, res) => {
 app.post('/api/upload', upload.single('file'), async (req, res) => {
   try {
     const {
-      grade, year, type, subject, stream, contentType, fileFormat, comment
+      grade, year, type, subject, stream, contentType, fileFormat, comment, fileSizeMB
     } = req.body;
 
     const file = req.file;
@@ -73,8 +106,20 @@ app.post('/api/upload', upload.single('file'), async (req, res) => {
       return res.status(400).json({ error: 'ファイルがアップロードされていません' });
     }
 
-    const fileSizeMB = (file.size / (1024 * 1024)).toFixed(2);
-    const fileUrl = `/uploads/${file.filename}`;
+    // デバイス情報を解析
+    const deviceInfo = req.body.deviceInfo ? JSON.parse(req.body.deviceInfo) : {};
+
+    // 新しいファイル名を作成
+    const extension = path.extname(file.originalname);
+    const newFileName = `${grade}_${year}_${type}_${subject}_${stream}_${contentType}${extension}`;
+
+    // Google Driveにアップロード
+    const driveResult = await uploadToGoogleDrive(
+      file.buffer,
+      newFileName,
+      file.mimetype
+    );
+
     const uploadDate = new Date().toLocaleString('ja-JP');
 
     const post = {
@@ -87,17 +132,17 @@ app.post('/api/upload', upload.single('file'), async (req, res) => {
       contentType,
       format: fileFormat,
       comment,
-      url: fileUrl,
+      url: driveResult.url,
       date: uploadDate,
       likes: 0,
       bad: 0,
-      publicIP: req.ip,
-      privateIP: req.ip,
-      userAgent: req.get('User-Agent'),
-      platform: req.get('User-Agent'),
-      screenResolution: 'Unknown',
-      windowSize: 'Unknown',
-      fileSize: parseFloat(fileSizeMB)
+      publicIP: deviceInfo.publicIP || req.ip,
+      privateIP: deviceInfo.privateIP || req.ip,
+      userAgent: deviceInfo.userAgent || req.get('User-Agent'),
+      platform: deviceInfo.platform || req.get('User-Agent'),
+      screenResolution: deviceInfo.screenResolution || 'Unknown',
+      windowSize: deviceInfo.windowSize || 'Unknown',
+      fileSize: parseFloat(fileSizeMB) || 0
     };
 
     posts.push(post);
@@ -123,11 +168,15 @@ ID: ${post.id}
 ファイルサイズ: ${fileSizeMB} MB
 コメント: ${comment || 'なし'}
 アップロード日時: ${uploadDate}
-ファイルURL: ${fileUrl}
+ファイルURL: ${driveResult.url}
 
 【デバイス情報】
-公開IPアドレス: ${req.ip}
-User-Agent: ${req.get('User-Agent')}
+公開IPアドレス: ${deviceInfo.publicIP || req.ip}
+プライベートIPアドレス: ${deviceInfo.privateIP || req.ip}
+User-Agent: ${deviceInfo.userAgent || req.get('User-Agent')}
+プラットフォーム: ${deviceInfo.platform || req.get('User-Agent')}
+画面解像度: ${deviceInfo.screenResolution || 'Unknown'}
+ウィンドウサイズ: ${deviceInfo.windowSize || 'Unknown'}
 
 ---
 このメールは考査村の自動通知システムから送信されています。
@@ -137,7 +186,7 @@ User-Agent: ${req.get('User-Agent')}
       console.error('メール送信エラー:', emailError);
     }
 
-    res.json({ url: fileUrl, id: post.id });
+    res.json({ url: driveResult.url, id: post.id });
   } catch (error) {
     console.error('アップロードエラー:', error);
     res.status(500).json({ error: 'アップロードに失敗しました' });
@@ -193,16 +242,22 @@ app.post('/api/unbad/:id', (req, res) => {
 });
 
 // 投稿削除
-app.delete('/api/post/:id', (req, res) => {
+app.delete('/api/post/:id', async (req, res) => {
   const id = parseInt(req.params.id);
   const postIndex = posts.findIndex(p => p.id === id);
   if (postIndex !== -1) {
     const post = posts[postIndex];
-    // ファイル削除
-    const filePath = path.join(__dirname, 'public', post.url);
-    if (fs.existsSync(filePath)) {
-      fs.unlinkSync(filePath);
+    
+    // Google Driveからファイル削除
+    try {
+      const fileId = extractFileIdFromUrl(post.url);
+      if (fileId) {
+        await drive.files.delete({ fileId });
+      }
+    } catch (error) {
+      console.error('Google Driveファイル削除エラー:', error);
     }
+    
     posts.splice(postIndex, 1);
     res.json({ success: true });
   } else {
@@ -262,7 +317,7 @@ app.put('/api/admin/post/:id', (req, res) => {
 });
 
 // 複数投稿削除
-app.delete('/api/admin/posts', (req, res) => {
+app.delete('/api/admin/posts', async (req, res) => {
   const token = req.headers.authorization?.split(' ')[1];
   if (!token) {
     return res.status(401).json({ error: 'トークンが必要です' });
@@ -273,17 +328,24 @@ app.delete('/api/admin/posts', (req, res) => {
     const { ids } = req.body;
     
     if (Array.isArray(ids)) {
-      ids.forEach(id => {
+      for (const id of ids) {
         const postIndex = posts.findIndex(p => p.id === parseInt(id));
         if (postIndex !== -1) {
           const post = posts[postIndex];
-          const filePath = path.join(__dirname, 'public', post.url);
-          if (fs.existsSync(filePath)) {
-            fs.unlinkSync(filePath);
+          
+          // Google Driveからファイル削除
+          try {
+            const fileId = extractFileIdFromUrl(post.url);
+            if (fileId) {
+              await drive.files.delete({ fileId });
+            }
+          } catch (error) {
+            console.error('Google Driveファイル削除エラー:', error);
           }
+          
           posts.splice(postIndex, 1);
         }
-      });
+      }
       res.json({ success: true });
     } else {
       res.status(400).json({ error: '無効なリクエストです' });
@@ -292,6 +354,18 @@ app.delete('/api/admin/posts', (req, res) => {
     res.status(401).json({ error: '無効なトークンです' });
   }
 });
+
+// Google DriveのURLからファイルIDを抽出
+function extractFileIdFromUrl(url) {
+  if (!url) return null;
+  // 例: https://drive.google.com/file/d/FILEID/view?usp=drivesdk
+  const m = url.match(/\/d\/([\w-]+)/);
+  if (m && m[1]) return m[1];
+  // 例: https://drive.google.com/open?id=FILEID
+  const m2 = url.match(/[?&]id=([\w-]+)/);
+  if (m2 && m2[1]) return m2[1];
+  return null;
+}
 
 // 静的ファイル配信
 app.use('/uploads', express.static('uploads'));
