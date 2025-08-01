@@ -396,18 +396,22 @@ function updatePost(postData) {
       throw new Error('指定されたIDの投稿が見つかりません: ' + postData.id);
     }
     
-    // 各フィールドを更新（IDは変更しない）
+    // 各フィールドを更新（IDは変更しない - A列は更新しない）
     const row = rowIndex + 2;
-    sheet.getRange(row, 2).setValue(postData.grade || '');
-    sheet.getRange(row, 3).setValue(postData.year || '');
-    sheet.getRange(row, 4).setValue(postData.type || '');
-    sheet.getRange(row, 5).setValue(postData.subject || '');
-    sheet.getRange(row, 6).setValue(postData.stream || '');
-    sheet.getRange(row, 7).setValue(postData.contentType || '');
-    sheet.getRange(row, 8).setValue(postData.format || '');
-    sheet.getRange(row, 9).setValue(postData.comment || '');
-    sheet.getRange(row, 11).setValue(Number(postData.likes) || 0);
-    sheet.getRange(row, 12).setValue(Number(postData.bad) || 0);
+    // A列: ID（変更不可）
+    sheet.getRange(row, 2).setValue(postData.grade || '');           // B列: 学年
+    sheet.getRange(row, 3).setValue(postData.year || '');            // C列: 年度
+    sheet.getRange(row, 4).setValue(postData.type || '');            // D列: 種類
+    sheet.getRange(row, 5).setValue(postData.subject || '');         // E列: 科目
+    sheet.getRange(row, 6).setValue(postData.stream || '');          // F列: 文理区分
+    sheet.getRange(row, 7).setValue(postData.contentType || '');     // G列: 内容
+    sheet.getRange(row, 8).setValue(postData.format || '');          // H列: ファイル形式
+    sheet.getRange(row, 9).setValue(postData.comment || '');         // I列: コメント
+    sheet.getRange(row, 10).setValue(postData.url || '');            // J列: URL
+    // K列: アップロード日時（変更不可）
+    sheet.getRange(row, 12).setValue(Number(postData.likes) || 0);   // L列: いいね
+    sheet.getRange(row, 13).setValue(Number(postData.bad) || 0);     // M列: バッド
+    // N列以降: デバイス情報（変更不可）
     
     Logger.log('投稿更新完了: ID=' + postData.id);
     return 'ok';
