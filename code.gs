@@ -1,7 +1,7 @@
 // Code.gs for 考査村
 
 // アップロード先フォルダのID
-const FOLDER_ID = '1xx-N4rKwFTJQv-3rZrC';
+const FOLDER_ID = '1xx-N4rKwFTk83iIxSOCEhctJQv-3rZrC';
 // スプレッドシートID
 const SPREADSHEET_ID = '14uI1FoXUWg_deV-ZGSYY85JREyLyZY4YVqpKka35sZw';
 const SHEET_NAME = 'シート1';
@@ -60,9 +60,19 @@ function uploadFileAndRecord(
     if (!base64) {
       throw new Error('base64データが提供されていません');
     }
+    
+    // フォルダIDの検証とファイル保存
+    let folder;
+    try {
+      folder = DriveApp.getFolderById(FOLDER_ID);
+    } catch (folderError) {
+      Logger.log('フォルダIDエラー: ' + folderError);
+      throw new Error('指定されたフォルダIDが無効です。正しいフォルダIDを設定してください。現在のID: ' + FOLDER_ID);
+    }
+    
     const decoded = Utilities.base64Decode(base64);
     const blob    = Utilities.newBlob(decoded, 'application/octet-stream', newFileName);
-    const file    = DriveApp.getFolderById(FOLDER_ID).createFile(blob);
+    const file    = folder.createFile(blob);
     
     // セキュリティ設定：ダウンロードと印刷を禁止
     file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
@@ -451,6 +461,48 @@ function testPasswordHash() {
 }
 
 /**
+ * フォルダIDを取得するヘルパー関数
+ * この関数を実行して、正しいフォルダIDを取得してください
+ */
+function getFolderId() {
+  try {
+    // ルートフォルダを取得
+    const rootFolder = DriveApp.getRootFolder();
+    Logger.log('ルートフォルダID: ' + rootFolder.getId());
+    
+    // ルートフォルダ内のフォルダ一覧を取得
+    const folders = rootFolder.getFolders();
+    Logger.log('=== 利用可能なフォルダ一覧 ===');
+    while (folders.hasNext()) {
+      const folder = folders.next();
+      Logger.log('フォルダ名: ' + folder.getName() + ' | ID: ' + folder.getId());
+    }
+    Logger.log('=============================');
+    
+    return 'フォルダ一覧をログで確認してください';
+  } catch (error) {
+    Logger.log('フォルダID取得エラー: ' + error);
+    return 'エラーが発生しました: ' + error.message;
+  }
+}
+
+/**
+ * 現在のフォルダIDをテストする関数
+ */
+function testCurrentFolderId() {
+  try {
+    Logger.log('現在のフォルダID: ' + FOLDER_ID);
+    const folder = DriveApp.getFolderById(FOLDER_ID);
+    Logger.log('フォルダ名: ' + folder.getName());
+    Logger.log('フォルダID: ' + folder.getId());
+    return 'フォルダIDは有効です。フォルダ名: ' + folder.getName();
+  } catch (error) {
+    Logger.log('フォルダIDテストエラー: ' + error);
+    return 'フォルダIDが無効です: ' + error.message;
+  }
+}
+
+/**
  * GASのdoGet/doPost関数
  */
 function doGet(e) {
@@ -459,6 +511,12 @@ function doGet(e) {
   switch (funcName) {
     case 'getData':
       return ContentService.createTextOutput(JSON.stringify(getData()))
+        .setMimeType(ContentService.MimeType.JSON);
+    case 'testFolderId':
+      return ContentService.createTextOutput(JSON.stringify({ result: testCurrentFolderId() }))
+        .setMimeType(ContentService.MimeType.JSON);
+    case 'getFolderList':
+      return ContentService.createTextOutput(JSON.stringify({ result: getFolderId() }))
         .setMimeType(ContentService.MimeType.JSON);
     default:
       return ContentService.createTextOutput(JSON.stringify({ error: 'Function not found' }))
