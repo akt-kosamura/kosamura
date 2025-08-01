@@ -138,10 +138,22 @@
     <span style="flex:1"></span>
     <a href="#" onclick="logout(); return false;" style="text-decoration:none; color:#d33; font-weight:bold;">▶ ログアウト</a>
   </nav>
-  <div id="loginForm" style="display:none; margin:2em 0;">
-    <h2>管理画面ログイン</h2>
-    <input type="password" id="adminPass" placeholder="パスワード">
-    <button onclick="login()">ログイン</button>
+  <div id="loginForm" style="display:none; margin:2em 0; text-align:center;">
+    <div style="max-width:400px; margin:0 auto; padding:2em; background:#fff; border-radius:8px; box-shadow:0 2px 10px rgba(0,0,0,0.1);">
+      <h2 style="margin-bottom:1.5em; color:#333;">管理画面ログイン</h2>
+      <div style="margin-bottom:1em;">
+        <input type="password" id="adminPass" placeholder="パスワードを入力してください" 
+               style="width:100%; padding:12px; border:1px solid #ccc; border-radius:4px; font-size:16px; box-sizing:border-box;"
+               onkeypress="if(event.key==='Enter') login();">
+      </div>
+      <button onclick="login()" 
+              style="width:100%; padding:12px; background:#0071e3; color:#fff; border:none; border-radius:4px; font-size:16px; cursor:pointer;">
+        ログイン
+      </button>
+      <div style="margin-top:1em; font-size:14px; color:#666;">
+        パスワードはスプレッドシートのシート2のA1に保存されています
+      </div>
+    </div>
   </div>
   <div id="adminContent" style="display:none;">
     <div style="margin:1em 0; display:flex; align-items:center; gap:1em;">
@@ -362,23 +374,33 @@
     
     async function login() {
       const pass = document.getElementById('adminPass').value;
+      if (!pass) {
+        alert('パスワードを入力してください');
+        return;
+      }
       try {
         const result = await window.kosamuraAPI.checkAdminPassword(pass);
-        if (result === 'ok') {
+        if (result) {
           localStorage.setItem('admin_auth', 'ok');
           checkAuth();
+          document.getElementById('adminPass').value = ''; // パスワードフィールドをクリア
         } else {
-          alert('パスワードが違うゾ');
+          alert('パスワードが違います');
+          document.getElementById('adminPass').value = ''; // パスワードフィールドをクリア
         }
       } catch (error) {
         console.error('ログインエラー:', error);
         alert('ログインに失敗しました');
+        document.getElementById('adminPass').value = ''; // パスワードフィールドをクリア
       }
     }
     
     function logout() {
-      localStorage.removeItem('admin_auth');
-      checkAuth();
+      if (confirm('ログアウトしますか？')) {
+        localStorage.removeItem('admin_auth');
+        checkAuth();
+        alert('ログアウトしました');
+      }
     }
     
     window.onload = checkAuth;
