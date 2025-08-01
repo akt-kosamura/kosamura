@@ -92,6 +92,7 @@ h1 {
   overflow: hidden;
   opacity: 1;
   max-height: 2000px;
+  position: relative;
 }
 .card-content.closed {
   opacity: 0;
@@ -169,7 +170,7 @@ textarea::placeholder {
 .radios input { margin-right: 6px; accent-color: var(--accent); }
 .upload-btn {
   display: block; width: 100%;
-  padding: 12px; margin-top: 24px;
+  padding: 12px; margin-top: 24px; margin-bottom: 16px;
   background: var(--accent); color: #fff;
   font-size: 16px; border: none;
   border-radius: 12px; cursor: pointer;
@@ -198,6 +199,7 @@ textarea::placeholder {
   white-space: nowrap;
   overflow-x: auto;
   text-align: center;
+  margin-bottom: 12px;
 }
 .desc {
   font-size: 13px;
@@ -366,27 +368,4 @@ textarea::placeholder {
   margin: 0 auto;
   max-width: 90%;
 }
-/* フリーモード表示デザインを他ページと統一 */
-.free-mode-status {
-  min-width: 120px;
-  text-align: right;
-  font-size: 15px;
-  font-weight: bold;
-  padding: 4px 14px;
-  border-radius: 6px;
-  margin-left: 24px;
-  margin-right: 3px;
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  height: 34px;
-  box-sizing: border-box;
-}
-.free-mode-status.free {
-  background: #00d084;
-  color: #fff;
-}
-.free-mode-status.ad {
-  background: #e0e0e0;
-  color: #444;
-} 
+/* フリーモード表示デザインはcommon.cssで統一 */ 

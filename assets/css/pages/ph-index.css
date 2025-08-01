@@ -862,30 +862,7 @@
       font-size: 16px;
     }
 
-    /* フリーモードステータス */
-    .free-mode-status {
-      min-width: 100px;
-      text-align: center;
-      font-size: 1rem;
-      font-weight: bold;
-      padding: 0.25em 0.9em;
-      border-radius: 6px;
-      margin-left: auto;
-      margin-right: auto;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      height: 2.1em;
-      box-sizing: border-box;
-    }
-    .free-mode-status.free {
-      background: #00d084;
-      color: #fff;
-    }
-    .free-mode-status.ad {
-      background: #e0e0e0;
-      color: #444;
-    }
+    /* フリーモードステータスはcommon.cssで統一 */
     .bbs.card {
       max-height: 120vh;
       overflow-y: auto;

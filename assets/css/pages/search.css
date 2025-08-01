@@ -28,17 +28,7 @@ body {
   box-sizing: border-box;
 }
 
-h1 {
-  text-align: center; font-size: 2rem;
-  margin-bottom: 1rem;
-  background: linear-gradient(90deg, var(--accent), #5ac8fa);
-  -webkit-background-clip: text; 
-  color: transparent;
-}
-.subtitle {
-  text-align: center; font-size: 1.2rem;
-  margin-bottom: 2rem; color: #6e6e73;
-}
+/* h1と.subtitleのスタイルはcommon.cssで統一 */
 
 .filter-section {
   background: var(--bg-card); 
@@ -422,27 +412,4 @@ th.hidden-col, td.hidden-col { display: none; }
   }
 }
 
-/* フリーモード表示デザインを他ページと統一 */
-.free-mode-status {
-  min-width: 120px;
-  text-align: right;
-  font-size: 15px;
-  font-weight: bold;
-  padding: 4px 14px;
-  border-radius: 6px;
-  margin-left: 24px;
-  margin-right: 3px;
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  height: 34px;
-  box-sizing: border-box;
-}
-.free-mode-status.free {
-  background: #00d084;
-  color: #fff;
-}
-.free-mode-status.ad {
-  background: #e0e0e0;
-  color: #444;
-}
+/* フリーモード表示デザインはcommon.cssで統一 */
