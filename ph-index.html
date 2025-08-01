@@ -50,7 +50,7 @@
           </a>
         </li>
         <li class="nav-item">
-          <a href="share.html" class="nav-link">
+          <a href="pages/share.html" class="nav-link">
             <i class="fa-solid fa-share-nodes"></i> 共有・拡散
           </a>
         </li>
@@ -86,11 +86,11 @@
           </p>
           
           <div class="action-buttons">
-             <a href="upload.html" class="action-btn primary">
+             <a href="pages/upload.html" class="action-btn primary">
               <i class="fa-solid fa-upload"></i>
               <span>提供</span>
             </a>
-             <a href="search.html" class="action-btn secondary">
+             <a href="pages/search.html" class="action-btn secondary">
               <i class="fa-solid fa-database"></i>
               <span>検索</span>
             </a>
@@ -219,7 +219,7 @@
       </div>
       
       <div class="view-all-container">
-        <a href="search.html" class="view-all-btn">
+        <a href="pages/search.html" class="view-all-btn">
           すべての投稿を見る
           <i class="fa-solid fa-arrow-right"></i>
         </a>
@@ -412,7 +412,7 @@
    <div id="copyToast" class="toast">コピーしました！</div>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/js/all.min.js"></script>
-     <script src="js/api.js"></script>
+     <script src="assets/js/api.js"></script>
   <script>
     // GASアプリでtitleが反映されない場合の対策
     document.title = '秋高考査村 - スマホ版';
@@ -798,7 +798,7 @@
     function tryAdminLogin() {
       if (pinValue === '0611') {
         closeAdminModal();
-         window.open('admin.html', '_blank', 'noopener');
+         window.open('admin/admin.html', '_blank', 'noopener');
       } else {
         adminPinError.textContent = '番号が違います';
         adminPinInput.value = '';
