@@ -381,24 +381,24 @@
      </div>
    </main>
        <!-- 管理者画面ボタンとモーダルここから -->
-     <div style="width:100%;text-align:center;margin-top:32px;margin-bottom:16px;">
-       <a href="#" id="adminLoginBtn" style="display:inline-block;padding:10px 28px;font-size:20px;background:#0071e3;color:#fff;border-radius:8px;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,0.10);">
-         <i class="fa-solid fa-user-shield" style="margin-right:0.6em; " ></i>管理画面へ
+     <div class="admin-login-container">
+       <a href="#" id="adminLoginBtn" class="admin-login-btn">
+         <i class="fa-solid fa-user-shield"></i>管理画面へ
        </a>
      </div>
-     <div id="adminLoginModal" style="display:none; position:fixed; z-index:9999; left:0; top:0; width:100vw; height:100vh; background:rgba(0,0,0,0.25); align-items:center; justify-content:center;">
-       <div style="background:#fff; border-radius:12px; padding:24px 18px 18px 18px; box-shadow:0 4px 24px rgba(0,0,0,0.18); min-width:260px; max-width:90vw; text-align:center;">
-         <div style="font-size:1.1em; margin-bottom:10px;">暗証番号</div>
-         <input id="adminPinInput" type="password" inputmode="numeric" maxlength="4" pattern="[0-9]*" style="font-size:2em; text-align:center; letter-spacing:0.5em; width:7em; margin-bottom:12px;" autocomplete="one-time-code" />
-         <div id="adminPinError" style="color:#d33; font-size:0.95em; min-height:1.5em; margin-bottom:8px;"></div>
-         <div style="display:grid; grid-template-columns:repeat(3,48px); gap:8px; justify-content:center; margin-bottom:10px;">
+     <div id="adminLoginModal" class="admin-modal">
+       <div class="admin-modal-content">
+         <div class="admin-modal-title">暗証番号</div>
+         <input id="adminPinInput" type="password" inputmode="numeric" maxlength="4" pattern="[0-9]*" class="admin-pin-input" autocomplete="one-time-code" />
+         <div id="adminPinError" class="admin-pin-error"></div>
+         <div class="pin-grid">
            <button class="pin-btn">1</button><button class="pin-btn">2</button><button class="pin-btn">3</button>
            <button class="pin-btn">4</button><button class="pin-btn">5</button><button class="pin-btn">6</button>
            <button class="pin-btn">7</button><button class="pin-btn">8</button><button class="pin-btn">9</button>
            <div></div><button class="pin-btn">0</button><button class="pin-btn" id="pinDelBtn">⌫</button>
          </div>
-         <button id="adminPinSubmit" style="background:#0071e3;color:#fff;padding:6px 24px;border:none;border-radius:6px;font-size:1.1em;">OK</button>
-         <button id="adminPinCancel" style="margin-left:1em; background:#eee;color:#333;padding:6px 18px;border:none;border-radius:6px;font-size:1.1em;">キャンセル</button>
+         <button id="adminPinSubmit" class="admin-pin-submit">OK</button>
+         <button id="adminPinCancel" class="admin-pin-cancel">キャンセル</button>
        </div>
      </div>
      <!-- 管理者画面ボタンとモーダルここまで -->
@@ -406,15 +406,6 @@
   
 
      <div class="copyright-note">Copyright© 2020 考査村 All Rights Reserved.</div><br>
-   <style>
-     .copyright-note {
-       font-size: 12px;
-       color: #888;
-       text-align: center;
-       margin-top: 18px;
-       margin-bottom: 18px;
-     }
-      </style>
 
    <!-- Toast -->
    <div id="copyToast" class="toast">コピーしました！</div>
