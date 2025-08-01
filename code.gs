@@ -1,7 +1,9 @@
 // Code.gs for 考査村
 
 // アップロード先フォルダのID
-const FOLDER_ID = '1xx-N4rKwFTk83iIxSOCEhctJQv-3rZrC';
+const FOLDER_ID = '1xx-N4rKwFTJQv-3rZrC';
+// スプレッドシートID
+const SPREADSHEET_ID = '14uI1FoXUWg_deV-ZGSYY85JREyLyZY4YVqpKka35sZw';
 const SHEET_NAME = 'シート1';
 
 /**
@@ -37,7 +39,7 @@ function uploadFileAndRecord(
     Logger.log('comment: ' + comment);
     Logger.log('filename: ' + filename);
     Logger.log('fileSizeMB: ' + fileSizeMB);
-    const ss    = SpreadsheetApp.getActiveSpreadsheet();
+    const ss    = SpreadsheetApp.openById(SPREADSHEET_ID);
     const sheet = ss.getSheetByName(SHEET_NAME);
     if (!sheet) throw new Error(SHEET_NAME + ' が見つかりません');
 
@@ -212,7 +214,7 @@ User-Agent: ${userAgent}
  */
 function getData() {
   try {
-    const ss = SpreadsheetApp.getActiveSpreadsheet();
+    const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
     const sheet = ss.getSheetByName(SHEET_NAME);
     if (!sheet) return [];
     
@@ -279,7 +281,7 @@ function unbad(id) {
  */
 function updateCount(id, colIndex, delta) {
   try {
-    const ss = SpreadsheetApp.getActiveSpreadsheet();
+    const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
     const sheet = ss.getSheetByName(SHEET_NAME);
     if (!sheet) throw new Error('シートが見つかりません');
     
@@ -307,7 +309,7 @@ function updateCount(id, colIndex, delta) {
  */
 function deletePost(id) {
   try {
-    const ss = SpreadsheetApp.getActiveSpreadsheet();
+    const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
     const sheet = ss.getSheetByName(SHEET_NAME);
     if (!sheet) return false;
     
@@ -341,7 +343,7 @@ function deletePost(id) {
  */
 function updatePost(postData) {
   try {
-    const ss = SpreadsheetApp.getActiveSpreadsheet();
+    const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
     const sheet = ss.getSheetByName(SHEET_NAME);
     if (!sheet) throw new Error('シートが見つかりません');
     

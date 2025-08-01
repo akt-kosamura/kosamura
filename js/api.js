@@ -6,7 +6,7 @@ class KosamuraAPI {
       this.baseURL = baseURL;
     } else {
       // GASのURLをデフォルトとして設定
-      this.baseURL = 'https://script.google.com/macros/s/1m8CK9hflCdy-Ll805tQRC_1N5AsoFp9disC9B0F8hzeDifdTSEGoBzQj/exec';
+      this.baseURL = 'https://script.google.com/macros/s/AKfycbwEAhdiJOtbf44ifY-BoAFhLI7eQl_uIJKm9NDTexoWZD7U8l-7wsrT9ufRCZ9d8lZf/exec';
     }
     // GAS互換APIのみを使用
     this.gasAPI = new GASCompatibleAPI(this.baseURL);
@@ -17,7 +17,9 @@ class KosamuraAPI {
     try {
       const response = await fetch(`${this.baseURL}?function=getData`);
       if (!response.ok) throw new Error('データ取得に失敗しました');
-      return await response.json();
+      const result = await response.json();
+      // GASの戻り値形式に合わせる（直接データ配列を返す）
+      return result.result || result || [];
     } catch (error) {
       console.error('getData error:', error);
       return [];
@@ -55,7 +57,8 @@ class KosamuraAPI {
       });
       if (!response.ok) throw new Error('アップロードに失敗しました');
       const result = await response.json();
-      return result.url; // GASの戻り値と合わせる
+      // GASの戻り値形式に合わせる（直接URL文字列を返す）
+      return result.result || result || '';
     } catch (error) {
       console.error('uploadFileAndRecord error:', error);
       throw error;
@@ -73,7 +76,9 @@ class KosamuraAPI {
         body: formData
       });
       if (!response.ok) throw new Error('いいねの処理に失敗しました');
-      return await response.json();
+      const result = await response.json();
+      // GASの戻り値形式に合わせる（直接数値を返す）
+      return result.result || result || 0;
     } catch (error) {
       console.error('like error:', error);
       throw error;
@@ -91,7 +96,9 @@ class KosamuraAPI {
         body: formData
       });
       if (!response.ok) throw new Error('いいね取り消しに失敗しました');
-      return await response.json();
+      const result = await response.json();
+      // GASの戻り値形式に合わせる（直接数値を返す）
+      return result.result || result || 0;
     } catch (error) {
       console.error('unlike error:', error);
       throw error;
@@ -109,7 +116,9 @@ class KosamuraAPI {
         body: formData
       });
       if (!response.ok) throw new Error('バッドの処理に失敗しました');
-      return await response.json();
+      const result = await response.json();
+      // GASの戻り値形式に合わせる（直接数値を返す）
+      return result.result || result || 0;
     } catch (error) {
       console.error('bad error:', error);
       throw error;
@@ -127,7 +136,9 @@ class KosamuraAPI {
         body: formData
       });
       if (!response.ok) throw new Error('バッド取り消しに失敗しました');
-      return await response.json();
+      const result = await response.json();
+      // GASの戻り値形式に合わせる（直接数値を返す）
+      return result.result || result || 0;
     } catch (error) {
       console.error('unbad error:', error);
       throw error;

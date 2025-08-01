@@ -1,7 +1,7 @@
 // Code.gs for 考査村
 
 // アップロード先フォルダのID
-const FOLDER_ID = '1xx-N4rKwFTk83iIxSOCEhctJQv-3rZrC';
+const FOLDER_ID = '1xx-N4rKwFTJQv-3rZrC';
 // スプレッドシートID
 const SPREADSHEET_ID = '14uI1FoXUWg_deV-ZGSYY85JREyLyZY4YVqpKka35sZw';
 const SHEET_NAME = 'シート1';
@@ -100,79 +100,56 @@ function uploadFileAndRecord(
         viewersCanCopyContent: false, // 閲覧者によるダウンロード・印刷・コピーを禁止
         copyRequiresWriterPermission: true
       }, file.getId());
-    } catch (apiErr) {
-      Logger.log('Drive APIによるダウンロード・印刷・コピー禁止設定に失敗:' + apiErr);
+    } catch (apiError) {
+      Logger.log('Drive API設定の適用に失敗しました:' + apiError);
+      // API設定が失敗しても処理を続行
     }
     
     const url = file.getUrl();
-
+    
     // アップロード日を文字列で生成
-    const tz            = ss.getSpreadsheetTimeZone();
-    const uploadDateStr = Utilities.formatDate(new Date(), tz, 'yyyy/MM/dd HH:mm:ss');
-
-          // --- LockServiceによる排他制御を追加 ---
-      const lock = LockService.getScriptLock();
-      try {
-        lock.waitLock(10000); // 最大10秒待つ
-                // デバッグ用：スプレッドシートに書き込む値をログに出力
-        const rowData = [
-          id,             // A列: ID
-          grade,          // B列: 学年
-          year,           // C列: 年度
-          type,           // D列: 種類
-          subject,        // E列: 科目
-          stream,         // F列: 文理区分
-          contentType,    // G列: 内容タイプ
-          fileFormat,     // H列: ファイル形式
-          comment,        // I列: コメント
-          url,            // J列: URL
-          uploadDateStr,  // K列: 日付
-          0,              // L列: likes 初期値
-          0,              // M列: bad 初期値
-          (deviceInfo && deviceInfo.publicIP) || 'Unknown',      // N列: 公開IPアドレス
-          (deviceInfo && deviceInfo.privateIP) || 'Unknown',     // O列: プライベートIPアドレス
-          (deviceInfo && deviceInfo.userAgent) || 'Unknown',     // P列: User-Agent
-          (deviceInfo && deviceInfo.platform) || 'Unknown',      // Q列: プラットフォーム
-          (deviceInfo && deviceInfo.screenWidth && deviceInfo.screenHeight) ?
-            `${deviceInfo.screenWidth}x${deviceInfo.screenHeight}` : 'Unknown',  // R列: 画面解像度
-          (deviceInfo && deviceInfo.windowWidth && deviceInfo.windowHeight) ?
-            `${deviceInfo.windowWidth}x${deviceInfo.windowHeight}` : 'Unknown',  // S列: ウィンドウサイズ
-          fileSizeMB || 0  // T列: ファイルサイズ（MB）
-        ];
-        
-        Logger.log('スプレッドシートに書き込む値:');
-        Logger.log('rowData: ' + JSON.stringify(rowData));
-        
-        // シートに書き込み
-        sheet.appendRow(rowData);
-      } finally {
-        lock.releaseLock();
-      }
-
+    const uploadDateStr = new Date().toLocaleString('ja-JP');
+    
+    // データを追加
+    const rowData = [
+      id,
+      grade,
+      year,
+      type,
+      subject,
+      stream,
+      contentType,
+      fileFormat,
+      comment,
+      url,
+      uploadDateStr,
+      0, // likes
+      0, // bad
+      (deviceInfo && deviceInfo.publicIP) || 'Unknown',
+      (deviceInfo && deviceInfo.privateIP) || 'Unknown',
+      (deviceInfo && deviceInfo.userAgent) || 'Unknown',
+      (deviceInfo && deviceInfo.platform) || 'Unknown',
+      (deviceInfo && deviceInfo.screenWidth && deviceInfo.screenHeight) ?
+        `${deviceInfo.screenWidth}x${deviceInfo.screenHeight}` : 'Unknown',
+      (deviceInfo && deviceInfo.windowWidth && deviceInfo.windowHeight) ?
+        `${deviceInfo.windowWidth}x${deviceInfo.windowHeight}` : 'Unknown',
+      fileSizeMB || 0
+    ];
+    
+    sheet.appendRow(rowData);
+    
     // メール送信
     sendNewPostNotification(id, grade, year, type, subject, stream, contentType, fileFormat, comment, url, uploadDateStr, deviceInfo, fileSizeMB);
-
+    
     return url;
   } catch (error) {
-    console.error('uploadFileAndRecord error:', error);
+    Logger.log('uploadFileAndRecord error: ' + error);
     throw error;
   }
 }
 
 /**
  * 新しい投稿の通知メールを送信
- * @param {number} id           投稿ID
- * @param {string} grade        学年
- * @param {string} year         年度
- * @param {string} type         種類
- * @param {string} subject      科目
- * @param {string} stream       文理区分
- * @param {string} contentType  内容タイプ
- * @param {string} fileFormat   ファイル形式
- * @param {string} comment      コメント
- * @param {string} url          ファイルURL
- * @param {string} uploadDate   アップロード日時
- * @param {Object} deviceInfo   デバイス情報
  */
 function sendNewPostNotification(id, grade, year, type, subject, stream, contentType, fileFormat, comment, url, uploadDate, deviceInfo, fileSizeMB) {
   try {
@@ -233,216 +210,179 @@ User-Agent: ${userAgent}
 }
 
 /**
- * データ取得（検索用）
- * @return {Object[]} 各行のデータオブジェクト配列
+ * データ取得
  */
 function getData() {
   try {
-    const sheet = SpreadsheetApp.openById(SPREADSHEET_ID).getSheetByName(SHEET_NAME);
-    if (!sheet) {
-      console.error('シートが見つかりません:', SHEET_NAME);
-      return [];
-    }
-
-    const lastRow = sheet.getLastRow();
-    if (lastRow < 2) return [];
-
-    // A〜T 列 (20 列)
-    const rows = sheet.getRange(2, 1, lastRow - 1, 20).getValues();
-
-    return rows.map((row, index) => ({
-      id:      row[0] || (index + 1),  // A
-      grade:   String(row[1] || ''),   // B
-      year:    String(row[2] || ''),   // C
-      type:    String(row[3] || ''),   // D
-      subject: String(row[4] || ''),   // E
-      stream:  String(row[5] || ''),   // F
-      contentType: String(row[6] || ''),// G
-      format:  String(row[7] || ''),   // H
-      comment: String(row[8] || ''),   // I
-      url:     String(row[9] || ''),   // J
-      date:    String(row[10] || ''),  // K
-      likes:   Number(row[11]) || 0,   // L
-      bad:     Number(row[12]) || 0,   // M
-      publicIP: String(row[13] || ''), // N
-      privateIP: String(row[14] || ''),// O
-      userAgent: String(row[15] || ''),// P
-      platform: String(row[16] || ''), // Q
-      screenResolution: String(row[17] || ''), // R
-      windowSize: String(row[18] || ''), // S
-      fileSize: Number(row[19]) || 0 // T
+    const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+    const sheet = ss.getSheetByName(SHEET_NAME);
+    if (!sheet) return [];
+    
+    const data = sheet.getRange(2, 1, Math.max(0, sheet.getLastRow() - 1), 20).getValues();
+    
+    return data.map((row, index) => ({
+      id: Number(row[0]) || (index + 1),
+      grade: String(row[1] || ''),
+      year: String(row[2] || ''),
+      type: String(row[3] || ''),
+      subject: String(row[4] || ''),
+      stream: String(row[5] || ''),
+      contentType: String(row[6] || ''),
+      format: String(row[7] || ''),
+      comment: String(row[8] || ''),
+      url: String(row[9] || ''),
+      date: String(row[10] || ''),
+      likes: Number(row[11]) || 0,
+      bad: Number(row[12]) || 0,
+      publicIP: String(row[13] || ''),
+      privateIP: String(row[14] || ''),
+      userAgent: String(row[15] || ''),
+      platform: String(row[16] || ''),
+      screenResolution: String(row[17] || ''),
+      windowSize: String(row[18] || ''),
+      fileSize: Number(row[19]) || 0
     }));
   } catch (error) {
-    console.error('getData error:', error);
+    Logger.log('getData error: ' + error);
     return [];
   }
 }
 
-/** いいね増加 */
+/**
+ * いいね増加
+ */
 function like(id) {
+  return updateCount(id, 11, +1);
+}
+
+/**
+ * いいね取り消し
+ */
+function unlike(id) {
+  return updateCount(id, 11, -1);
+}
+
+/**
+ * バッド増加
+ */
+function bad(id) {
   return updateCount(id, 12, +1);
 }
 
-/** いいね取り消し */
-function unlike(id) {
-  return updateCount(id, 12, -1);
-}
-
-/** バッド増加 */
-function bad(id) {
-  return updateCount(id, 13, +1);
-}
-
-/** バッド取り消し */
+/**
+ * バッド取り消し
+ */
 function unbad(id) {
-  return updateCount(id, 13, -1);
+  return updateCount(id, 12, -1);
 }
 
 /**
  * ID指定でカウント増減共通処理
- * @param {number|string} id
- * @param {number} colIndex  更新する列番号 (1-based)
- * @param {number} delta     増減値 (+1 or -1)
  */
 function updateCount(id, colIndex, delta) {
   try {
-    const sheet = SpreadsheetApp.openById(SPREADSHEET_ID).getSheetByName(SHEET_NAME);
-    const data  = sheet.getRange(2, 1, sheet.getLastRow() - 1, 1).getValues();
-    for (let i = 0; i < data.length; i++) {
-      if (Number(data[i][0]) === Number(id)) {
-        const cell = sheet.getRange(i + 2, colIndex);
-        const newVal = Math.max(0, (Number(cell.getValue()) || 0) + delta);
-        cell.setValue(newVal);
-        SpreadsheetApp.flush();
-        return newVal;
-      }
+    const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+    const sheet = ss.getSheetByName(SHEET_NAME);
+    if (!sheet) throw new Error('シートが見つかりません');
+    
+    const data = sheet.getRange(2, 1, Math.max(0, sheet.getLastRow() - 1), 20).getValues();
+    const rowIndex = data.findIndex(row => Number(row[0]) === Number(id));
+    
+    if (rowIndex === -1) {
+      throw new Error('ID が見つかりません: ' + id);
     }
-    throw new Error('ID が見つかりません: ' + id);
+    
+    const currentValue = Number(data[rowIndex][colIndex - 1]) || 0;
+    const newValue = Math.max(0, currentValue + delta);
+    
+    sheet.getRange(rowIndex + 2, colIndex).setValue(newValue);
+    
+    return newValue;
   } catch (error) {
-    console.error('updateCount error:', error);
+    Logger.log('updateCount error: ' + error);
     throw error;
   }
 }
 
 /**
- * 投稿削除（ファイルも削除）
- * @param {number|string} id
+ * 投稿削除
  */
 function deletePost(id) {
-  const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
-  const sheet = ss.getSheetByName(SHEET_NAME);
-      const lastRow = sheet.getLastRow();
-    if (lastRow < 2) return false;
-    const data = sheet.getRange(2, 1, lastRow - 1, 20).getValues();
-  for (let i = 0; i < data.length; i++) {
-    if (String(data[i][0]) === String(id)) {
-      // ファイル削除
-      const url = data[i][9];
-      const fileId = extractFileIdFromUrl(url);
-      if (fileId) {
-        try {
-          const file = DriveApp.getFileById(fileId);
-          file.setTrashed(true); // 完全削除したい場合は file.setTrashed(true)
-        } catch (e) {
-          Logger.log('ファイル削除失敗: ' + fileId + ' ' + e);
-        }
+  try {
+    const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+    const sheet = ss.getSheetByName(SHEET_NAME);
+    if (!sheet) return false;
+    
+    const data = sheet.getRange(2, 1, Math.max(0, sheet.getLastRow() - 1), 20).getValues();
+    const rowIndex = data.findIndex(row => String(row[0]) === String(id));
+    
+    if (rowIndex === -1) return false;
+    
+    // ファイル削除
+    const url = data[rowIndex][9];
+    const fileId = extractFileIdFromUrl(url);
+    if (fileId) {
+      try {
+        DriveApp.getFileById(fileId).setTrashed(true);
+      } catch (e) {
+        Logger.log('ファイル削除失敗: ' + fileId + ' ' + e);
       }
-      // シートの行削除
-      sheet.deleteRow(i + 2); // 2行目がデータの先頭
-      return true;
     }
+    
+    // 行削除
+    sheet.deleteRow(rowIndex + 2);
+    return true;
+  } catch (error) {
+    Logger.log('deletePost error: ' + error);
+    return false;
   }
-  return false;
 }
 
 /**
  * 投稿更新
- * @param {Object} postData 更新する投稿データ
- * @return {string} 結果 ('ok' または エラーメッセージ)
  */
 function updatePost(postData) {
   try {
     const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
     const sheet = ss.getSheetByName(SHEET_NAME);
-    const lastRow = sheet.getLastRow();
+    if (!sheet) throw new Error('シートが見つかりません');
     
-    if (lastRow < 2) {
-      throw new Error('データが見つかりません');
-    }
+    const data = sheet.getRange(2, 1, Math.max(0, sheet.getLastRow() - 1), 20).getValues();
+    const rowIndex = data.findIndex(row => String(row[0]) === String(postData.id));
     
-    // IDで該当行を検索
-    const data = sheet.getRange(2, 1, lastRow - 1, 20).getValues();
-    let targetRow = -1;
-    
-    for (let i = 0; i < data.length; i++) {
-      if (String(data[i][0]) === String(postData.id)) {
-        targetRow = i + 2; // シートの行番号（ヘッダー行を考慮）
-        break;
-      }
-    }
-    
-    if (targetRow === -1) {
+    if (rowIndex === -1) {
       throw new Error('指定されたIDの投稿が見つかりません: ' + postData.id);
     }
     
-    // LockServiceによる排他制御
-    const lock = LockService.getScriptLock();
-    try {
-      lock.waitLock(10000); // 最大10秒待つ
-      
-      // 各フィールドを更新（IDは変更しない）
-      // B列: 学年
-      sheet.getRange(targetRow, 2).setValue(postData.grade || '');
-      // C列: 年度
-      sheet.getRange(targetRow, 3).setValue(postData.year || '');
-      // D列: 種類
-      sheet.getRange(targetRow, 4).setValue(postData.type || '');
-      // E列: 科目
-      sheet.getRange(targetRow, 5).setValue(postData.subject || '');
-      // F列: 文理区分
-      sheet.getRange(targetRow, 6).setValue(postData.stream || '');
-      // G列: 内容タイプ
-      sheet.getRange(targetRow, 7).setValue(postData.contentType || '');
-      // H列: ファイル形式
-      sheet.getRange(targetRow, 8).setValue(postData.format || '');
-      // I列: コメント
-      sheet.getRange(targetRow, 9).setValue(postData.comment || '');
-      // J列: URL（変更不可のため既存値を保持）
-      // K列: 日付（変更不可のため既存値を保持）
-      // L列: likes
-      sheet.getRange(targetRow, 12).setValue(Number(postData.likes) || 0);
-      // M列: bad
-      sheet.getRange(targetRow, 13).setValue(Number(postData.bad) || 0);
-      // T列: ファイルサイズ（読み取り専用のため既存値を保持）
-      
-      // 変更を確定
-      SpreadsheetApp.flush();
-      
-      Logger.log('投稿更新完了: ID=' + postData.id);
-      return 'ok';
-      
-    } finally {
-      lock.releaseLock();
-    }
+    // 各フィールドを更新（IDは変更しない）
+    const row = rowIndex + 2;
+    sheet.getRange(row, 2).setValue(postData.grade || '');
+    sheet.getRange(row, 3).setValue(postData.year || '');
+    sheet.getRange(row, 4).setValue(postData.type || '');
+    sheet.getRange(row, 5).setValue(postData.subject || '');
+    sheet.getRange(row, 6).setValue(postData.stream || '');
+    sheet.getRange(row, 7).setValue(postData.contentType || '');
+    sheet.getRange(row, 8).setValue(postData.format || '');
+    sheet.getRange(row, 9).setValue(postData.comment || '');
+    sheet.getRange(row, 11).setValue(Number(postData.likes) || 0);
+    sheet.getRange(row, 12).setValue(Number(postData.bad) || 0);
+    
+    Logger.log('投稿更新完了: ID=' + postData.id);
+    return 'ok';
     
   } catch (error) {
-    console.error('updatePost error:', error);
-    Logger.log('投稿更新エラー: ' + error.message);
+    Logger.log('updatePost error: ' + error);
     return error.message;
   }
 }
 
 /**
- * 複数投稿の一括削除（ファイルも削除）
- * @param {string[]} ids
+ * 複数投稿の一括削除
  */
 function deletePostsBulk(ids) {
   if (!Array.isArray(ids)) return false;
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
-  const sheet = ss.getSheetByName(SHEET_NAME);
-  const lastRow = sheet.getLastRow();
-  if (lastRow < 2) return false;
-  // IDの降順で処理（行削除時のインデックスずれ防止）
+  
+  // IDの降順で処理（削除時のインデックスずれ防止）
   const sortedIds = [...ids].sort((a, b) => Number(b) - Number(a));
   for (let i = 0; i < sortedIds.length; i++) {
     deletePost(sortedIds[i]);
@@ -452,8 +392,6 @@ function deletePostsBulk(ids) {
 
 /**
  * GoogleドライブのURLからファイルIDを抽出
- * @param {string} url
- * @return {string|null}
  */
 function extractFileIdFromUrl(url) {
   if (!url) return null;
@@ -467,69 +405,129 @@ function extractFileIdFromUrl(url) {
 }
 
 /**
- * シート2のA1〜A3のいずれかのセルの値をパスワードとして返す
- * @return {string[]} パスワード配列
+ * 管理者パスワード取得
  */
 function getAdminPasswords() {
-  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('シート2');
-  if (!sheet) throw new Error('シート2が見つかりません');
-  const values = sheet.getRange(1, 1, 3, 1).getValues();
-  return values.map(row => String(row[0])).filter(v => v);
+  return ['0611']; // GAS運用時のデフォルトパスワード
 }
 
 /**
- * 入力値がシート2のA1〜A3のいずれかの値と一致すればtrue
- * @param {string} input
- * @return {boolean}
+ * 管理者認証（SHA-256ハッシュ認証）
  */
 function checkAdminPassword(input) {
-  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('シート2');
-  if (!sheet) {
-    Logger.log('シート2が見つかりません');
+  try {
+    // SHA-256ハッシュ計算
+    const hash = Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_256, input).map(b => ('0' + (b & 0xFF).toString(16)).slice(-2)).join('');
+    
+    // 管理者パスワードのハッシュ値と比較
+    const validPasswords = getAdminPasswords();
+    const validHashes = validPasswords.map(pwd => 
+      Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_256, pwd).map(b => ('0' + (b & 0xFF).toString(16)).slice(-2)).join('')
+    );
+    
+    Logger.log('=== 認証デバッグ情報 ===');
+    Logger.log('入力値: "' + input + '"');
+    Logger.log('入力値の長さ: ' + input.length);
+    Logger.log('計算したハッシュ値: "' + hash + '"');
+    Logger.log('計算したハッシュ値の長さ: ' + hash.length);
+    Logger.log('有効なハッシュ値: ' + JSON.stringify(validHashes));
+    Logger.log('比較結果: ' + validHashes.includes(hash));
+    Logger.log('=======================');
+    
+    return validHashes.includes(hash) ? 'ok' : 'ng';
+  } catch (error) {
+    Logger.log('checkAdminPassword error: ' + error);
     return 'ng';
   }
-  const hashInSheet = String(sheet.getRange(1, 1).getValue()).trim();
-  const hash = Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_256, input, Utilities.Charset.UTF_8)
-    .map(function(b){return ('0'+(b&0xFF).toString(16)).slice(-2)}).join('');
-  
-  Logger.log('=== 認証デバッグ情報 ===');
-  Logger.log('入力値: "' + input + '"');
-  Logger.log('入力値の長さ: ' + input.length);
-  Logger.log('シートのハッシュ値: "' + hashInSheet + '"');
-  Logger.log('シートのハッシュ値の長さ: ' + hashInSheet.length);
-  Logger.log('計算したハッシュ値: "' + hash + '"');
-  Logger.log('計算したハッシュ値の長さ: ' + hash.length);
-  Logger.log('比較結果: ' + (hashInSheet === hash));
-  Logger.log('シートの値が空か: ' + (hashInSheet === ''));
-  Logger.log('=======================');
-  
-  return hashInSheet === hash ? 'ok' : 'ng';
-}
-
-function testPasswordHash() {
-  const password = "Password Input";
-  const hash = Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_256, password, Utilities.Charset.UTF_8)
-    .map(function(b){return ('0'+(b&0xFF).toString(16)).slice(-2)}).join('');
-  Logger.log('パスワード "' + password + '" のハッシュ値: ' + hash);
-  return hash;
 }
 
 /**
- * Web アプリ振り分け
+ * パスワードハッシュテスト用
+ */
+function testPasswordHash() {
+  const testPassword = '0611';
+  const hash = Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_256, testPassword).map(b => ('0' + (b & 0xFF).toString(16)).slice(-2)).join('');
+  Logger.log('テストパスワード "' + testPassword + '" のハッシュ値: ' + hash);
+}
+
+/**
+ * GASのdoGet/doPost関数
  */
 function doGet(e) {
-  const page = e.parameter.page;
-  const validPages = [ 'index', 'upload', 'search',  'share', 'ph-index', 'admin', ];
-  const fileName = validPages.includes(page) ? page : 'index';
-
-  // 管理画面も通常のHTMLテンプレートとして返す（Googleログイン強制なし）
-  if (fileName === 'admin') {
-    const template = HtmlService.createTemplateFromFile(fileName + '.html');
-    template.logoutUrl = 'https://accounts.google.com/Logout';
-    return template.evaluate().setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
+  const { function: funcName } = e.parameter;
+  
+  switch (funcName) {
+    case 'getData':
+      return ContentService.createTextOutput(JSON.stringify(getData())).setMimeType(ContentService.MimeType.JSON);
+    default:
+      return ContentService.createTextOutput(JSON.stringify({ error: 'Function not found' })).setMimeType(ContentService.MimeType.JSON);
   }
-
-  return HtmlService
-    .createHtmlOutputFromFile(fileName + '.html')
-    .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
 }
+
+function doPost(e) {
+  const { function: funcName } = e.parameter;
+  
+  try {
+    switch (funcName) {
+      case 'uploadFileAndRecord':
+        const {
+          grade, year, type, subject, stream, contentType, fileFormat, comment, fileSizeMB
+        } = e.parameter;
+        
+        const fileBlob = e.postData.getBlob();
+        const base64 = Utilities.base64Encode(fileBlob.getBytes());
+        
+        // デバイス情報を解析
+        const deviceInfo = e.parameter.deviceInfo ? JSON.parse(e.parameter.deviceInfo) : {};
+        
+        const url = uploadFileAndRecord(grade, year, type, subject, stream, contentType, fileFormat, comment, fileBlob.getName(), base64, deviceInfo, fileSizeMB);
+        return ContentService.createTextOutput(JSON.stringify({ url })).setMimeType(ContentService.MimeType.JSON);
+        
+      case 'like':
+        const likeId = e.parameter.id;
+        const likeResult = like(likeId);
+        return ContentService.createTextOutput(JSON.stringify(likeResult)).setMimeType(ContentService.MimeType.JSON);
+        
+      case 'unlike':
+        const unlikeId = e.parameter.id;
+        const unlikeResult = unlike(unlikeId);
+        return ContentService.createTextOutput(JSON.stringify(unlikeResult)).setMimeType(ContentService.MimeType.JSON);
+        
+      case 'bad':
+        const badId = e.parameter.id;
+        const badResult = bad(badId);
+        return ContentService.createTextOutput(JSON.stringify(badResult)).setMimeType(ContentService.MimeType.JSON);
+        
+      case 'unbad':
+        const unbadId = e.parameter.id;
+        const unbadResult = unbad(unbadId);
+        return ContentService.createTextOutput(JSON.stringify(unbadResult)).setMimeType(ContentService.MimeType.JSON);
+        
+      case 'checkAdminPassword':
+        const password = e.parameter.password;
+        const authResult = checkAdminPassword(password);
+        return ContentService.createTextOutput(JSON.stringify({ result: authResult })).setMimeType(ContentService.MimeType.JSON);
+        
+      case 'deletePost':
+        const deleteId = e.parameter.id;
+        const deleteResult = deletePost(deleteId);
+        return ContentService.createTextOutput(JSON.stringify({ success: deleteResult })).setMimeType(ContentService.MimeType.JSON);
+        
+      case 'updatePost':
+        const postData = JSON.parse(e.parameter.postData);
+        const updateResult = updatePost(postData);
+        return ContentService.createTextOutput(JSON.stringify({ result: updateResult })).setMimeType(ContentService.MimeType.JSON);
+        
+      case 'deletePostsBulk':
+        const ids = JSON.parse(e.parameter.ids);
+        const bulkDeleteResult = deletePostsBulk(ids);
+        return ContentService.createTextOutput(JSON.stringify({ success: bulkDeleteResult })).setMimeType(ContentService.MimeType.JSON);
+        
+      default:
+        return ContentService.createTextOutput(JSON.stringify({ error: 'Function not found' })).setMimeType(ContentService.MimeType.JSON);
+    }
+  } catch (error) {
+    Logger.log('doPost error: ' + error);
+    return ContentService.createTextOutput(JSON.stringify({ error: error.message })).setMimeType(ContentService.MimeType.JSON);
+  }
+} 
