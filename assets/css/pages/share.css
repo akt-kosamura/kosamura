@@ -16,61 +16,7 @@ body {
   padding-left: 32px;
   padding-right: 32px;
 }
-/* ヘッダー */
-header {
-  position: fixed; top: 0; left: 0; right: 0;
-  background: #ffffff; box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-  z-index: 1000;
-}
-.header-inner {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 1rem 2%;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 1rem;
-}
-.header-title {
-  display: flex;
-  gap: 19px;
-  align-items: center;
-  flex-wrap: wrap;
-  justify-content: flex-start;
-}
-.site-title {
-  font-size: 1.5rem;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  color: #0071e3;
-  display: inline-block;
-}
-.site-subtitle { font-size: 0.9rem; color: #6e6e73; }
-/* ナビバー */
-nav {
-  width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch;
-}
-nav ul {
-  display: flex; justify-content: center;
-  list-style: none; margin: 0; padding: 0;
-  white-space: nowrap;
-}
-nav li { margin: 0; }
-nav a {
-  display: block; padding: 0.5rem 1rem;
-  color: #1d1d20; text-decoration: none;
-  border-bottom: 1px solid #ccc;
-  transition: background 0.2s;
-  flex-shrink: 0;
-  font-size: 0.95rem;
-  background: transparent;
-}
-nav a:hover { background: #e8ecf2; }
-nav a.active {
-  background: #d0e4fd;
-  border-bottom: 3px solid var(--accent);
-}
+
 main {
   max-width: 1400px;
   margin: 96px auto 32px;

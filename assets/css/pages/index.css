@@ -18,64 +18,7 @@ body {
   font-size: 16px;
 }
 
-/* ヘッダー */
-header {
-  position: fixed; top: 0; left: 0; right: 0;
-  background: #ffffff; box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-  z-index: 1000;
-}
-.header-inner {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 16px 2%;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 16px;
-}
-.header-title {
-  display: flex;
-  gap: 19px;
-  align-items: center;
-  flex-wrap: wrap;
-  justify-content: flex-start;
-}
-.site-title {
-  font-size: 1.5rem;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  color: #0071e3;
-  display: inline-block;
-}
 
-/* 下線は削除 */
-.site-subtitle { font-size: 0.9rem; color: #6e6e73; }
-
-/* ナビバー */
-nav {
-  width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch;
-}
-nav ul {
-  display: flex; justify-content: center;
-  list-style: none; margin: 0; padding: 0;
-  white-space: nowrap;
-}
-nav li { margin: 0; }
-nav a {
-  display: block; padding: 8px 16px;
-  color: #1d1d20; text-decoration: none;
-  border-bottom: 1px solid #ccc;
-  transition: background 0.2s;
-  flex-shrink: 0;
-  font-size: 0.95rem;
-  background: transparent;
-}
-nav a:hover { background: #e8ecf2; }
-nav a.active {
-  background: #d0e4fd;
-  border-bottom: 3px solid var(--accent);
-}
 
 /* メイン見出し */
 h1 {
@@ -469,24 +412,13 @@ main {
   .recent-files {
     gap: 11px;
   }
-  .header-title {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 8px;
-  }
-  .free-mode-status {
-    margin-left: 0;
-    margin-top: 3px;
-  }
-  .site-title { font-size: 1.6rem; }
-  .site-subtitle { font-size: 0.85rem; }
+
   h1 { font-size: 1.8rem; }
 }
 
 @media (max-width: 600px) {
   .info-lead { font-size: 0.97rem; margin-top: 1rem; }
-  .site-title { font-size: 1.4rem; }
-  .site-subtitle { font-size: 0.8rem; }
+
   h1 { font-size: 1.6rem; }
   body {
     padding-left: 16px;
@@ -495,8 +427,7 @@ main {
 }
 
 @media (max-width: 480px) {
-  .site-title { font-size: 1.3rem; }
-  .site-subtitle { font-size: 0.75rem; }
+
   h1 { font-size: 1.4rem; }
   body {
     padding-left: 8px;
@@ -510,27 +441,7 @@ main {
     padding-right: 4px;
     font-size: 15px;
   }
-  .header-inner {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 6px;
-    padding: 10px 1.5%;
-  }
-  .header-title {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 4px;
-  }
-  nav ul {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 0;
-  }
-  nav a {
-    font-size: 0.97rem;
-    padding: 8px 8px;
-    border-bottom: 1px solid #eee;
-  }
+
   .card, .dynamic-card, .card-info-text {
     max-width: 100%;
     padding-left: 2vw;
