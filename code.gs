@@ -472,36 +472,17 @@ function doPost(e) {
   try {
     switch (funcName) {
       case 'uploadFileAndRecord':
-        // FormDataからパラメータを取得（簡易版）
-        const formData = e.postData.getBlob().getDataAsString();
-        const boundary = formData.match(/boundary=(.+)/)[1];
-        const parts = formData.split('--' + boundary);
-        
-        const params = {};
-        
-        for (let i = 0; i < parts.length; i++) {
-          const part = parts[i];
-          if (part.includes('Content-Disposition: form-data')) {
-            const nameMatch = part.match(/name="([^"]+)"/);
-            if (nameMatch) {
-              const name = nameMatch[1];
-              const dataStart = part.indexOf('\r\n\r\n') + 4;
-              const dataEnd = part.lastIndexOf('\r\n');
-              if (dataStart < dataEnd) {
-                params[name] = part.substring(dataStart, dataEnd);
-              }
-            }
-          }
-        }
-        
         const {
-          grade, year, type, subject, stream, contentType, fileFormat, comment, fileSizeMB, filename, base64
-        } = params;
+          grade, year, type, subject, stream, contentType, fileFormat, comment, fileSizeMB
+        } = e.parameter;
+        
+        const fileBlob = e.postData.getBlob();
+        const base64 = Utilities.base64Encode(fileBlob.getBytes());
         
         // デバイス情報を解析
-        const deviceInfo = params.deviceInfo ? JSON.parse(params.deviceInfo) : {};
+        const deviceInfo = e.parameter.deviceInfo ? JSON.parse(e.parameter.deviceInfo) : {};
         
-        const url = uploadFileAndRecord(grade, year, type, subject, stream, contentType, fileFormat, comment, filename || 'uploaded_file.pdf', base64 || '', deviceInfo, fileSizeMB);
+        const url = uploadFileAndRecord(grade, year, type, subject, stream, contentType, fileFormat, comment, fileBlob.getName(), base64, deviceInfo, fileSizeMB);
         return ContentService.createTextOutput(JSON.stringify({ url }))
           .setMimeType(ContentService.MimeType.JSON);
         

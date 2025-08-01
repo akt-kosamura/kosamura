@@ -27,7 +27,17 @@ class KosamuraAPI {
   // ファイルアップロード（GAS運用時と同じ）
   async uploadFileAndRecord(grade, year, type, subject, stream, contentType, fileFormat, comment, filename, base64, deviceInfo, fileSizeMB) {
     try {
+      // Base64をBlobに変換
+      const byteCharacters = atob(base64);
+      const byteNumbers = new Array(byteCharacters.length);
+      for (let i = 0; i < byteCharacters.length; i++) {
+        byteNumbers[i] = byteCharacters.charCodeAt(i);
+      }
+      const byteArray = new Uint8Array(byteNumbers);
+      const blob = new Blob([byteArray], { type: 'application/octet-stream' });
+
       const formData = new FormData();
+      formData.append('file', blob, filename);
       formData.append('grade', grade);
       formData.append('year', year);
       formData.append('type', type);
@@ -36,8 +46,6 @@ class KosamuraAPI {
       formData.append('contentType', contentType);
       formData.append('fileFormat', fileFormat);
       formData.append('comment', comment);
-      formData.append('filename', filename);
-      formData.append('base64', base64);
       formData.append('fileSizeMB', fileSizeMB);
       formData.append('deviceInfo', JSON.stringify(deviceInfo));
 
