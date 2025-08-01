@@ -1,9 +1,15 @@
 // Code.gs for 考査村
 
 // アップロード先フォルダのID（環境変数から取得）
-const FOLDER_ID = PropertiesService.getScriptProperties().getProperty('FOLDER_ID') || '1xx-N4rKwFTk83iIxSOCEhctJQv-3rZrC';
+const FOLDER_ID = PropertiesService.getScriptProperties().getProperty('FOLDER_ID');
+if (!FOLDER_ID) {
+  throw new Error('FOLDER_ID環境変数が設定されていません。GASのスクリプトプロパティで設定してください。');
+}
 // スプレッドシートID（環境変数から取得）
-const SPREADSHEET_ID = PropertiesService.getScriptProperties().getProperty('SPREADSHEET_ID') || '14uI1FoXUWg_deV-ZGSYY85JREyLyZY4YVqpKka35sZw';
+const SPREADSHEET_ID = PropertiesService.getScriptProperties().getProperty('SPREADSHEET_ID');
+if (!SPREADSHEET_ID) {
+  throw new Error('SPREADSHEET_ID環境変数が設定されていません。GASのスクリプトプロパティで設定してください。');
+}
 const SHEET_NAME = 'シート1';
 
 /**
