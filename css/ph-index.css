@@ -50,7 +50,6 @@
       z-index: 1000;
       transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
       box-shadow: 0 4px 20px rgba(59, 130, 246, 0.08);
-      zoom: 1.7;
     }
 
     .header-content {
@@ -209,6 +208,7 @@
       font-size: 24px;
       position: relative;
       overflow: hidden;
+      zoom: 1.0;
     }
 
     .nav-link::before {
@@ -397,7 +397,6 @@
       background: linear-gradient(135deg, #3b82f6, #1d4ed8);
       color: white;
       box-shadow: 0 4px 16px rgba(59, 130, 246, 0.3);
-      zoom: 1.5;
     }
 
     .action-btn.primary:hover {
@@ -409,7 +408,6 @@
       background: rgba(59, 130, 246, 0.1);
       color: #3b82f6;
       border: 2px solid rgba(59, 130, 246, 0.2);
-      zoom: 1.5;
     }
 
     .action-btn.secondary:hover {
@@ -505,7 +503,6 @@
       list-style: none;
       margin: 0;
       padding: 0;
-      zoom: 2.0;  
     }
 
     .history-item {
@@ -670,7 +667,6 @@
       z-index: 2;
       width: 100%;
       max-width: none;
-      zoom: 1.5;
     }
 
     .scroll-down-indicator {
@@ -691,7 +687,6 @@
       opacity: 0.8;
       text-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
       filter: drop-shadow(0 2px 4px rgba(59, 130, 246, 0.2));
-      zoom: 3.0;
     }
 
     @keyframes bounce {
@@ -735,7 +730,6 @@
       
       .hero-title {
         font-size: 28px;
-        zoom: 1.8;
       }
       
       .card-content {
@@ -748,7 +742,6 @@
       
       .hero-subtitle {
         font-size: 14px;
-        zoom: 1.2;
       }
       
       .card-title {
@@ -757,7 +750,6 @@
       
       .triangle {
         font-size: 40px;
-        zoom: 2.5;
       }
     }
 
@@ -830,7 +822,6 @@
     }
 
     .sharecontents {
-      zoom: 1.8;
     }
     .indent {
       margin-left: 1.2em;
@@ -855,7 +846,6 @@
       transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
       min-height: 48px;
-      zoom: 2.2;
     }
 
     .bbs-btn:hover {
@@ -878,7 +868,6 @@
       min-width: 120px;
       text-align: center;
       font-size: 1.2rem;
-      zoom: 1.3;
       font-weight: bold;
       padding: 0.25em 0.9em;
       border-radius: 6px;
@@ -903,6 +892,4 @@
       overflow-y: auto;
     }
 
-    .bbs-btn {
-      zoom: 2.1;
-    }
+

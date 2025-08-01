@@ -380,9 +380,9 @@
              </div>
      </div>
    </main>
-   <!-- 管理者画面ボタンとモーダルここから -->
+       <!-- 管理者画面ボタンとモーダルここから -->
      <div style="width:100%;text-align:center;margin-top:32px;margin-bottom:16px;">
-       <a href="#" id="adminLoginBtn" style="display:inline-block;padding:10px 28px;font-size:20px;background:#0071e3;color:#fff;border-radius:8px;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,0.10);zoom:2.0;">
+       <a href="#" id="adminLoginBtn" style="display:inline-block;padding:10px 28px;font-size:20px;background:#0071e3;color:#fff;border-radius:8px;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,0.10);">
          <i class="fa-solid fa-user-shield" style="margin-right:0.6em; " ></i>管理画面へ
        </a>
      </div>
@@ -417,7 +417,7 @@
       </style>
 
    <!-- Toast -->
-   <div id="copyToast" class="toast" style="zoom: 2.0;">コピーしました！</div>
+   <div id="copyToast" class="toast">コピーしました！</div>
 
    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/js/all.min.js"></script>
      <script src="js/api.js"></script>
@@ -648,9 +648,6 @@
        // BBSカードだけは別のObserverで監視
        const bbsCard = document.querySelector('.bbs.card');
        if (bbsCard) {
-         // ズーム倍率を考慮してrootMarginを動的に計算（下部を広げる）
-         const bbsZoom = 2.1;
-         const margin = Math.round(window.innerHeight * (bbsZoom - 1));
          const bbsObserver = new IntersectionObserver((entries, obs) => {
            entries.forEach((entry) => {
              if (entry.isIntersecting) {
@@ -660,7 +657,7 @@
            });
          }, {
            threshold: 0.01,
-           rootMargin: `0px 0px +${margin}px 0px`
+           rootMargin: '0px 0px 0px 0px'
          });
          bbsObserver.observe(bbsCard);
        }
