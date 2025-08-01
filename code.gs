@@ -483,25 +483,23 @@ function getAdminPasswords() {
  */
 function checkAdminPassword(input) {
   try {
-    // SHA-256ハッシュ計算
-    const hash = Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_256, input).map(b => ('0' + (b & 0xFF).toString(16)).slice(-2)).join('');
+    // 入力されたパスワードのSHA-256ハッシュを計算
+    const inputHash = Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_256, input).map(b => ('0' + (b & 0xFF).toString(16)).slice(-2)).join('');
     
-    // 管理者パスワードのハッシュ値と比較
-    const validPasswords = getAdminPasswords();
-    const validHashes = validPasswords.map(pwd => 
-      Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_256, pwd).map(b => ('0' + (b & 0xFF).toString(16)).slice(-2)).join('')
-    );
+    // スプレッドシートから保存されたハッシュ値を取得
+    const validHashes = getAdminPasswords();
     
     Logger.log('=== 認証デバッグ情報 ===');
     Logger.log('入力値: "' + input + '"');
     Logger.log('入力値の長さ: ' + input.length);
-    Logger.log('計算したハッシュ値: "' + hash + '"');
-    Logger.log('計算したハッシュ値の長さ: ' + hash.length);
-    Logger.log('有効なハッシュ値: ' + JSON.stringify(validHashes));
-    Logger.log('比較結果: ' + validHashes.includes(hash));
+    Logger.log('計算したハッシュ値: "' + inputHash + '"');
+    Logger.log('計算したハッシュ値の長さ: ' + inputHash.length);
+    Logger.log('保存されたハッシュ値: ' + JSON.stringify(validHashes));
+    Logger.log('比較結果: ' + validHashes.includes(inputHash));
     Logger.log('=======================');
     
-    return validHashes.includes(hash) ? 'ok' : 'ng';
+    // 入力されたパスワードのハッシュ値と保存されたハッシュ値を直接比較
+    return validHashes.includes(inputHash) ? 'ok' : 'ng';
   } catch (error) {
     Logger.log('checkAdminPassword error: ' + error);
     return 'ng';
@@ -539,6 +537,35 @@ function testPasswordHash() {
     
   } catch (error) {
     Logger.log('パスワードハッシュテストエラー: ' + error);
+  }
+}
+
+/**
+ * パスワード認証デバッグ用
+ */
+function debugPasswordAuth(testPassword) {
+  try {
+    Logger.log('=== パスワード認証デバッグ ===');
+    
+    // スプレッドシートから保存されたハッシュ値を取得
+    const validHashes = getAdminPasswords();
+    Logger.log('保存されたハッシュ値: ' + JSON.stringify(validHashes));
+    
+    // テストパスワードのハッシュを計算
+    const inputHash = Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_256, testPassword).map(b => ('0' + (b & 0xFF).toString(16)).slice(-2)).join('');
+    Logger.log('テストパスワード: "' + testPassword + '"');
+    Logger.log('テストパスワードのハッシュ値: "' + inputHash + '"');
+    
+    // 比較
+    const isMatch = validHashes.includes(inputHash);
+    Logger.log('認証結果: ' + (isMatch ? '成功' : '失敗'));
+    
+    Logger.log('=============================');
+    return isMatch;
+    
+  } catch (error) {
+    Logger.log('デバッグエラー: ' + error);
+    return false;
   }
 }
 
