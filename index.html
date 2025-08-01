@@ -11,7 +11,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>秋高考査村 - ホーム</title>
-  <link rel="stylesheet" href="css/index.css" />
+  <link rel="stylesheet" href="assets/css/common.css" />
+  <link rel="stylesheet" href="assets/css/pages/index.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
 </head>
 <body>
@@ -28,9 +29,9 @@
         <nav>
           <ul>
             <li><a href="index.html" class="active">ホーム</a></li>
-            <li><a href="upload.html">アップロード</a></li>
-            <li><a href="search.html">問題データベース</a></li>
-            <li><a href="share.html">共有・拡散</a></li>
+            <li><a href="pages/upload.html">アップロード</a></li>
+            <li><a href="pages/search.html">問題データベース</a></li>
+            <li><a href="pages/share.html">共有・拡散</a></li>
             <li><a href="https://c.kuku.lu/hmc853pz" target="_blank">掲示板</a></li>
             <li><a href="https://forms.gle/ZWtQCvecH4eZtTEU7" target="_blank">報告・問い合わせ</a></li>
           </ul>
@@ -53,11 +54,11 @@
       <div class="card">
         <p style="margin-top:1.5rem;">問題をアップロードすると、広告フリーモードが24時間追加されます。</p>
         <div class="card-buttons">
-          <a href="upload.html">
+          <a href="pages/upload.html">
             <i class="fa-solid fa-upload"></i>
             <span>提供</span>
           </a>
-          <a href="search.html">
+          <a href="pages/search.html">
             <i class="fa-solid fa-database"></i>
             <span>検索</span>
           </a>
@@ -230,7 +231,7 @@
     <div class="copyright-note">Copyright© 2020 考査村 All Rights Reserved.</div><br><br>
   </div>
 
-  <script src="js/api.js"></script>
+  <script src="assets/js/api.js"></script>
   <script>
     // Intersection Observerでカードをアニメーション表示
     document.addEventListener('DOMContentLoaded', function() {
@@ -350,7 +351,7 @@
     const adminPinSubmit = document.getElementById('adminPinSubmit');
     const adminPinCancel = document.getElementById('adminPinCancel');
     const adminPinBtns = document.querySelectorAll('.pin-btn');
-    const adminUrl = 'admin.html';
+    const adminUrl = 'admin/admin.html';
     let pinValue = '';
     function openAdminModal() {
       adminLoginModal.style.display = 'flex';
