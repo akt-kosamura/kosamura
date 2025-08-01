@@ -1,119 +1,548 @@
-body { font-family: sans-serif; margin: 2em; background: #f7f7f7; }
-table { border-collapse: collapse; width: 100%; background: #fff; }
-th, td { border: 1px solid #ccc; padding: 6px 8px; font-size: 15px; }
-th { background: #e0e0e0; }
-tr:nth-child(even) { background: #f9f9f9; }
-button { padding: 3px 10px; font-size: 14px; }
-.filter-btn { margin-left: 4px; }
-.del-btn { color: #fff; background: #d33; border: none; border-radius: 3px; }
-.del-btn:hover { background: #a00; }
-.edit-btn { color: #fff; background: #0071e3; border: none; border-radius: 3px; margin-right: 4px; }
-.edit-btn:hover { background: #0051a3; }
-.filter-row input, .filter-row select { font-size: 14px; padding: 2px 4px; }
+/* admin.html用 古いデザインのCSS */
 
-/* 編集モーダル用スタイル */
-.edit-modal {
+/* 基本スタイル */
+body {
+  margin: 0;
+  padding: 0;
+  background-color: #FFFEE0;
+  font-family: "MS UI Gothic", Arial, sans-serif;
+  font-size: 12px;
+}
+
+/* リンクスタイル */
+a {
+  font-family: "MS UI Gothic";
+  font-size: 12px;
+  color: #000099;
+  text-decoration: none;
+}
+
+a:hover {
+  color: #006699;
+}
+
+a:active {
+  color: #FF9966;
+}
+
+/* テーブルスタイル */
+table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 10px 0;
+}
+
+.table {
+  border-color: #CACACA;
+  border-width: 1px;
+  border-style: solid;
+  border-collapse: collapse;
+}
+
+.table1 {
+  border-color: #CACACA;
+  border-width: 1px;
+  border-style: solid;
+  border-collapse: collapse;
+  border-top-style: none;
+  border-left-style: solid;
+  border-right-style: solid;
+  border-bottom-style: solid;
+}
+
+.table3 {
+  font-family: "MS UI Gothic";
+  font-size: 12px;
+  padding-top: 1px;
+  border-color: #CACACA;
+  border-width: 1px;
+  font-weight: normal;
+  padding-left: 2px;
+  padding-right: 2px;
+  border-style: solid;
+  border-collapse: collapse;
+  border-top-style: solid;
+  border-left-style: solid;
+  border-right-style: none;
+  border-bottom-style: solid;
+}
+
+.table4 {
+  font-family: "MS UI Gothic";
+  font-size: 12px;
+  padding-top: 1px;
+  border-color: #CACACA;
+  border-width: 1px;
+  font-weight: normal;
+  padding-left: 2px;
+  padding-right: 2px;
+  border-style: solid;
+  border-collapse: collapse;
+  border-top-style: solid;
+  border-left-style: none;
+  border-right-style: solid;
+  border-bottom-style: solid;
+}
+
+/* セルスタイル */
+td, th {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 12px;
+  padding: 2px 4px;
+  border: 1px solid #CACACA;
+  vertical-align: middle;
+}
+
+tr {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 12px;
+}
+
+/* テキストスタイル */
+.bodytext {
+  font-family: "MS UI Gothic";
+  font-size: 12px;
+  font-weight: normal;
+  padding-left: 2px;
+  padding-right: 2px;
+  padding-top: 1px;
+}
+
+.bodytext2 {
+  font-family: "MS UI Gothic";
+  font-size: 9pt;
+  font-weight: normal;
+  padding-left: 2px;
+  padding-right: 2px;
+  padding-top: 1px;
+}
+
+.bodytextLeft {
+  font-family: "MS UI Gothic";
+  font-size: 12px;
+  font-weight: normal;
+  padding-left: 3px;
+  text-align: left;
+}
+
+.bodytextnoline {
+  font-family: "MS UI Gothic";
+  font-size: 12px;
+  font-weight: normal;
+}
+
+.bodytextblue {
+  font-family: "MS UI Gothic";
+  font-size: 12px;
+  font-weight: normal;
+  color: #0033FF;
+  line-height: 1;
+  vertical-align: middle;
+}
+
+.bodytextred {
+  font-family: "MS UI Gothic";
+  font-size: 14px;
+  font-weight: normal;
+  color: #FF0000;
+  line-height: 1;
+  vertical-align: middle;
+}
+
+.bodytextbold {
+  font-family: "MS UI Gothic";
+  font-size: 12px;
+  font-weight: bold;
+  vertical-align: middle;
+}
+
+.bodynumbers {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 12px;
+  font-weight: normal;
+  vertical-align: middle;
+  padding-right: 2px;
+}
+
+.bodynumbersnew {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 12px;
+  font-weight: normal;
+  vertical-align: middle;
+}
+
+.bodynumbersbold {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 12px;
+  font-weight: bold;
+  vertical-align: middle;
+}
+
+/* 見出しスタイル */
+.bodytopheading {
+  font-family: "MS UI Gothic";
+  font-size: 20px;
+  font-weight: bold;
+  letter-spacing: -1.9px;
+  color: #FFFFFF;
+  vertical-align: middle;
+}
+
+.bodytopheading1 {
+  font-family: "MS UI Gothic";
+  font-size: 17px;
+  font-weight: bold;
+  color: #000000;
+}
+
+.bodytopheading2 {
+  font-family: "MS UI Gothic";
+  font-size: 17px;
+  font-weight: bold;
+  color: #3366FF;
+}
+
+.pageheading {
+  font-family: "MS UI Gothic";
+  font-size: 13px;
+  font-weight: bold;
+  vertical-align: middle;
+  color: #000000;
+}
+
+.pageheadingHyperlink {
+  font-family: "MS UI Gothic";
+  font-size: 13px;
+  font-weight: bold;
+}
+
+/* ナビゲーションリンク */
+.vlink {
+  font-family: "MS UI Gothic";
+  font-size: 12px;
+  font-weight: normal;
+  color: #003333;
+}
+
+.vlinkactive {
+  font-family: "MS UI Gothic";
+  font-size: 13px;
+  font-weight: bold;
+  color: #663399;
+}
+
+.vlinkbold {
+  font-family: "MS UI Gothic";
+  font-size: 12px;
+  font-weight: bold;
+  color: #003333;
+}
+
+.vlinkboldactive {
+  font-family: "MS UI Gothic";
+  font-size: 12px;
+  font-weight: bold;
+  color: #663399;
+}
+
+.hlink {
+  font-family: "MS UI Gothic";
+  font-size: 12px;
+  font-weight: normal;
+  color: #000000;
+}
+
+.hlinkactive {
+  font-family: "MS UI Gothic";
+  font-size: 12px;
+  font-weight: bold;
+  color: #FFcc99;
+}
+
+/* ボタンスタイル */
+button, input[type="button"], input[type="submit"] {
+  font-family: "MS UI Gothic";
+  font-size: 12px;
+  background-color: #C0C0C0;
+  border: 2px outset #C0C0C0;
+  padding: 2px 8px;
+  cursor: pointer;
+}
+
+button:hover, input[type="button"]:hover, input[type="submit"]:hover {
+  background-color: #D0D0D0;
+}
+
+button:active, input[type="button"]:active, input[type="submit"]:active {
+  border: 2px inset #C0C0C0;
+}
+
+/* 入力フィールド */
+input[type="text"], input[type="password"], select, textarea {
+  font-family: "MS UI Gothic";
+  font-size: 12px;
+  border: 1px solid #CACACA;
+  padding: 1px 2px;
+  background-color: #FFFFFF;
+}
+
+/* ドロップダウン */
+.dropdown {
+  font-family: "MS UI Gothic";
+  font-size: 12px;
+  font-weight: normal;
+  color: #003333;
+}
+
+/* グリッド番号 */
+.gridnum {
+  font-family: "MS UI Gothic";
+  font-size: 12px;
+  font-weight: normal;
+  padding-right: 2px;
+  padding-left: 2px;
+  vertical-align: middle;
+  text-align: right;
+}
+
+/* ページャースタイル */
+.pagerstyle {
+  font-family: "MS UI Gothic";
+  font-size: 12px;
+  font-weight: normal;
+  padding-left: 2px;
+  padding-right: 2px;
+  padding-top: 1px;
+  color: #808080;
+}
+
+/* テーブル境界線 */
+.tableborder {
+  border: 1px solid #CACACA;
+}
+
+.datagridtableborder {
+  border: solid 1px #CACACA;
+}
+
+/* テーブル区切り線 */
+.tablebreak {
+  border-bottom-width: 1px;
+  border-bottom-style: solid;
+  border-bottom-color: #CACACA;
+}
+
+.tabledoublebreak {
+  border-bottom-width: 2px;
+  border-bottom-style: solid;
+  border-bottom-color: #CACACA;
+}
+
+/* テーブルヘッダー */
+.tableheading {
+  font-family: "MS UI Gothic";
+  font-size: 12px;
+  padding-top: 1px;
+  background-color: #E0E0E0;
+  font-weight: bold;
+}
+
+/* ハイライト */
+.HighLight {
+  background-color: yellow;
+}
+
+/* タブスタイル */
+.tabletab {
+  border-bottom-width: 1px;
+  border-bottom-style: solid;
+  border-bottom-color: #CACACA;
+  border-right-width: 1px;
+  border-right-style: solid;
+  border-right-color: #CACACA;
+  border-left-width: 1px;
+  border-left-style: solid;
+  border-left-color: #CACACA;
+  padding: 5px;
+}
+
+.tabletabnew {
+  border-top-width: 1px;
+  border-top-style: solid;
+  border-top-color: #CACACA;
+  border-bottom-width: 1px;
+  border-bottom-style: solid;
+  border-bottom-color: #CACACA;
+  border-right-width: 1px;
+  border-right-style: solid;
+  border-right-color: #CACACA;
+  border-left-width: 1px;
+  border-left-style: solid;
+  border-left-color: #CACACA;
+  background-color: #99CCFF;
+  padding: 5px;
+}
+
+.tabletabsel {
+  border-top-width: 1px;
+  border-top-style: solid;
+  border-top-color: #CACACA;
+  border-bottom-style: none;
+  border-right-width: 1px;
+  border-right-style: solid;
+  border-right-color: #CACACA;
+  border-left-width: 1px;
+  border-left-style: solid;
+  border-left-color: #CACACA;
+  padding: 5px;
+  color: #000000;
+}
+
+/* 管理画面特有のスタイル */
+.admin-header {
+  background-color: #3366FF;
+  color: white;
+  padding: 10px;
+  margin-bottom: 20px;
+}
+
+.admin-title {
+  font-family: "MS UI Gothic";
+  font-size: 20px;
+  font-weight: bold;
+  margin: 0;
+}
+
+.admin-nav {
+  margin: 10px 0;
+  padding: 5px 0;
+  border-bottom: 1px solid #CACACA;
+}
+
+.admin-nav a {
+  margin-right: 15px;
+  padding: 2px 5px;
+}
+
+.admin-nav a.active {
+  background-color: #99CCFF;
+  color: #000000;
+}
+
+.admin-content {
+  padding: 10px;
+}
+
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.admin-table th {
+  background-color: #E0E0E0;
+  font-weight: bold;
+  text-align: center;
+}
+
+.admin-table td {
+  text-align: left;
+  padding: 3px 5px;
+}
+
+.admin-form {
+  margin: 10px 0;
+  padding: 10px;
+  border: 1px solid #CACACA;
+  background-color: #F8F8F8;
+}
+
+.admin-form label {
+  display: inline-block;
+  width: 120px;
+  font-weight: bold;
+  margin-right: 10px;
+}
+
+.admin-form input[type="text"],
+.admin-form input[type="password"],
+.admin-form select {
+  width: 200px;
+  margin-bottom: 5px;
+}
+
+.admin-buttons {
+  margin: 10px 0;
+  text-align: center;
+}
+
+.admin-buttons button {
+  margin: 0 5px;
+}
+
+/* モーダルスタイル */
+.modal {
   display: none;
   position: fixed;
-  z-index: 9999;
+  z-index: 1000;
   left: 0;
   top: 0;
-  width: 100vw;
-  height: 100vh;
-  background: rgba(0,0,0,0.5);
-  align-items: center;
-  justify-content: center;
-}
-.edit-modal-content {
-  background: #fff;
-  border-radius: 8px;
-  padding: 24px;
-  box-shadow: 0 4px 24px rgba(0,0,0,0.2);
-  min-width: 500px;
-  max-width: 90vw;
-  max-height: 90vh;
-  overflow-y: auto;
-}
-.edit-form {
-  display: grid;
-  grid-template-columns: 120px 1fr;
-  gap: 12px 16px;
-  align-items: start;
-}
-.edit-form label {
-  font-weight: bold;
-  font-size: 14px;
-  color: #333;
-  padding-top: 8px;
-}
-.edit-form input, .edit-form textarea, .edit-form select {
-  padding: 8px 12px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  font-size: 14px;
   width: 100%;
-  box-sizing: border-box;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
 }
-.edit-form textarea {
-  resize: vertical;
-  min-height: 60px;
-  grid-column: 2;
+
+.modal-content {
+  background-color: #FFFEE0;
+  margin: 5% auto;
+  padding: 20px;
+  border: 2px solid #CACACA;
+  width: 80%;
+  max-width: 600px;
+  font-family: "MS UI Gothic";
+  font-size: 12px;
 }
-.edit-form .readonly-field {
-  background: #f5f5f5;
-  color: #666;
-  cursor: not-allowed;
+
+.modal-header {
+  background-color: #3366FF;
+  color: white;
+  padding: 10px;
+  margin: -20px -20px 20px -20px;
 }
-.edit-buttons {
-  display: flex;
-  gap: 8px;
-  justify-content: flex-end;
-  margin-top: 20px;
-  grid-column: 1 / -1;
-}
-.edit-buttons button {
-  padding: 8px 16px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 14px;
-}
-.save-btn {
-  background: #0071e3;
-  color: #fff;
-}
-.save-btn:hover {
-  background: #0051a3;
-}
-.cancel-btn {
-  background: #ccc;
-  color: #333;
-}
-.cancel-btn:hover {
-  background: #aaa;
-}
-.save-btn:disabled {
-  background: #ccc;
-  cursor: not-allowed;
-}
-.save-btn:disabled:hover {
-  background: #ccc;
-}
-.sortable {
-  cursor: pointer;
-  user-select: none;
-  position: relative;
-}
-.sortable:hover {
-  background-color: #f0f0f0;
-}
-.sortable.asc::after {
-  content: ' ▲';
-  color: #0071e3;
+
+.modal-title {
+  font-size: 16px;
   font-weight: bold;
+  margin: 0;
 }
-.sortable.desc::after {
-  content: ' ▼';
-  color: #0071e3;
+
+.close {
+  color: white;
+  float: right;
+  font-size: 20px;
   font-weight: bold;
+  cursor: pointer;
+}
+
+.close:hover {
+  color: #FFcc99;
+}
+
+/* レスポンシブ対応 */
+@media (max-width: 768px) {
+  .admin-form label {
+    display: block;
+    width: auto;
+    margin-bottom: 5px;
+  }
+  
+  .admin-form input[type="text"],
+  .admin-form input[type="password"],
+  .admin-form select {
+    width: 100%;
+  }
+  
+  .modal-content {
+    width: 95%;
+    margin: 10% auto;
+  }
 }

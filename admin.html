@@ -7,50 +7,63 @@
   <link rel="stylesheet" href="css/admin.css">
 </head>
 <body>
-  <div style="font-size:1.5em; font-weight:bold; margin-bottom:0.5em;">管理画面</div>
-  <nav style="margin-bottom:1.2em; display:flex; align-items:center;">
-    <a href="index.html" style="margin-right:1em; text-decoration:none;">▶ ホーム</a>
-    <a href="upload.html" style="margin-right:1em; text-decoration:none;">▶ アップロード</a>
-    <a href="search.html" style="margin-right:1em; text-decoration:none;">▶ データベース</a>
-    <a href="share.html" style="margin-right:1em; text-decoration:none;">▶ 共有・拡散</a>
-    <a href="ph-index.html" style="margin-right:1em; text-decoration:none;">▶ スマホ版</a>
-    <a href="admin.html" style="margin-right:1em; text-decoration:none; font-weight:bold;">▶ 管理画面</a>
-    <span style="flex:1"></span>
-    <a href="#" onclick="logout(); return false;" style="text-decoration:none; color:#d33; font-weight:bold;">▶ ログアウト</a>
-  </nav>
-  <div id="loginForm" style="display:none; margin:2em 0;">
-    <h2>管理画面ログイン</h2>
-    <input type="password" id="adminPass" placeholder="パスワード">
-    <button onclick="login()">ログイン</button>
+  <div class="admin-header">
+    <h1 class="admin-title">管理画面</h1>
   </div>
-  <div id="adminContent" style="display:none;">
-    <div style="margin:1em 0; display:flex; align-items:center; gap:1em;">
-      <button id="deleteSelectedBtn">選択した投稿を一括削除</button>
-      <span id="deleteProgress" style="display:none; color:#d33;">削除中...</span>
-      <label style="display:flex; align-items:center; gap:0.5em; margin-left:1em;">
-        <input type="checkbox" id="showDeviceInfo" style="margin:0;">
-        <span>デバイス情報表示</span>
-      </label>
+  <div class="admin-nav">
+    <a href="index.html" class="vlink">▶ ホーム</a>
+    <a href="upload.html" class="vlink">▶ アップロード</a>
+    <a href="search.html" class="vlink">▶ データベース</a>
+    <a href="share.html" class="vlink">▶ 共有・拡散</a>
+    <a href="ph-index.html" class="vlink">▶ スマホ版</a>
+    <a href="admin.html" class="vlinkactive">▶ 管理画面</a>
+    <a href="#" onclick="logout(); return false;" class="bodytextred">▶ ログアウト</a>
+  </div>
+  <div class="admin-content">
+    <div id="loginForm" style="display:none;">
+      <div class="admin-form">
+        <h2 class="bodytopheading1">管理画面ログイン</h2>
+        <div style="margin: 10px 0;">
+          <label class="bodytextbold">パスワード:</label>
+          <input type="password" id="adminPass" placeholder="パスワード">
+        </div>
+        <div class="admin-buttons">
+          <button onclick="login()">ログイン</button>
+        </div>
+      </div>
     </div>
-    <table id="postTable">
+    <div id="adminContent" style="display:none;">
+      <div class="admin-form">
+        <div style="margin: 10px 0;">
+          <button id="deleteSelectedBtn">選択した投稿を一括削除</button>
+          <span id="deleteProgress" style="display:none; color:#FF0000;">削除中...</span>
+        </div>
+        <div style="margin: 10px 0;">
+          <label class="bodytextbold">
+            <input type="checkbox" id="showDeviceInfo" style="margin-right: 5px;">
+            デバイス情報表示
+          </label>
+        </div>
+      </div>
+    <table id="postTable" class="table">
       <thead>
-        <tr id="headerRow">
-          <th><input type="checkbox" id="checkAll"></th>
-          <th data-key="id" class="sortable">ID</th>
-          <th data-key="grade" class="sortable">学年</th>
-          <th data-key="year" class="sortable">年度</th>
-          <th data-key="type" class="sortable">種類</th>
-          <th data-key="subject" class="sortable">科目</th>
-          <th data-key="stream" class="sortable">文理区分</th>
-          <th data-key="contentType" class="sortable">内容</th>
-          <th data-key="format" class="sortable">形式</th>
-          <th data-key="comment" class="sortable">コメント</th>
-          <th data-key="fileSize" class="sortable">ファイルサイズ</th>
-          <th data-key="url">URL</th>
-          <th data-key="date" class="sortable">日付</th>
-          <th data-key="likes" class="sortable">いいね</th>
-          <th data-key="bad" class="sortable">バッド</th>
-          <th>操作</th>
+        <tr id="headerRow" class="tableheading">
+          <th class="table3"><input type="checkbox" id="checkAll"></th>
+          <th class="table3" data-key="id" class="sortable">ID</th>
+          <th class="table3" data-key="grade" class="sortable">学年</th>
+          <th class="table3" data-key="year" class="sortable">年度</th>
+          <th class="table3" data-key="type" class="sortable">種類</th>
+          <th class="table3" data-key="subject" class="sortable">科目</th>
+          <th class="table3" data-key="stream" class="sortable">文理区分</th>
+          <th class="table3" data-key="contentType" class="sortable">内容</th>
+          <th class="table3" data-key="format" class="sortable">形式</th>
+          <th class="table3" data-key="comment" class="sortable">コメント</th>
+          <th class="table3" data-key="fileSize" class="sortable">ファイルサイズ</th>
+          <th class="table3" data-key="url">URL</th>
+          <th class="table3" data-key="date" class="sortable">日付</th>
+          <th class="table3" data-key="likes" class="sortable">いいね</th>
+          <th class="table3" data-key="bad" class="sortable">バッド</th>
+          <th class="table4">操作</th>
         </tr>
         <tr id="deviceHeaderRow" style="display:none;">
           <th><input type="checkbox" id="checkAllDevice"></th>
