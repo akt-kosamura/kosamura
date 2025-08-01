@@ -27,38 +27,28 @@ class KosamuraAPI {
   // ファイルアップロード（GAS運用時と同じ）
   async uploadFileAndRecord(grade, year, type, subject, stream, contentType, fileFormat, comment, filename, base64, deviceInfo, fileSizeMB) {
     try {
-      // GASのdoPost関数が期待する形式でFormDataを作成
-      const formData = new FormData();
+      // GASのdoPost関数が期待する形式でURLパラメータを作成
+      const params = new URLSearchParams();
+      params.append('function', 'uploadFileAndRecord');
+      params.append('grade', grade);
+      params.append('year', year);
+      params.append('type', type);
+      params.append('subject', subject);
+      params.append('stream', stream);
+      params.append('contentType', contentType);
+      params.append('fileFormat', fileFormat);
+      params.append('comment', comment);
+      params.append('fileSizeMB', fileSizeMB);
+      params.append('deviceInfo', JSON.stringify(deviceInfo));
+      params.append('filename', filename);
       
-      // ファイルデータをBlobとして追加
-      const byteCharacters = atob(base64);
-      const byteNumbers = new Array(byteCharacters.length);
-      for (let i = 0; i < byteCharacters.length; i++) {
-        byteNumbers[i] = byteCharacters.charCodeAt(i);
-      }
-      const byteArray = new Uint8Array(byteNumbers);
-      const blob = new Blob([byteArray], { type: 'application/octet-stream' });
-      
-      // GASのdoPost関数が期待する形式でデータを追加
-      formData.append('grade', grade);
-      formData.append('year', year);
-      formData.append('type', type);
-      formData.append('subject', subject);
-      formData.append('stream', stream);
-      formData.append('contentType', contentType);
-      formData.append('fileFormat', fileFormat);
-      formData.append('comment', comment);
-      formData.append('fileSizeMB', fileSizeMB);
-      formData.append('deviceInfo', JSON.stringify(deviceInfo));
-      
-      // GASのdoPost関数が期待する形式でファイルデータを追加
-      // GASでは e.postData.getBlob() でファイルデータを取得し、
-      // fileBlob.getName() でファイル名を取得する
-      formData.append('file', blob, filename);
-
-      const response = await fetch(`${this.baseURL}?function=uploadFileAndRecord`, {
+      // Base64エンコードされたファイルデータをリクエストボディとして送信
+      const response = await fetch(`${this.baseURL}?${params.toString()}`, {
         method: 'POST',
-        body: formData
+        body: base64,
+        headers: {
+          'Content-Type': 'text/plain'
+        }
       });
       
       if (!response.ok) {

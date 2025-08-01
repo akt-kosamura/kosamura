@@ -473,16 +473,16 @@ function doPost(e) {
     switch (funcName) {
       case 'uploadFileAndRecord':
         const {
-          grade, year, type, subject, stream, contentType, fileFormat, comment, fileSizeMB
+          grade, year, type, subject, stream, contentType, fileFormat, comment, fileSizeMB, filename
         } = e.parameter;
         
-        const fileBlob = e.postData.getBlob();
-        const base64 = Utilities.base64Encode(fileBlob.getBytes());
+        // リクエストボディからBase64データを直接取得
+        const base64 = e.postData.getDataAsString();
         
         // デバイス情報を解析
         const deviceInfo = e.parameter.deviceInfo ? JSON.parse(e.parameter.deviceInfo) : {};
         
-        const url = uploadFileAndRecord(grade, year, type, subject, stream, contentType, fileFormat, comment, fileBlob.getName(), base64, deviceInfo, fileSizeMB);
+        const url = uploadFileAndRecord(grade, year, type, subject, stream, contentType, fileFormat, comment, filename, base64, deviceInfo, fileSizeMB);
         return ContentService.createTextOutput(JSON.stringify({ url }))
           .setMimeType(ContentService.MimeType.JSON);
         
