@@ -4,132 +4,239 @@
   <meta charset="UTF-8" />
   <title>管理ページ - 考査村</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="stylesheet" href="css/admin.css">
+  <style>
+    body { font-family: sans-serif; margin: 2em; background: #f7f7f7; }
+    table { border-collapse: collapse; width: 100%; background: #fff; }
+    th, td { border: 1px solid #ccc; padding: 6px 8px; font-size: 15px; }
+    th { background: #e0e0e0; }
+    tr:nth-child(even) { background: #f9f9f9; }
+    button { padding: 3px 10px; font-size: 14px; }
+    .filter-btn { margin-left: 4px; }
+    .del-btn { color: #fff; background: #d33; border: none; border-radius: 3px; }
+    .del-btn:hover { background: #a00; }
+    .edit-btn { color: #fff; background: #0071e3; border: none; border-radius: 3px; margin-right: 4px; }
+    .edit-btn:hover { background: #0051a3; }
+    .filter-row input, .filter-row select { font-size: 14px; padding: 2px 4px; }
+    
+    /* 編集モーダル用スタイル */
+    .edit-modal {
+      display: none;
+      position: fixed;
+      z-index: 9999;
+      left: 0;
+      top: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0,0,0,0.5);
+      align-items: center;
+      justify-content: center;
+    }
+    .edit-modal-content {
+      background: #fff;
+      border-radius: 8px;
+      padding: 24px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.2);
+      min-width: 500px;
+      max-width: 90vw;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+    .edit-form {
+      display: grid;
+      grid-template-columns: 120px 1fr;
+      gap: 12px 16px;
+      align-items: start;
+    }
+    .edit-form label {
+      font-weight: bold;
+      font-size: 14px;
+      color: #333;
+      padding-top: 8px;
+    }
+    .edit-form input, .edit-form textarea, .edit-form select {
+      padding: 8px 12px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 14px;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    .edit-form textarea {
+      resize: vertical;
+      min-height: 60px;
+      grid-column: 2;
+    }
+    .edit-form .readonly-field {
+      background: #f5f5f5;
+      color: #666;
+      cursor: not-allowed;
+    }
+    .edit-buttons {
+      display: flex;
+      gap: 8px;
+      justify-content: flex-end;
+      margin-top: 20px;
+      grid-column: 1 / -1;
+    }
+    .edit-buttons button {
+      padding: 8px 16px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    .save-btn {
+      background: #0071e3;
+      color: #fff;
+    }
+    .save-btn:hover {
+      background: #0051a3;
+    }
+    .cancel-btn {
+      background: #ccc;
+      color: #333;
+    }
+    .cancel-btn:hover {
+      background: #aaa;
+    }
+    .save-btn:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+    .save-btn:disabled:hover {
+      background: #ccc;
+    }
+    .sortable {
+      cursor: pointer;
+      user-select: none;
+      position: relative;
+    }
+    .sortable:hover {
+      background-color: #f0f0f0;
+    }
+    .sortable.asc::after {
+      content: ' ▲';
+      color: #0071e3;
+      font-weight: bold;
+    }
+    .sortable.desc::after {
+      content: ' ▼';
+      color: #0071e3;
+      font-weight: bold;
+    }
+  </style>
 </head>
 <body>
-  <div class="admin-header">
-    <h1 class="admin-title">管理画面</h1>
+  <div style="font-size:1.5em; font-weight:bold; margin-bottom:0.5em;">管理画面</div>
+  <nav style="margin-bottom:1.2em; display:flex; align-items:center;">
+    <a href="index.html" style="margin-right:1em; text-decoration:none;">▶ ホーム</a>
+    <a href="upload.html" style="margin-right:1em; text-decoration:none;">▶ アップロード</a>
+    <a href="search.html" style="margin-right:1em; text-decoration:none;">▶ データベース</a>
+    <a href="share.html" style="margin-right:1em; text-decoration:none;">▶ 共有・拡散</a>
+    <a href="ph-index.html" style="margin-right:1em; text-decoration:none;">▶ スマホ版</a>
+    <a href="admin.html" style="margin-right:1em; text-decoration:none; font-weight:bold;">▶ 管理画面</a>
+    <span style="flex:1"></span>
+    <a href="#" onclick="logout(); return false;" style="text-decoration:none; color:#d33; font-weight:bold;">▶ ログアウト</a>
+  </nav>
+  <div id="loginForm" style="display:none; margin:2em 0;">
+    <h2>管理画面ログイン</h2>
+    <input type="password" id="adminPass" placeholder="パスワード">
+    <button onclick="login()">ログイン</button>
   </div>
-  <div class="admin-nav">
-    <a href="index.html" class="vlink">▶ ホーム</a>
-    <a href="upload.html" class="vlink">▶ アップロード</a>
-    <a href="search.html" class="vlink">▶ データベース</a>
-    <a href="share.html" class="vlink">▶ 共有・拡散</a>
-    <a href="ph-index.html" class="vlink">▶ スマホ版</a>
-    <a href="admin.html" class="vlinkactive">▶ 管理画面</a>
-    <a href="#" onclick="logout(); return false;" class="bodytextred">▶ ログアウト</a>
-  </div>
-  <div class="admin-content">
-    <div id="loginForm" style="display:none;">
-      <div class="admin-form">
-        <h2 class="bodytopheading1">管理画面ログイン</h2>
-        <div style="margin: 10px 0;">
-          <label class="bodytextbold">パスワード:</label>
-          <input type="password" id="adminPass" placeholder="パスワード">
-        </div>
-        <div class="admin-buttons">
-          <button onclick="login()">ログイン</button>
-        </div>
-      </div>
+  <div id="adminContent" style="display:none;">
+    <div style="margin:1em 0; display:flex; align-items:center; gap:1em;">
+      <button id="deleteSelectedBtn">選択した投稿を一括削除</button>
+      <span id="deleteProgress" style="display:none; color:#d33;">削除中...</span>
+      <label style="display:flex; align-items:center; gap:0.5em; margin-left:1em;">
+        <input type="checkbox" id="showDeviceInfo" style="margin:0;">
+        <span>デバイス情報表示</span>
+      </label>
     </div>
-    <div id="adminContent" style="display:none;">
-      <div class="admin-form">
-        <div style="margin: 10px 0;">
-          <button id="deleteSelectedBtn">選択した投稿を一括削除</button>
-          <span id="deleteProgress" style="display:none; color:#FF0000;">削除中...</span>
-        </div>
-        <div style="margin: 10px 0;">
-          <label class="bodytextbold">
-            <input type="checkbox" id="showDeviceInfo" style="margin-right: 5px;">
-            デバイス情報表示
-          </label>
-        </div>
-      </div>
-    <table id="postTable" class="table">
+    <table id="postTable">
       <thead>
-        <tr id="headerRow" class="tableheading">
-          <th class="table3"><input type="checkbox" id="checkAll"></th>
-          <th class="table3" data-key="id" class="sortable">ID</th>
-          <th class="table3" data-key="grade" class="sortable">学年</th>
-          <th class="table3" data-key="year" class="sortable">年度</th>
-          <th class="table3" data-key="type" class="sortable">種類</th>
-          <th class="table3" data-key="subject" class="sortable">科目</th>
-          <th class="table3" data-key="stream" class="sortable">文理区分</th>
-          <th class="table3" data-key="contentType" class="sortable">内容</th>
-          <th class="table3" data-key="format" class="sortable">形式</th>
-          <th class="table3" data-key="comment" class="sortable">コメント</th>
-          <th class="table3" data-key="fileSize" class="sortable">ファイルサイズ</th>
-          <th class="table3" data-key="url">URL</th>
-          <th class="table3" data-key="date" class="sortable">日付</th>
-          <th class="table3" data-key="likes" class="sortable">いいね</th>
-          <th class="table3" data-key="bad" class="sortable">バッド</th>
-          <th class="table4">操作</th>
+        <tr id="headerRow">
+          <th><input type="checkbox" id="checkAll"></th>
+          <th data-key="id" class="sortable">ID</th>
+          <th data-key="grade" class="sortable">学年</th>
+          <th data-key="year" class="sortable">年度</th>
+          <th data-key="type" class="sortable">種類</th>
+          <th data-key="subject" class="sortable">科目</th>
+          <th data-key="stream" class="sortable">文理区分</th>
+          <th data-key="contentType" class="sortable">内容</th>
+          <th data-key="format" class="sortable">形式</th>
+          <th data-key="comment" class="sortable">コメント</th>
+          <th data-key="fileSize" class="sortable">ファイルサイズ</th>
+          <th data-key="url">URL</th>
+          <th data-key="date" class="sortable">日付</th>
+          <th data-key="likes" class="sortable">いいね</th>
+          <th data-key="bad" class="sortable">バッド</th>
+          <th>操作</th>
         </tr>
-        <tr id="deviceHeaderRow" style="display:none;" class="tableheading">
-          <th class="table3"><input type="checkbox" id="checkAllDevice"></th>
-          <th class="table3" data-key="id" class="sortable">ID</th>
-          <th class="table3" data-key="grade" class="sortable">学年</th>
-          <th class="table3" data-key="year" class="sortable">年度</th>
-          <th class="table3" data-key="type" class="sortable">種類</th>
-          <th class="table3" data-key="subject" class="sortable">科目</th>
-          <th class="table3" data-key="stream" class="sortable">文理区分</th>
-          <th class="table3" data-key="contentType" class="sortable">内容</th>
-          <th class="table3" data-key="format" class="sortable">形式</th>
-          <th class="table3" data-key="comment" class="sortable">コメント</th>
-          <th class="table3" data-key="fileSize" class="sortable">ファイルサイズ</th>
-          <th class="table3" data-key="url">URL</th>
-          <th class="table3" data-key="date" class="sortable">日付</th>
-          <th class="table3" data-key="likes" class="sortable">いいね</th>
-          <th class="table3" data-key="bad" class="sortable">バッド</th>
-          <th class="table3" data-key="publicIP" class="sortable">公開IP</th>
-          <th class="table3" data-key="privateIP" class="sortable">プライベートIP</th>
-          <th class="table3" data-key="userAgent" class="sortable">User-Agent</th>
-          <th class="table3" data-key="platform" class="sortable">プラットフォーム</th>
-          <th class="table3" data-key="screenResolution" class="sortable">画面解像度</th>
-          <th class="table3" data-key="windowSize" class="sortable">ウィンドウサイズ</th>
-          <th class="table4">操作</th>
+        <tr id="deviceHeaderRow" style="display:none;">
+          <th><input type="checkbox" id="checkAllDevice"></th>
+          <th data-key="id" class="sortable">ID</th>
+          <th data-key="grade" class="sortable">学年</th>
+          <th data-key="year" class="sortable">年度</th>
+          <th data-key="type" class="sortable">種類</th>
+          <th data-key="subject" class="sortable">科目</th>
+          <th data-key="stream" class="sortable">文理区分</th>
+          <th data-key="contentType" class="sortable">内容</th>
+          <th data-key="format" class="sortable">形式</th>
+          <th data-key="comment" class="sortable">コメント</th>
+          <th data-key="fileSize" class="sortable">ファイルサイズ</th>
+          <th data-key="url">URL</th>
+          <th data-key="date" class="sortable">日付</th>
+          <th data-key="likes" class="sortable">いいね</th>
+          <th data-key="bad" class="sortable">バッド</th>
+          <th data-key="publicIP" class="sortable">公開IP</th>
+          <th data-key="privateIP" class="sortable">プライベートIP</th>
+          <th data-key="userAgent" class="sortable">User-Agent</th>
+          <th data-key="platform" class="sortable">プラットフォーム</th>
+          <th data-key="screenResolution" class="sortable">画面解像度</th>
+          <th data-key="windowSize" class="sortable">ウィンドウサイズ</th>
+          <th>操作</th>
         </tr>
         <tr class="filter-row">
-          <td class="bodytext"></td>
-          <td class="bodytext"><input type="text" id="filter-id" style="width:4em"></td>
-          <td class="bodytext"><input type="text" id="filter-grade" style="width:4em"></td>
-          <td class="bodytext"><input type="text" id="filter-year" style="width:5em"></td>
-          <td class="bodytext"><input type="text" id="filter-type" style="width:5em"></td>
-          <td class="bodytext"><input type="text" id="filter-subject" style="width:5em"></td>
-          <td class="bodytext"><input type="text" id="filter-stream" style="width:5em"></td>
-          <td class="bodytext"><input type="text" id="filter-contentType" style="width:5em"></td>
-          <td class="bodytext"><input type="text" id="filter-format" style="width:4em"></td>
-          <td class="bodytext"><input type="text" id="filter-comment" style="width:6em"></td>
-          <td class="bodytext"><input type="text" id="filter-fileSize" style="width:4em"></td>
-          <td class="bodytext"></td>
-          <td class="bodytext"></td>
-          <td class="bodytext"><input type="text" id="filter-likes" style="width:3em"></td>
-          <td class="bodytext"><input type="text" id="filter-bad" style="width:3em"></td>
-          <td class="bodytext"><button id="filterBtn">絞込</button><button id="clearBtn">解除</button></td>
+          <td></td>
+          <td><input type="text" id="filter-id" style="width:4em"></td>
+          <td><input type="text" id="filter-grade" style="width:4em"></td>
+          <td><input type="text" id="filter-year" style="width:5em"></td>
+          <td><input type="text" id="filter-type" style="width:5em"></td>
+          <td><input type="text" id="filter-subject" style="width:5em"></td>
+          <td><input type="text" id="filter-stream" style="width:5em"></td>
+          <td><input type="text" id="filter-contentType" style="width:5em"></td>
+          <td><input type="text" id="filter-format" style="width:4em"></td>
+          <td><input type="text" id="filter-comment" style="width:6em"></td>
+          <td><input type="text" id="filter-fileSize" style="width:4em"></td>
+          <td></td>
+          <td></td>
+          <td><input type="text" id="filter-likes" style="width:3em"></td>
+          <td><input type="text" id="filter-bad" style="width:3em"></td>
+          <td><button id="filterBtn" class="filter-btn">絞込</button><button id="clearBtn" class="filter-btn">解除</button></td>
         </tr>
         <tr class="filter-row" id="deviceFilterRow" style="display:none;">
-          <td class="bodytext"></td>
-          <td class="bodytext"><input type="text" id="filter-id-device" style="width:4em"></td>
-          <td class="bodytext"><input type="text" id="filter-grade-device" style="width:4em"></td>
-          <td class="bodytext"><input type="text" id="filter-year-device" style="width:5em"></td>
-          <td class="bodytext"><input type="text" id="filter-type-device" style="width:5em"></td>
-          <td class="bodytext"><input type="text" id="filter-subject-device" style="width:5em"></td>
-          <td class="bodytext"><input type="text" id="filter-stream-device" style="width:5em"></td>
-          <td class="bodytext"><input type="text" id="filter-contentType-device" style="width:5em"></td>
-          <td class="bodytext"><input type="text" id="filter-format-device" style="width:4em"></td>
-          <td class="bodytext"><input type="text" id="filter-comment-device" style="width:6em"></td>
-          <td class="bodytext"><input type="text" id="filter-fileSize-device" style="width:4em"></td>
-          <td class="bodytext"></td>
-          <td class="bodytext"></td>
-          <td class="bodytext"><input type="text" id="filter-likes-device" style="width:3em"></td>
-          <td class="bodytext"><input type="text" id="filter-bad-device" style="width:3em"></td>
-          <td class="bodytext"><input type="text" id="filter-publicIP-device" style="width:6em"></td>
-          <td class="bodytext"><input type="text" id="filter-privateIP-device" style="width:6em"></td>
-          <td class="bodytext"><input type="text" id="filter-userAgent-device" style="width:8em"></td>
-          <td class="bodytext"><input type="text" id="filter-platform-device" style="width:6em"></td>
-          <td class="bodytext"><input type="text" id="filter-screenResolution-device" style="width:6em"></td>
-          <td class="bodytext"><input type="text" id="filter-windowSize-device" style="width:6em"></td>
-          <td class="bodytext"><button id="filterBtnDevice">絞込</button><button id="clearBtnDevice">解除</button></td>
+          <td></td>
+          <td><input type="text" id="filter-id-device" style="width:4em"></td>
+          <td><input type="text" id="filter-grade-device" style="width:4em"></td>
+          <td><input type="text" id="filter-year-device" style="width:5em"></td>
+          <td><input type="text" id="filter-type-device" style="width:5em"></td>
+          <td><input type="text" id="filter-subject-device" style="width:5em"></td>
+          <td><input type="text" id="filter-stream-device" style="width:5em"></td>
+          <td><input type="text" id="filter-contentType-device" style="width:5em"></td>
+          <td><input type="text" id="filter-format-device" style="width:4em"></td>
+          <td><input type="text" id="filter-comment-device" style="width:6em"></td>
+          <td><input type="text" id="filter-fileSize-device" style="width:4em"></td>
+          <td></td>
+          <td></td>
+          <td><input type="text" id="filter-likes-device" style="width:3em"></td>
+          <td><input type="text" id="filter-bad-device" style="width:3em"></td>
+          <td><input type="text" id="filter-publicIP-device" style="width:6em"></td>
+          <td><input type="text" id="filter-privateIP-device" style="width:6em"></td>
+          <td><input type="text" id="filter-userAgent-device" style="width:8em"></td>
+          <td><input type="text" id="filter-platform-device" style="width:6em"></td>
+          <td><input type="text" id="filter-screenResolution-device" style="width:6em"></td>
+          <td><input type="text" id="filter-windowSize-device" style="width:6em"></td>
+          <td><button id="filterBtnDevice" class="filter-btn">絞込</button><button id="clearBtnDevice" class="filter-btn">解除</button></td>
         </tr>
       </thead>
       <tbody id="postTbody">
@@ -139,131 +246,102 @@
   </div>
 
   <!-- 編集モーダル -->
-  <div id="editModal" class="modal">
-    <div class="modal-content">
-      <div class="modal-header">
-        <span class="close">&times;</span>
-        <h3 class="modal-title">投稿を編集</h3>
-      </div>
-      <form class="admin-form" id="editForm">
-        <div style="margin: 10px 0;">
-          <label class="bodytextbold">ID:</label>
-          <div id="edit-id-display" class="bodytext" style="padding: 2px 4px; border: 1px solid #CACACA; background: #F8F8F8; color: #666; display: inline-block; width: 200px;"></div>
-        </div>
+  <div id="editModal" class="edit-modal">
+    <div class="edit-modal-content">
+      <h3>投稿を編集</h3>
+      <form class="edit-form" id="editForm">
+        <label for="edit-id">ID:</label>
+        <div id="edit-id-display" class="readonly-field" style="padding: 8px 12px; border: 1px solid #ccc; border-radius: 4px; background: #f5f5f5; color: #666;"></div>
         
-        <div style="margin: 10px 0;">
-          <label class="bodytextbold">学年:</label>
-          <select id="edit-grade">
-            <option value="1">1年</option>
-            <option value="2">2年</option>
-            <option value="3">3年</option>
-          </select>
-        </div>
+        <label for="edit-grade">学年:</label>
+        <select id="edit-grade">
+          <option value="1">1年</option>
+          <option value="2">2年</option>
+          <option value="3">3年</option>
+        </select>
         
-        <div style="margin: 10px 0;">
-          <label class="bodytextbold">年度:</label>
-          <input type="text" id="edit-year">
-        </div>
+        <label for="edit-year">年度:</label>
+        <input type="text" id="edit-year">
         
-        <div style="margin: 10px 0;">
-          <label class="bodytextbold">種類:</label>
-          <select id="edit-type">
-            <option value="定期考査">定期考査</option>
-            <option value="実力テスト">実力テスト</option>
-            <option value="確認テスト">確認テスト</option>
-            <option value="その他">その他</option>
-          </select>
-        </div>
+        <label for="edit-type">種類:</label>
+        <select id="edit-type">
+          <option value="定期考査">定期考査</option>
+          <option value="実力テスト">実力テスト</option>
+          <option value="確認テスト">確認テスト</option>
+          <option value="その他">その他</option>
+        </select>
         
-        <div style="margin: 10px 0;">
-          <label class="bodytextbold">科目:</label>
-          <input type="text" id="edit-subject">
-        </div>
+        <label for="edit-subject">科目:</label>
+        <input type="text" id="edit-subject">
         
-        <div style="margin: 10px 0;">
-          <label class="bodytextbold">文理区分:</label>
-          <select id="edit-stream">
-            <option value="共通">共通</option>
-            <option value="文系">文系</option>
-            <option value="理系">理系</option>
-          </select>
-        </div>
+        <label for="edit-stream">文理区分:</label>
+        <select id="edit-stream">
+          <option value="共通">共通</option>
+          <option value="文系">文系</option>
+          <option value="理系">理系</option>
+        </select>
         
-        <div style="margin: 10px 0;">
-          <label class="bodytextbold">内容:</label>
-          <select id="edit-contentType">
-            <option value="問題">問題</option>
-            <option value="解答">解答</option>
-            <option value="問題・解答">問題・解答</option>
-          </select>
-        </div>
+        <label for="edit-contentType">内容:</label>
+        <select id="edit-contentType">
+          <option value="問題">問題</option>
+          <option value="解答">解答</option>
+          <option value="問題・解答">問題・解答</option>
+        </select>
         
-        <div style="margin: 10px 0;">
-          <label class="bodytextbold">形式:</label>
-          <select id="edit-format">
-            <option value="PDF">PDF</option>
-            <option value="画像">画像</option>
-            <option value="その他">その他</option>
-          </select>
-        </div>
+        <label for="edit-format">形式:</label>
+        <select id="edit-format">
+          <option value="PDF">PDF</option>
+          <option value="画像">画像</option>
+          <option value="その他">その他</option>
+        </select>
         
-        <div style="margin: 10px 0;">
-          <label class="bodytextbold">URL:</label>
-          <input type="url" id="edit-url">
-        </div>
+        <label for="edit-url">URL:</label>
+        <input type="url" id="edit-url">
         
-        <div style="margin: 10px 0;">
-          <label class="bodytextbold">いいね:</label>
-          <input type="number" id="edit-likes" min="0">
-        </div>
+        <label for="edit-likes">いいね:</label>
+        <input type="number" id="edit-likes" min="0">
         
-        <div style="margin: 10px 0;">
-          <label class="bodytextbold">バッド:</label>
-          <input type="number" id="edit-bad" min="0">
-        </div>
+        <label for="edit-bad">バッド:</label>
+        <input type="number" id="edit-bad" min="0">
         
-        <div style="margin: 10px 0;">
-          <label class="bodytextbold">ファイルサイズ:</label>
-          <input type="number" id="edit-fileSize" min="0" step="0.01" readonly style="background: #F8F8F8; color: #666;">
-        </div>
+        <label for="edit-fileSize">ファイルサイズ:</label>
+        <input type="number" id="edit-fileSize" min="0" step="0.01" readonly class="readonly-field">
         
-        <div style="margin: 10px 0;">
-          <label class="bodytextbold">コメント:</label>
-          <textarea id="edit-comment" style="width: 200px; height: 60px;"></textarea>
-        </div>
+        <label for="edit-comment">コメント:</label>
+        <textarea id="edit-comment"></textarea>
         
         <!-- デバイス情報（読み取り専用） -->
-        <div style="margin: 20px 0; padding-top: 20px; border-top: 1px solid #CACACA;">
-          <h4 class="bodytopheading1" style="margin-bottom: 15px; color: #666;">デバイス情報（読み取り専用）</h4>
+        <div style="grid-column: 1 / -1; margin-top: 20px; padding-top: 20px; border-top: 1px solid #ccc;">
+          <h4 style="margin-bottom: 15px; color: #666;">デバイス情報（読み取り専用）</h4>
         </div>
-        <div style="margin: 10px 0;">
-          <label class="bodytextbold">公開IPアドレス:</label>
-          <input type="text" id="edit-publicIP" readonly style="background: #F8F8F8; color: #666;">
+        <div>
+          <label for="edit-publicIP">公開IPアドレス:</label>
+          <input type="text" id="edit-publicIP" readonly class="readonly-field">
         </div>
-        <div style="margin: 10px 0;">
-          <label class="bodytextbold">プライベートIPアドレス:</label>
-          <input type="text" id="edit-privateIP" readonly style="background: #F8F8F8; color: #666;">
+        <div>
+          <label for="edit-privateIP">プライベートIPアドレス:</label>
+          <input type="text" id="edit-privateIP" readonly class="readonly-field">
         </div>
-        <div style="margin: 10px 0;">
-          <label class="bodytextbold">User-Agent:</label>
-          <input type="text" id="edit-userAgent" readonly style="background: #F8F8F8; color: #666;">
+        <div>
+          <label for="edit-userAgent">User-Agent:</label>
+          <input type="text" id="edit-userAgent" readonly class="readonly-field">
         </div>
-        <div style="margin: 10px 0;">
-          <label class="bodytextbold">プラットフォーム:</label>
-          <input type="text" id="edit-platform" readonly style="background: #F8F8F8; color: #666;">
+        <div>
+          <label for="edit-platform">プラットフォーム:</label>
+          <input type="text" id="edit-platform" readonly class="readonly-field">
         </div>
-        <div style="margin: 10px 0;">
-          <label class="bodytextbold">画面解像度:</label>
-          <input type="text" id="edit-screenResolution" readonly style="background: #F8F8F8; color: #666;">
+        <div>
+          <label for="edit-screenResolution">画面解像度:</label>
+          <input type="text" id="edit-screenResolution" readonly class="readonly-field">
         </div>
-        <div style="margin: 10px 0;">
-          <label class="bodytextbold">ウィンドウサイズ:</label>
-          <input type="text" id="edit-windowSize" readonly style="background: #F8F8F8; color: #666;">
+        <div>
+          <label for="edit-windowSize">ウィンドウサイズ:</label>
+          <input type="text" id="edit-windowSize" readonly class="readonly-field">
         </div>
         
-        <div class="admin-buttons">
-          <button type="button" onclick="closeEditModal()">キャンセル</button>
-          <button type="button" id="saveEditBtn" onclick="saveEdit()">保存</button>
+        <div class="edit-buttons">
+          <button type="button" class="cancel-btn" onclick="closeEditModal()">キャンセル</button>
+          <button type="button" class="save-btn" id="saveEditBtn" onclick="saveEdit()">保存</button>
         </div>
       </form>
     </div>
@@ -271,13 +349,6 @@
 
   <script src="js/api.js"></script>
   <script>
-    const GAS_URL = 'https://script.google.com/macros/s/1m8CK9hflCdy-Ll805tQRC_1N5AsoFp9disC9B0F8hzeDifdTSEGoBzQj/exec';
-    
-    // GAS URLを設定
-    if (window.kosamuraAPI) {
-      window.kosamuraAPI.baseURL = GAS_URL;
-    }
-
     // 認証ロジック
     function checkAuth() {
       if (localStorage.getItem('admin_auth') === 'ok') {
@@ -293,7 +364,7 @@
       const pass = document.getElementById('adminPass').value;
       try {
         const result = await window.kosamuraAPI.checkAdminPassword(pass);
-        if (result) {
+        if (result === 'ok') {
           localStorage.setItem('admin_auth', 'ok');
           checkAuth();
         } else {
@@ -311,13 +382,12 @@
     }
     
     window.onload = checkAuth;
-    
     let tableData = [];
     let currentSort = { key: null, direction: 'asc' };
     let currentEditId = null;
     let isSaving = false;
     
-    // GASからデータ取得
+    // データ取得
     async function fetchData() {
       try {
         const data = await window.kosamuraAPI.getData();
@@ -325,7 +395,7 @@
         renderTable(tableData);
       } catch (error) {
         console.error('データ取得エラー:', error);
-        document.getElementById('postTbody').innerHTML = '<tr><td colspan="15" style="text-align:center; color:#d33;">データの取得に失敗しました</td></tr>';
+        document.getElementById('postTbody').innerHTML = '<tr><td colspan="15" style="text-align:center; color:red;">データの取得に失敗しました</td></tr>';
       }
     }
     
@@ -594,6 +664,7 @@
       window._isDeleting = true;
       progress.style.display = '';
       window.addEventListener('beforeunload', beforeUnloadHandler);
+      
       try {
         await window.kosamuraAPI.deletePostsBulk(ids.map(String));
         progress.style.display = 'none';
@@ -630,12 +701,12 @@
       const comment = document.getElementById('filter-comment').value.trim();
       const likes = document.getElementById('filter-likes').value.trim();
       const bad = document.getElementById('filter-bad').value.trim();
-      const publicIP = document.getElementById('filter-publicIP') ? document.getElementById('filter-publicIP').value.trim() : '';
-      const privateIP = document.getElementById('filter-privateIP') ? document.getElementById('filter-privateIP').value.trim() : '';
-      const userAgent = document.getElementById('filter-userAgent') ? document.getElementById('filter-userAgent').value.trim() : '';
-      const platform = document.getElementById('filter-platform') ? document.getElementById('filter-platform').value.trim() : '';
-      const screenResolution = document.getElementById('filter-screenResolution') ? document.getElementById('filter-screenResolution').value.trim() : '';
-      const windowSize = document.getElementById('filter-windowSize') ? document.getElementById('filter-windowSize').value.trim() : '';
+      const publicIP = document.getElementById('filter-publicIP').value.trim();
+      const privateIP = document.getElementById('filter-privateIP').value.trim();
+      const userAgent = document.getElementById('filter-userAgent').value.trim();
+      const platform = document.getElementById('filter-platform').value.trim();
+      const screenResolution = document.getElementById('filter-screenResolution').value.trim();
+      const windowSize = document.getElementById('filter-windowSize').value.trim();
       
       try {
         const data = await window.kosamuraAPI.getData();
@@ -744,48 +815,6 @@
         fetchData();
       };
     });
-    
-    // モーダル関連の関数
-    function openEditModal(post) {
-      // フォームに値を設定
-      document.getElementById('edit-id-display').textContent = post.id;
-      document.getElementById('edit-grade').value = post.grade;
-      document.getElementById('edit-year').value = post.year;
-      document.getElementById('edit-type').value = post.type;
-      document.getElementById('edit-subject').value = post.subject;
-      document.getElementById('edit-stream').value = post.stream;
-      document.getElementById('edit-contentType').value = post.contentType;
-      document.getElementById('edit-format').value = post.format;
-      document.getElementById('edit-url').value = post.url;
-      document.getElementById('edit-likes').value = post.likes;
-      document.getElementById('edit-bad').value = post.bad;
-      document.getElementById('edit-fileSize').value = post.fileSize;
-      document.getElementById('edit-comment').value = post.comment;
-      document.getElementById('edit-publicIP').value = post.publicIP;
-      document.getElementById('edit-privateIP').value = post.privateIP;
-      document.getElementById('edit-userAgent').value = post.userAgent;
-      document.getElementById('edit-platform').value = post.platform;
-      document.getElementById('edit-screenResolution').value = post.screenResolution;
-      document.getElementById('edit-windowSize').value = post.windowSize;
-      
-      // モーダルを表示
-      document.getElementById('editModal').style.display = 'block';
-    }
-    
-    function closeEditModal() {
-      document.getElementById('editModal').style.display = 'none';
-    }
-    
-    // モーダルの外側をクリックした時に閉じる
-    window.onclick = function(event) {
-      const modal = document.getElementById('editModal');
-      if (event.target === modal) {
-        closeEditModal();
-      }
-    }
-    
-    // 閉じるボタンのイベント
-    document.querySelector('.close').onclick = closeEditModal;
     
     // 初期表示
     fetchData();
