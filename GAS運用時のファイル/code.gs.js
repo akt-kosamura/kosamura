@@ -2,6 +2,8 @@
 
 // アップロード先フォルダのID
 const FOLDER_ID = '1xx-N4rKwFTk83iIxSOCEhctJQv-3rZrC';
+// スプレッドシートID
+const SPREADSHEET_ID = '14uI1FoXUWg_deV-ZGSYY85JREyLyZY4YVqpKka35sZw';
 const SHEET_NAME = 'シート1';
 
 /**
@@ -37,7 +39,7 @@ function uploadFileAndRecord(
     Logger.log('comment: ' + comment);
     Logger.log('filename: ' + filename);
     Logger.log('fileSizeMB: ' + fileSizeMB);
-    const ss    = SpreadsheetApp.getActiveSpreadsheet();
+    const ss    = SpreadsheetApp.openById(SPREADSHEET_ID);
     const sheet = ss.getSheetByName(SHEET_NAME);
     if (!sheet) throw new Error(SHEET_NAME + ' が見つかりません');
 
@@ -236,7 +238,7 @@ User-Agent: ${userAgent}
  */
 function getData() {
   try {
-    const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SHEET_NAME);
+    const sheet = SpreadsheetApp.openById(SPREADSHEET_ID).getSheetByName(SHEET_NAME);
     if (!sheet) {
       console.error('シートが見つかりません:', SHEET_NAME);
       return [];
@@ -304,7 +306,7 @@ function unbad(id) {
  */
 function updateCount(id, colIndex, delta) {
   try {
-    const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SHEET_NAME);
+    const sheet = SpreadsheetApp.openById(SPREADSHEET_ID).getSheetByName(SHEET_NAME);
     const data  = sheet.getRange(2, 1, sheet.getLastRow() - 1, 1).getValues();
     for (let i = 0; i < data.length; i++) {
       if (Number(data[i][0]) === Number(id)) {
@@ -327,7 +329,7 @@ function updateCount(id, colIndex, delta) {
  * @param {number|string} id
  */
 function deletePost(id) {
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
   const sheet = ss.getSheetByName(SHEET_NAME);
       const lastRow = sheet.getLastRow();
     if (lastRow < 2) return false;
@@ -360,7 +362,7 @@ function deletePost(id) {
  */
 function updatePost(postData) {
   try {
-    const ss = SpreadsheetApp.getActiveSpreadsheet();
+    const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
     const sheet = ss.getSheetByName(SHEET_NAME);
     const lastRow = sheet.getLastRow();
     
