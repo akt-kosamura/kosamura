@@ -125,13 +125,13 @@ function uploadFileAndRecord(
     
     // アップロード日を文字列で生成（yyyy/mm/dd hh:mm:ss形式）
     const now = new Date();
-    const year = now.getFullYear();
-    const month = String(now.getMonth() + 1).padStart(2, '0');
-    const day = String(now.getDate()).padStart(2, '0');
-    const hours = String(now.getHours()).padStart(2, '0');
-    const minutes = String(now.getMinutes()).padStart(2, '0');
-    const seconds = String(now.getSeconds()).padStart(2, '0');
-    const uploadDateStr = `${year}/${month}/${day} ${hours}:${minutes}:${seconds}`;
+    const currentYear = now.getFullYear();
+    const currentMonth = String(now.getMonth() + 1).padStart(2, '0');
+    const currentDay = String(now.getDate()).padStart(2, '0');
+    const currentHours = String(now.getHours()).padStart(2, '0');
+    const currentMinutes = String(now.getMinutes()).padStart(2, '0');
+    const currentSeconds = String(now.getSeconds()).padStart(2, '0');
+    const uploadDateStr = `${currentYear}/${currentMonth}/${currentDay} ${currentHours}:${currentMinutes}:${currentSeconds}`;
     
     // データを追加
     const rowData = [
@@ -159,7 +159,26 @@ function uploadFileAndRecord(
       fileSizeMB || 0
     ];
     
+    // デバッグ用：スプレッドシート書き込み前のデータをログに出力
+    Logger.log('=== スプレッドシート書き込みデータ ===');
+    Logger.log('ID: ' + id);
+    Logger.log('学年: ' + grade);
+    Logger.log('年度: ' + year);
+    Logger.log('種類: ' + type);
+    Logger.log('科目: ' + subject);
+    Logger.log('文理区分: ' + stream);
+    Logger.log('内容: ' + contentType);
+    Logger.log('ファイル形式: ' + fileFormat);
+    Logger.log('コメント: ' + comment);
+    Logger.log('URL: ' + url);
+    Logger.log('アップロード日時: ' + uploadDateStr);
+    Logger.log('ファイルサイズ: ' + fileSizeMB + ' MB');
+    Logger.log('===============================');
+    
     sheet.appendRow(rowData);
+    
+    // デバッグ用：書き込み後の確認
+    Logger.log('スプレッドシートへの書き込み完了');
     
     // メール送信
     sendNewPostNotification(id, grade, year, type, subject, stream, contentType, fileFormat, comment, url, uploadDateStr, deviceInfo, fileSizeMB);
@@ -275,28 +294,28 @@ function getData() {
  * いいね増加
  */
 function like(id) {
-  return updateCount(id, 11, +1);
+  return updateCount(id, 12, +1);
 }
 
 /**
  * いいね取り消し
  */
 function unlike(id) {
-  return updateCount(id, 11, -1);
+  return updateCount(id, 12, -1);
 }
 
 /**
  * バッド増加
  */
 function bad(id) {
-  return updateCount(id, 12, +1);
+  return updateCount(id, 13, +1);
 }
 
 /**
  * バッド取り消し
  */
 function unbad(id) {
-  return updateCount(id, 12, -1);
+  return updateCount(id, 13, -1);
 }
 
 /**

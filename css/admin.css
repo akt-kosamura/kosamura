@@ -1,0 +1,119 @@
+body { font-family: sans-serif; margin: 2em; background: #f7f7f7; }
+table { border-collapse: collapse; width: 100%; background: #fff; }
+th, td { border: 1px solid #ccc; padding: 6px 8px; font-size: 15px; }
+th { background: #e0e0e0; }
+tr:nth-child(even) { background: #f9f9f9; }
+button { padding: 3px 10px; font-size: 14px; }
+.filter-btn { margin-left: 4px; }
+.del-btn { color: #fff; background: #d33; border: none; border-radius: 3px; }
+.del-btn:hover { background: #a00; }
+.edit-btn { color: #fff; background: #0071e3; border: none; border-radius: 3px; margin-right: 4px; }
+.edit-btn:hover { background: #0051a3; }
+.filter-row input, .filter-row select { font-size: 14px; padding: 2px 4px; }
+
+/* 編集モーダル用スタイル */
+.edit-modal {
+  display: none;
+  position: fixed;
+  z-index: 9999;
+  left: 0;
+  top: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0,0,0,0.5);
+  align-items: center;
+  justify-content: center;
+}
+.edit-modal-content {
+  background: #fff;
+  border-radius: 8px;
+  padding: 24px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.2);
+  min-width: 500px;
+  max-width: 90vw;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+.edit-form {
+  display: grid;
+  grid-template-columns: 120px 1fr;
+  gap: 12px 16px;
+  align-items: start;
+}
+.edit-form label {
+  font-weight: bold;
+  font-size: 14px;
+  color: #333;
+  padding-top: 8px;
+}
+.edit-form input, .edit-form textarea, .edit-form select {
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+  width: 100%;
+  box-sizing: border-box;
+}
+.edit-form textarea {
+  resize: vertical;
+  min-height: 60px;
+  grid-column: 2;
+}
+.edit-form .readonly-field {
+  background: #f5f5f5;
+  color: #666;
+  cursor: not-allowed;
+}
+.edit-buttons {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  margin-top: 20px;
+  grid-column: 1 / -1;
+}
+.edit-buttons button {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+}
+.save-btn {
+  background: #0071e3;
+  color: #fff;
+}
+.save-btn:hover {
+  background: #0051a3;
+}
+.cancel-btn {
+  background: #ccc;
+  color: #333;
+}
+.cancel-btn:hover {
+  background: #aaa;
+}
+.save-btn:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+.save-btn:disabled:hover {
+  background: #ccc;
+}
+.sortable {
+  cursor: pointer;
+  user-select: none;
+  position: relative;
+}
+.sortable:hover {
+  background-color: #f0f0f0;
+}
+.sortable.asc::after {
+  content: ' ▲';
+  color: #0071e3;
+  font-weight: bold;
+}
+.sortable.desc::after {
+  content: ' ▼';
+  color: #0071e3;
+  font-weight: bold;
+}

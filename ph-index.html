@@ -756,7 +756,8 @@
       adminPinInput.value = '';
       pinValue = '';
       adminPinError.textContent = '';
-      setTimeout(()=>adminPinInput.focus(), 100);
+      // 自動フォーカスを無効化
+      // setTimeout(()=>adminPinInput.focus(), 100);
     }
     function closeAdminModal() {
       adminLoginModal.style.display = 'none';

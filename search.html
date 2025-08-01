@@ -336,17 +336,21 @@ function showAdPopup(fileUrl) {
         const id = btn.dataset.id, prev = localStorage.getItem('vote_' + id), tr = btn.closest('tr');
         const badBtn = tr.querySelector('.btn-bad');
         let count = parseInt(btn.textContent.replace(/\D/g,''),10);
+        console.log('Like button clicked:', { id, prev, count, buttonText: btn.textContent, buttonElement: btn, buttonClass: btn.className });
         if (prev==='good') {
           btn.classList.remove('active'); localStorage.removeItem('vote_' + id); kosamuraAPI.unlike(Number(id));
           btn.textContent = `❤ ${--count}`;
+          console.log('Unlike:', { newCount: count, newText: btn.textContent, buttonElement: btn, buttonClass: btn.className });
         } else {
           if (prev==='bad') {
             let bc = parseInt(badBtn.textContent.replace(/\D/g,''),10);
             badBtn.classList.remove('active'); localStorage.removeItem('vote_' + id); kosamuraAPI.unbad(Number(id));
             badBtn.textContent = `👎 ${--bc}`;
+            console.log('Unbad:', { newCount: bc, newText: badBtn.textContent, buttonElement: badBtn, buttonClass: badBtn.className });
           }
           btn.classList.add('active'); localStorage.setItem('vote_' + id, 'good'); kosamuraAPI.like(Number(id));
           btn.textContent = `❤ ${++count}`;
+          console.log('Like:', { newCount: count, newText: btn.textContent, buttonElement: btn, buttonClass: btn.className });
         }
       };
     });
@@ -355,17 +359,21 @@ function showAdPopup(fileUrl) {
         const id = btn.dataset.id, prev = localStorage.getItem('vote_' + id), tr = btn.closest('tr');
         const likeBtn = tr.querySelector('.btn-like');
         let count = parseInt(btn.textContent.replace(/\D/g,''),10);
+        console.log('Bad button clicked:', { id, prev, count, buttonText: btn.textContent });
         if (prev==='bad') {
           btn.classList.remove('active'); localStorage.removeItem('vote_' + id); kosamuraAPI.unbad(Number(id));
           btn.textContent = `👎 ${--count}`;
+          console.log('Unbad:', { newCount: count, newText: btn.textContent });
         } else {
           if (prev==='good') {
             let lc = parseInt(likeBtn.textContent.replace(/\D/g,''),10);
             likeBtn.classList.remove('active'); localStorage.removeItem('vote_' + id); kosamuraAPI.unlike(Number(id));
             likeBtn.textContent = `❤ ${--lc}`;
+            console.log('Unlike:', { newCount: lc, newText: likeBtn.textContent });
           }
           btn.classList.add('active'); localStorage.setItem('vote_' + id, 'bad'); kosamuraAPI.bad(Number(id));
           btn.textContent = `👎 ${++count}`;
+          console.log('Bad:', { newCount: count, newText: btn.textContent });
         }
       };
     });
