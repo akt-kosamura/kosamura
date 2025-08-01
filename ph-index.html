@@ -160,7 +160,7 @@
     }
     .loading {
       text-align: center;
-      padding: 20px;
+        padding: 20px;
       color: #6c757d;
     }
     .error {
@@ -190,19 +190,19 @@
         過去問や参考資料を共有して、みんなで勉強をサポートし合いましょう。
         スマートフォンからでも簡単にアップロード・検索ができます。
       </p>
-    </div>
+          </div>
 
     <div class="card">
       <div class="stats">
         <div class="stat-item">
           <span class="stat-number" id="totalPosts">-</span>
           <span class="stat-label">投稿数</span>
-        </div>
+              </div>
         <div class="stat-item">
           <span class="stat-number" id="totalLikes">-</span>
           <span class="stat-label">いいね数</span>
-        </div>
-      </div>
+              </div>
+              </div>
 
       <a href="gas-upload.html" class="btn">📤 ファイルをアップロード</a>
       <a href="gas-search.html" class="btn btn-secondary">🔍 ファイルを検索</a>
@@ -219,8 +219,8 @@
     <div class="footer">
       <p>© 2024 考査村 - 秋高生のための過去問共有サイト</p>
       <p>スマートフォン版</p>
+      </div>
     </div>
-  </div>
 
   <script src="js/api.js"></script>
   <script>
@@ -298,7 +298,7 @@
           await window.kosamuraAPI.unlike(id);
           post.likes = Math.max(0, (post.likes || 0) - 1);
           post.userLiked = false;
-        } else {
+      } else {
           await window.kosamuraAPI.like(id);
           post.likes = (post.likes || 0) + 1;
           post.userLiked = true;
@@ -335,4 +335,4 @@
     }
   </script>
 </body>
-</html> 
+</html>

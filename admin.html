@@ -237,8 +237,8 @@
           <li><a href="gas-share.html">共有</a></li>
           <li><a href="gas-admin.html" class="active">管理者</a></li>
         </ul>
-      </nav>
-    </div>
+  </nav>
+  </div>
   </header>
 
   <main>
@@ -251,18 +251,18 @@
         <div class="form-group">
           <label for="adminPassword">管理者パスワード:</label>
           <input type="password" id="adminPassword" placeholder="パスワードを入力">
-        </div>
+    </div>
         <button class="btn" onclick="authenticate()">認証</button>
-      </div>
+  </div>
 
       <div id="adminContent" style="display: none;">
         <div class="admin-section">
           <h2>投稿一覧</h2>
           <div id="postsList">
             <div class="loading">読み込み中...</div>
-          </div>
         </div>
-
+        </div>
+        
         <div class="admin-section">
           <h2>一括操作</h2>
           <div class="checkbox-group">
@@ -275,8 +275,8 @@
             <button class="btn btn-danger" onclick="deleteSelected()">選択した投稿を削除</button>
           </div>
         </div>
-      </div>
     </div>
+  </div>
   </main>
 
   <script src="js/api.js"></script>
@@ -327,7 +327,7 @@
       const postsList = document.getElementById('postsList');
       if (posts.length === 0) {
         postsList.innerHTML = '<div class="loading">投稿がありません</div>';
-        return;
+          return;
       }
 
       const postsHTML = posts.map((post, index) => `
