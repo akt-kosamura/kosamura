@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>共有・拡散 - 考査村</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            padding: 30px;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+        }
+        
+        .share-section {
+            margin-bottom: 40px;
+        }
+        
+        .share-section h2 {
+            color: #333;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .share-content {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .share-text {
+            font-size: 16px;
+            line-height: 1.6;
+            color: #333;
+            margin-bottom: 20px;
+        }
+        
+        .share-buttons {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .share-btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .twitter-btn {
+            background: #1da1f2;
+            color: white;
+        }
+        
+        .line-btn {
+            background: #00b900;
+            color: white;
+        }
+        
+        .copy-btn {
+            background: #6c757d;
+            color: white;
+        }
+        
+        .share-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+        
+        .stat-card {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 2em;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        
+        .qr-section {
+            text-align: center;
+            margin-top: 30px;
+        }
+        
+        .qr-code {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            display: inline-block;
+            margin-top: 15px;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                padding: 20px;
+            }
+            
+            .share-buttons {
+                flex-direction: column;
+            }
+            
+            .stats {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>共有・拡散</h1>
+        
+        <div class="share-section">
+            <h2>📢 考査村を広めよう</h2>
+            <div class="share-content">
+                <div class="share-text">
+                    秋田高校の考査問題共有プラットフォーム「考査村」を友達に共有して、みんなで勉強をサポートし合いましょう！
+                </div>
+                <div class="share-buttons">
+                    <a href="#" class="share-btn twitter-btn" onclick="shareToTwitter()">
+                        🐦 Twitterで共有
+                    </a>
+                    <a href="#" class="share-btn line-btn" onclick="shareToLine()">
+                        💬 LINEで共有
+                    </a>
+                    <button class="share-btn copy-btn" onclick="copyUrl()">
+                        📋 URLをコピー
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="share-section">
+            <h2>📊 利用統計</h2>
+            <div class="stats" id="stats">
+                <div class="stat-card">
+                    <div class="stat-number" id="totalPosts">-</div>
+                    <div class="stat-label">投稿数</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="totalLikes">-</div>
+                    <div class="stat-label">総いいね数</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="totalViews">-</div>
+                    <div class="stat-label">総閲覧数</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="share-section">
+            <h2>📱 QRコード</h2>
+            <div class="qr-section">
+                <p>スマートフォンでQRコードを読み取って、考査村にアクセスできます</p>
+                <div class="qr-code" id="qrCode">
+                    <!-- QRコードがここに表示されます -->
+                    <div style="width: 200px; height: 200px; background: #f0f0f0; display: flex; align-items: center; justify-content: center; border-radius: 10px;">
+                        QRコード生成中...
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/gas-api.js"></script>
+    <script src="js/api.js"></script>
+    <script>
+        // GASのURLを設定
+        const GAS_URL = 'https://script.google.com/macros/s/1m8CK9hflCdy-Ll805tQRC_1N5AsoFp9disC9B0F8hzeDifdTSEGoBzQj/exec';
+        
+        // APIクライアントをGAS用に設定
+        if (window.kosamuraAPI) {
+            window.kosamuraAPI.baseURL = GAS_URL;
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            loadStats();
+            generateQRCode();
+        });
+
+        // 統計データを読み込み
+        async function loadStats() {
+            try {
+                const data = await google.script.run.getData();
+                
+                const totalPosts = data.length;
+                const totalLikes = data.reduce((sum, item) => sum + (item.likes || 0), 0);
+                const totalViews = data.reduce((sum, item) => sum + (item.bad || 0), 0) + totalLikes; // 簡易的な計算
+                
+                document.getElementById('totalPosts').textContent = totalPosts;
+                document.getElementById('totalLikes').textContent = totalLikes;
+                document.getElementById('totalViews').textContent = totalViews;
+                
+            } catch (error) {
+                console.error('Stats loading error:', error);
+            }
+        }
+
+        // QRコード生成
+        function generateQRCode() {
+            const currentUrl = window.location.origin + window.location.pathname.replace('gas-share.html', 'gas-index.html');
+            const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(currentUrl)}`;
+            
+            document.getElementById('qrCode').innerHTML = `
+                <img src="${qrCodeUrl}" alt="QR Code" style="border-radius: 10px;">
+            `;
+        }
+
+        // Twitterで共有
+        function shareToTwitter() {
+            const text = '秋田高校の考査問題共有プラットフォーム「考査村」で過去問を共有・検索できます！';
+            const url = window.location.origin + window.location.pathname.replace('gas-share.html', 'gas-index.html');
+            const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`;
+            window.open(twitterUrl, '_blank');
+        }
+
+        // LINEで共有
+        function shareToLine() {
+            const text = '秋田高校の考査問題共有プラットフォーム「考査村」で過去問を共有・検索できます！';
+            const url = window.location.origin + window.location.pathname.replace('gas-share.html', 'gas-index.html');
+            const lineUrl = `https://social-plugins.line.me/lineit/share?url=${encodeURIComponent(url)}&text=${encodeURIComponent(text)}`;
+            window.open(lineUrl, '_blank');
+        }
+
+        // URLをコピー
+        function copyUrl() {
+            const url = window.location.origin + window.location.pathname.replace('gas-share.html', 'gas-index.html');
+            navigator.clipboard.writeText(url).then(function() {
+                alert('URLをクリップボードにコピーしました！');
+            }).catch(function() {
+                // フォールバック
+                const textArea = document.createElement('textarea');
+                textArea.value = url;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                alert('URLをクリップボードにコピーしました！');
+            });
+        }
+    </script>
+</body>
+</html> 

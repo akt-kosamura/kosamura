@@ -6,7 +6,7 @@ class KosamuraAPI {
       this.baseURL = baseURL;
     } else {
       // GASのURLをデフォルトとして設定
-      this.baseURL = 'https://script.google.com/macros/s/YOUR_GAS_SCRIPT_ID/exec';
+      this.baseURL = 'https://script.google.com/macros/s/1m8CK9hflCdy-Ll805tQRC_1N5AsoFp9disC9B0F8hzeDifdTSEGoBzQj/exec';
     }
     // GAS互換APIのみを使用
     this.gasAPI = new GASCompatibleAPI(this.baseURL);
