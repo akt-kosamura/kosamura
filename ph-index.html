@@ -84,23 +84,58 @@
             問題をアップロードすると、広告フリーモードが24時間追加されます。
           </p>
           
-          <div class="action-buttons">
-            <a href="upload.html" class="action-btn primary">
-              <i class="fa-solid fa-upload"></i>
-              <span>提供</span>
-            </a>
-            <a href="search.html" class="action-btn secondary">
-              <i class="fa-solid fa-database"></i>
-              <span>検索</span>
-            </a>
-            <a href="https://c.kuku.lu/hmc853pz" class="action-btn secondary" target="_blank">
-              <i class="fa-solid fa-comments"></i>
-              <span>掲示板</span>
-            </a>
-          </div>
-        </div>
-      </div>
-    </section>
+                     <div class="action-buttons">
+             <a href="upload.html" class="action-btn primary">
+               <i class="fa-solid fa-upload"></i>
+               <span>提供</span>
+             </a>
+             <a href="search.html" class="action-btn secondary">
+               <i class="fa-solid fa-database"></i>
+               <span>検索</span>
+             </a>
+             <a href="https://c.kuku.lu/hmc853pz" class="action-btn secondary" target="_blank">
+               <i class="fa-solid fa-comments"></i>
+               <span>掲示板</span>
+             </a>
+           </div>
+
+           <ul class="info-list">
+             <li class="info-item">
+               <div class="info-icon">
+                 <i class="fa-regular fa-file-pdf"></i>
+               </div>
+               <div class="info-text">
+                 PDFまたは画像で共有できます
+                 <span class="info-note">（Word・Excel・一太郎には順次対応予定）</span>
+               </div>
+             </li>
+             <li class="info-item">
+               <div class="info-icon">
+                 <i class="fa-solid fa-paper-plane"></i>
+               </div>
+               <div class="info-text">
+                 アップロード画面から送信していただきたい試験例
+                 <div class="info-highlight" style="margin-top: 6px; text-align: center; font-size: 13px;">
+                   定期考査・実力テスト・確認テスト など
+                 </div>
+               </div>
+             </li>
+             <li class="info-item">
+               <div class="info-icon">
+                 <i class="fa-solid fa-comments"></i>
+               </div>
+               <div class="info-text">
+                 週間テストや確認プリントなどは<span class="info-highlight">掲示板</span>で！                
+               </div>
+             </li>
+                      </ul>
+         </div>
+       </div>
+       <!-- スクロール誘導アニメーション -->
+       <div class="scroll-down-indicator" id="scrollDownIndicator">
+         <span class="triangle">▼</span>
+       </div>
+     </section>
 
     <!-- Features Section -->
     <section class="features-section">
@@ -190,282 +225,600 @@
       </div>
     </section>
 
-    <!-- Admin Section -->
-    <section class="admin-section">
-      <div class="admin-card">
-        <div class="admin-content">
-          <h3 class="admin-title">管理者の方へ</h3>
-          <p class="admin-description">
-            管理者機能にアクセスするには、パスワードが必要です。
-          </p>
-          <button class="admin-btn" id="adminLoginBtn">
-            <i class="fa-solid fa-lock"></i>
-            管理者ログイン
+    
+
+    <!-- Notice Card -->
+    <div class="card notice">
+      <div class="card-content">
+        <h2 class="card-title" style="zoom: 0.75;">考査村をご利用の皆様にお伝えしたいことがあります</h2>
+        <div class="video-container" style="width:100%;max-width:100%;margin:0;padding:0;border-radius:0;">
+          <iframe
+            src="https://www.youtube.com/embed/FWlckcAayE4?autoplay=1&mute=1&rel=0&fs=0"
+            allow="autoplay; encrypted-media"
+            style="width:100%;max-width:100%;height:98%;min-height:calc(56.25vw);display:block;background:#000;border-radius:12px;"
+            title="YouTube video"
+          ></iframe>
+        </div>
+        <style>
+          @media (max-width: 600px) {
+            .video-container iframe {
+              width: 100vw !important;
+              height: calc(100vw * 9 / 16) !important;
+              max-width: 100vw !important;
+              max-height: none !important;
+              border-radius: 0 !important;
+            }
+          }
+        </style>
+      </div>
+    </div>
+
+    <!-- History Card -->
+    <div class="card">
+      <div class="card-content">
+        <h2 class="card-title">更新履歴</h2>
+        <ul class="history-list">
+          <li class="history-item"><span class="history-date">2025/07/22</span><span class="history-desc">PDF結合ロジックの修正。アップロード時間改善</span></li>
+          <li class="history-item"><span class="history-date">2025/07/21</span><span class="history-desc">UIデザインの修正</span></li>
+          <li class="history-item"><span class="history-date">2025/07/21</span><span class="history-desc">評価システム導入</span></li>
+          <li class="history-item"><span class="history-date">2025/07/20</span><span class="history-desc">掲示板オープン　詳細については、下を御覧ください。</span></li>
+          <li class="history-item"><span class="history-date">2020/06/26</span><span class="history-desc">サービス開始</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- BBS Card -->
+    <div class="bbs card card-inview">
+      <div class="card-content">
+        <h2 class="card-title">匿名掲示板（外部サービス使用）</h2>
+        <div class="indent" style="text-align: left; font-size: 13px; line-height: 1.6;">
+          これら掲示板では、主に次のような情報を共有することを目的として用意しました。<br>
+          完全匿名ですぐに利用できます。<br><br>
+          
+          <strong class="info-highlight">★平均点の報告</strong><br>
+          　クラス平均点100点を目指そう！<br><br>
+          
+          <strong class="info-highlight">★テストの共有（写真投稿機能あり）</strong><br><br>
+          <strong class="info-highlight">★過去問と一致している科目の報告</strong><br><br>
+          <strong class="info-highlight">★試験への対策について。</strong><br><br><br>
+          
+          <strong class="info-highlight">掲示板リンク</strong><br>
+          <div style="margin: 12px 0 0 0; display: flex; flex-direction: column; gap: 16px;">
+            <button class="bbs-btn" onclick="window.open('https://c.kuku.lu/hmc853pz', '_blank')">
+              <i class="fa-solid fa-comments"></i>
+              <span>全体の部屋</span>
+            </button>
+            <button class="bbs-btn" onclick="window.open('https://c.kuku.lu/wxamr3rk', '_blank')">
+              <i class="fa-solid fa-users"></i>
+              <span>３年生の部屋</span>
+            </button>
+            <button class="bbs-btn" onclick="window.open('https://c.kuku.lu/shwzzu7z', '_blank')">
+              <i class="fa-solid fa-users"></i>
+              <span>２年生の部屋</span>
+            </button>
+            <button class="bbs-btn" onclick="window.open('https://c.kuku.lu/xpgpbn7k', '_blank')">
+              <i class="fa-solid fa-users"></i>
+              <span>１年生の部屋</span>
+            </button>
+            <button class="bbs-btn" onclick="window.open('https://c.kuku.lu/rk6hxege', '_blank')">
+              <i class="fa-solid fa-user-tie"></i>
+              <span>運営者と話す部屋</span>
+            </button><br>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- About Card -->
+    <div class="card about card-inview">
+      <div class="card-content">
+        <h2 class="card-title">このサービスについて</h2>
+        <div class="indent" style="text-align: justify; font-size: 13px; line-height: 1.6;">
+          私が1年生で受けた「歴史総合」の考査を前年の問題と比較したところ、年度の数字が一つ増えただけでした。さらに、2年生で受けた「公共」の試験問題は、過去問と一致している部分が8割を超えていました。評定に関わる考査で、いくら授業が同じ内容だとはいえ前年の問題をほとんど同じく出題すべきではないと考えます。入試に関わらない教科であっても、過去問を手に入れることで勉強時間を他の重要な科目に充てることができます。<br><br>
+          
+          このサービスは、先輩とのつながりがない人でも過去問を利用できることを目指し、平均点を異常に高くし、将来的にコピペしただけの考査問題を絶滅させることを目的としたプロジェクトです。<br><br>
+          
+          このサービスは個人で運営しています。サービス維持には皆さんのご協力が必要です。ぜひ、過去問のアップロードやこのサイトの共有・拡散をよろしくお願いします。<br><br>
+        </div>
+      </div>
+    </div>
+
+    <!-- Share Card -->
+    <div class="card card-inview">
+      <div class="card-content">
+        <h2 class="card-title">共有・拡散</h2>
+        <p class="text-center" style="margin-bottom: 16px; font-size: 13px; color: #64748b;">
+          秋高考査村を友達やクラス、学校に広めて<br>みんなで過去問を共有しよう
+        </p>
+      
+        <div class="sharecontents">
+          <input 
+            type="text" 
+            id="siteUrl" 
+            class="share-input" 
+            value="https://akt-kosamura.github.io/kosamura/ph-index.html" 
+            readonly
+          >
+          
+          <div style="display: flex; justify-content: center; margin-bottom: 32px;">
+            <button class="action-btn secondary" id="copyBtn" onclick="copyButton('siteUrl')" style="border-radius: 8px;">
+              <i class="fa-regular fa-copy"></i>
+              <span>コピー</span>
+            </button>
+          </div>
+          
+          <div class="share-buttons">
+            <a
+              id="twitterBtn"
+              href="https://twitter.com/intent/tweet?text=無料＆匿名で使える過去問共有サイト「秋高考査村」%0A考査問題に限らず、テスト問題をアップロード・閲覧できるサービスです。%0A%0Ahttps://akt-kosamura.github.io/kosamura/ph-index.html%0A%0A%23考査村%20%23過去問"
+              class="share-btn"
+              target="_blank" 
+              rel="noopener noreferrer"
+            >
+              <i class="fa-brands fa-twitter" style="font-size: 18px;"></i>
+              <span>ツイート</span>
+            </a>
+            <button class="share-btn" id="nativeShareBtn">
+              <i class="fa-solid fa-share-nodes" style="font-size: 18px;"></i>
+              <span>共有</span>
+            </button>
+          </div>
+          
+          <button class="print-btn" onclick="window.print()">
+            <i class="fa-solid fa-print" style="font-size: 18px;"></i> 印刷して配布（準備中）
           </button>
-        </div>
-      </div>
-    </section>
-  </main>
-
-  <!-- Admin Login Modal -->
-  <div class="modal" id="adminLoginModal">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h3>管理者ログイン</h3>
-        <button class="modal-close" onclick="closeAdminModal()">
-          <i class="fa-solid fa-times"></i>
-        </button>
-      </div>
-      
-      <div class="modal-body">
-        <div class="pin-input-container">
-          <input type="password" id="adminPinInput" class="pin-input" placeholder="パスワードを入力" maxlength="4" readonly>
-          <div class="pin-error" id="adminPinError"></div>
-        </div>
-        
-        <div class="pin-keypad">
-          <div class="pin-row">
-            <button class="pin-btn" data-value="1">1</button>
-            <button class="pin-btn" data-value="2">2</button>
-            <button class="pin-btn" data-value="3">3</button>
-          </div>
-          <div class="pin-row">
-            <button class="pin-btn" data-value="4">4</button>
-            <button class="pin-btn" data-value="5">5</button>
-            <button class="pin-btn" data-value="6">6</button>
-          </div>
-          <div class="pin-row">
-            <button class="pin-btn" data-value="7">7</button>
-            <button class="pin-btn" data-value="8">8</button>
-            <button class="pin-btn" data-value="9">9</button>
-          </div>
-          <div class="pin-row">
-            <button class="pin-btn" data-value="0">0</button>
-            <button class="pin-btn" id="pinDelBtn">削除</button>
-            <button class="pin-btn" id="adminPinSubmit">OK</button>
+          
+          <br>
+          
+          <div style="margin-top: 32px; padding-top: 24px; border-top: 1px solid rgba(59, 130, 246, 0.2);">
+            <a href="https://forms.gle/ZWtQCvecH4eZtTEU7" class="action-btn secondary" target="_blank" style="border-radius: 8px;">
+              <i class="fa-solid fa-envelope" style="font-size: 16px;"></i>
+              <span>問い合わせフォーム</span>
+            </a>
           </div>
         </div>
-        
-        <div class="modal-actions">
-          <button class="btn-secondary" id="adminPinCancel">キャンセル</button>
-        </div>
-      </div>
-    </div>
-  </div>
+             </div>
+     </div>
+   </main>
+   <!-- 管理者画面ボタンとモーダルここから -->
+     <div style="width:100%;text-align:center;margin-top:32px;margin-bottom:16px;">
+       <a href="#" id="adminLoginBtn" style="display:inline-block;padding:10px 28px;font-size:20px;background:#0071e3;color:#fff;border-radius:8px;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,0.10);zoom:2.0;">
+         <i class="fa-solid fa-user-shield" style="margin-right:0.6em; " ></i>管理画面へ
+       </a>
+     </div>
+     <div id="adminLoginModal" style="display:none; position:fixed; z-index:9999; left:0; top:0; width:100vw; height:100vh; background:rgba(0,0,0,0.25); align-items:center; justify-content:center;">
+       <div style="background:#fff; border-radius:12px; padding:24px 18px 18px 18px; box-shadow:0 4px 24px rgba(0,0,0,0.18); min-width:260px; max-width:90vw; text-align:center;">
+         <div style="font-size:1.1em; margin-bottom:10px;">暗証番号</div>
+         <input id="adminPinInput" type="password" inputmode="numeric" maxlength="4" pattern="[0-9]*" style="font-size:2em; text-align:center; letter-spacing:0.5em; width:7em; margin-bottom:12px;" autocomplete="one-time-code" />
+         <div id="adminPinError" style="color:#d33; font-size:0.95em; min-height:1.5em; margin-bottom:8px;"></div>
+         <div style="display:grid; grid-template-columns:repeat(3,48px); gap:8px; justify-content:center; margin-bottom:10px;">
+           <button class="pin-btn">1</button><button class="pin-btn">2</button><button class="pin-btn">3</button>
+           <button class="pin-btn">4</button><button class="pin-btn">5</button><button class="pin-btn">6</button>
+           <button class="pin-btn">7</button><button class="pin-btn">8</button><button class="pin-btn">9</button>
+           <div></div><button class="pin-btn">0</button><button class="pin-btn" id="pinDelBtn">⌫</button>
+         </div>
+         <button id="adminPinSubmit" style="background:#0071e3;color:#fff;padding:6px 24px;border:none;border-radius:6px;font-size:1.1em;">OK</button>
+         <button id="adminPinCancel" style="margin-left:1em; background:#eee;color:#333;padding:6px 18px;border:none;border-radius:6px;font-size:1.1em;">キャンセル</button>
+       </div>
+     </div>
+     <!-- 管理者画面ボタンとモーダルここまで -->
 
-  <!-- Footer -->
-  <footer class="footer">
-    <div class="footer-content">
-      <p class="footer-text">
-        Copyright© 2020 考査村 All Rights Reserved.
-      </p>
-    </div>
-  </footer>
+  
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/js/all.min.js"></script>
-  <script src="js/api.js"></script>
-  <script>
-    // Navigation Toggle
-    const navToggle = document.getElementById('navToggle');
-    const navMenu = document.getElementById('navMenu');
-    
-    navToggle.addEventListener('click', () => {
-      navMenu.classList.toggle('active');
-      navToggle.classList.toggle('active');
-    });
+     <div class="copyright-note">Copyright© 2020 考査村 All Rights Reserved.</div><br>
+   <style>
+     .copyright-note {
+       font-size: 12px;
+       color: #888;
+       text-align: center;
+       margin-top: 18px;
+       margin-bottom: 18px;
+     }
+      </style>
 
-    // Close menu when clicking outside
-    document.addEventListener('click', (e) => {
-      if (!navToggle.contains(e.target) && !navMenu.contains(e.target)) {
-        navMenu.classList.remove('active');
-        navToggle.classList.remove('active');
-      }
-    });
+   <!-- Toast -->
+   <div id="copyToast" class="toast" style="zoom: 2.0;">コピーしました！</div>
 
-    // Load recent posts
-    async function loadRecentPosts() {
-      try {
-        const data = await kosamuraAPI.getData();
-        const recentPosts = data.slice(0, 6); // Get latest 6 posts
-        
-        const postsContainer = document.getElementById('recentPosts');
-        
-        if (recentPosts.length === 0) {
-          postsContainer.innerHTML = '<p class="no-posts">まだ投稿がありません</p>';
-          return;
-        }
-        
-        postsContainer.innerHTML = recentPosts.map(post => `
-          <div class="post-card">
-            <div class="post-header">
-              <div class="post-meta">
-                <span class="post-grade">${post.grade}</span>
-                <span class="post-year">${post.year}</span>
-                <span class="post-subject">${post.subject}</span>
-              </div>
-              <div class="post-type">${post.type}</div>
-            </div>
-            <div class="post-content">
-              <div class="post-title">${post.contentType}</div>
-              <div class="post-format">${post.format}</div>
-            </div>
-            <div class="post-footer">
-              <div class="post-stats">
-                <span class="post-likes">❤ ${post.likes}</span>
-                <span class="post-bads">👎 ${post.bad}</span>
-              </div>
-              <div class="post-date">${post.date}</div>
-            </div>
-          </div>
-        `).join('');
-        
-      } catch (error) {
-        console.error('Error loading recent posts:', error);
-        document.getElementById('recentPosts').innerHTML = '<p class="error">投稿の読み込みに失敗しました</p>';
-      }
-    }
+   <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/js/all.min.js"></script>
+     <script src="js/api.js"></script>
+   <script>
+     // GASアプリでtitleが反映されない場合の対策
+     document.title = '秋高考査村 - スマホ版';
+   </script>
+   <script>
+     // ページ読み込み時のアラート
+     window.addEventListener('DOMContentLoaded', function() {
+       alert('現在「ホーム」ページのみスマホに最適化されています。「アップロード」及び「問題検索」画面では文字が小さなパソコン版が表示されます。ご了承ください。');
+     });
+     
+     // Navigation Toggle with enhanced animation
+     const navToggle = document.getElementById('navToggle');
+     const navMenu = document.getElementById('navMenu');
+     let isMenuOpen = false;
 
-    // Load stats
-    async function loadStats() {
-      try {
-        const data = await kosamuraAPI.getData();
-        
-        document.getElementById('totalPosts').textContent = data.length;
-        
-        const totalLikes = data.reduce((sum, post) => sum + (post.likes || 0), 0);
-        document.getElementById('totalLikes').textContent = totalLikes;
-        
-        // Active users (unique IPs in last 30 days)
-        const thirtyDaysAgo = new Date();
-        thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-        
-        const recentPosts = data.filter(post => {
-          const postDate = new Date(post.date);
-          return postDate > thirtyDaysAgo;
-        });
-        
-        const uniqueIPs = new Set(recentPosts.map(post => post.publicIP).filter(ip => ip && ip !== 'Unknown'));
-        document.getElementById('activeUsers').textContent = uniqueIPs.size;
-        
-      } catch (error) {
-        console.error('Error loading stats:', error);
-      }
-    }
+     navToggle.addEventListener('click', (e) => {
+       e.preventDefault();
+       e.stopPropagation();
+       
+       // メニューの開閉状態を切り替え
+       isMenuOpen = !isMenuOpen;
+       navToggle.classList.toggle('active');
+       navMenu.classList.toggle('active');
+       
+       // Add haptic feedback if available
+       if (navigator.vibrate) {
+         navigator.vibrate(50);
+       }
+       // メニューが開いているときはヘッダーを固定しスクロール不可
+       const header = document.querySelector('.header');
+       if (isMenuOpen) {
+         document.body.style.overflow = 'hidden';
+         if (header) header.style.position = 'fixed';
+       } else {
+         document.body.style.overflow = '';
+         if (header) header.style.position = '';
+       }
+     });
 
-    // Free mode status
-    function isInFreeMode() {
-      const freeModeEnd = localStorage.getItem('freeModeEnd');
-      if (!freeModeEnd) return false;
-      return new Date().getTime() < parseInt(freeModeEnd);
-    }
-    
-    function updateFreeModeStatus() {
-      const status = document.getElementById('freeModeStatus');
-      if (isInFreeMode()) {
-        const freeModeEnd = parseInt(localStorage.getItem('freeModeEnd'));
-        const remaining = freeModeEnd - new Date().getTime();
-        if (remaining <= 0) {
-          localStorage.removeItem('freeModeEnd');
-          status.textContent = '問題アップロードで広告フリー';
-          status.className = 'free-mode-status ad';
-          return;
-        }
-        const hours = Math.floor(remaining / (60 * 60 * 1000));
-        const minutes = Math.floor((remaining % (60 * 60 * 1000)) / (60 * 1000));
-        const seconds = Math.floor((remaining % (60 * 1000)) / 1000);
-        status.textContent = `フリーモード ${hours}時間${minutes}分${seconds}秒`;
-        status.className = 'free-mode-status free';
-      } else {
-        status.textContent = '問題アップロードで広告フリー';
-        status.className = 'free-mode-status ad';
-      }
-    }
+     // Close nav when clicking outside
+     document.addEventListener('click', (e) => {
+       // メニューが開いている時のみ処理
+       if (isMenuOpen && !navToggle.contains(e.target) && !navMenu.contains(e.target)) {
+         navToggle.classList.remove('active');
+         navMenu.classList.remove('active');
+         isMenuOpen = false;
+         document.body.style.overflow = '';
+         const header = document.querySelector('.header');
+         if (header) header.style.position = '';
+       }
+     });
 
-    // Admin login functionality
-    const adminLoginBtn = document.getElementById('adminLoginBtn');
-    const adminLoginModal = document.getElementById('adminLoginModal');
-    const adminPinInput = document.getElementById('adminPinInput');
-    const adminPinError = document.getElementById('adminPinError');
-    const adminPinSubmit = document.getElementById('adminPinSubmit');
-    const adminPinCancel = document.getElementById('adminPinCancel');
-    const adminPinBtns = document.querySelectorAll('.pin-btn');
-    
-    let pinValue = '';
-    
-    function openAdminModal() {
-      adminLoginModal.style.display = 'flex';
-      adminPinInput.value = '';
-      pinValue = '';
-      adminPinError.textContent = '';
-      setTimeout(() => adminPinInput.focus(), 100);
-    }
-    
-    function closeAdminModal() {
-      adminLoginModal.style.display = 'none';
-    }
-    
-    adminLoginBtn.onclick = function(e) {
-      e.preventDefault();
-      openAdminModal();
-    };
-    
-    adminPinCancel.onclick = function() {
-      closeAdminModal();
-    };
-    
-    adminPinSubmit.onclick = tryAdminLogin;
-    
-    adminPinInput.oninput = function(e) {
-      pinValue = adminPinInput.value.replace(/\D/g, '').slice(0, 4);
-      adminPinInput.value = pinValue;
-      adminPinError.textContent = '';
-    };
-    
-    adminPinInput.onkeydown = function(e) {
-      if (e.key === 'Enter') tryAdminLogin();
-      if (e.key === 'Backspace' && pinValue.length > 0) {
-        pinValue = pinValue.slice(0, -1);
-        adminPinInput.value = pinValue;
-        e.preventDefault();
-      }
-    };
-    
-    adminPinBtns.forEach(btn => {
-      btn.onclick = function() {
-        if (btn.id === 'pinDelBtn') {
-          pinValue = pinValue.slice(0, -1);
-        } else if (pinValue.length < 4) {
-          pinValue += btn.textContent;
-        }
-        adminPinInput.value = pinValue;
-        adminPinError.textContent = '';
-      };
-    });
-    
-    function tryAdminLogin() {
-      if (pinValue === '0611') {
-        closeAdminModal();
-        window.open('admin.html', '_blank', 'noopener');
-      } else {
-        adminPinError.textContent = '番号が違います';
-        adminPinInput.value = '';
-        pinValue = '';
-      }
-    }
-    
-    // Close modal when clicking outside
-    adminLoginModal.onclick = function(e) {
-      if (e.target === adminLoginModal) closeAdminModal();
-    };
+     // Prevent menu from closing when clicking inside menu
+     navMenu.addEventListener('click', (e) => {
+       e.stopPropagation();
+     });
 
-    // Initialize
-    document.addEventListener('DOMContentLoaded', () => {
-      updateFreeModeStatus();
-      setInterval(updateFreeModeStatus, 1000);
-      
-      loadRecentPosts();
-      loadStats();
-    });
-  </script>
+     // メニュー内のリンククリック時にメニューを閉じる
+     navMenu.addEventListener('click', (e) => {
+       if (e.target.tagName === 'A' || e.target.closest('a')) {
+         // リンククリック時は少し遅延してメニューを閉じる
+         setTimeout(() => {
+           navToggle.classList.remove('active');
+           navMenu.classList.remove('active');
+           isMenuOpen = false;
+           document.body.style.overflow = '';
+           const header = document.querySelector('.header');
+           if (header) header.style.position = '';
+         }, 100);
+       }
+     });
+
+     // Enhanced copy functionality with better feedback
+     function copyButton(elementId) {
+       const element = document.getElementById(elementId);
+       const text = element.value || element.textContent;
+       
+       navigator.clipboard.writeText(text).then(() => {
+         showToast('コピーしました！');
+         
+         // Enhanced button state with animation
+         const btn = document.getElementById('copyBtn');
+         const originalContent = btn.innerHTML;
+         btn.innerHTML = '<i class="fa-solid fa-check"></i><span>コピー完了</span>';
+         btn.style.background = 'linear-gradient(135deg, #10b981, #059669)';
+         btn.style.color = 'white';
+         btn.style.border = '2px solid #10b981';
+         btn.style.transform = 'scale(1.05)';
+         
+         // Add haptic feedback
+         if (navigator.vibrate) {
+           navigator.vibrate([50, 50, 50]);
+         }
+         
+         setTimeout(() => {
+           btn.innerHTML = originalContent;
+           btn.style.background = '';
+           btn.style.color = '';
+           btn.style.border = '';
+           btn.style.transform = '';
+         }, 2000);
+       }).catch(() => {
+         showToast('コピーに失敗しました');
+       });
+     }
+
+     // Enhanced toast function
+     function showToast(message) {
+       const toast = document.getElementById('copyToast');
+       toast.textContent = message;
+       toast.classList.add('show');
+       
+       setTimeout(() => {
+         toast.classList.remove('show');
+       }, 2500);
+     }
+
+     // Enhanced native sharing
+     document.addEventListener('DOMContentLoaded', () => {
+       const urlInput = document.getElementById('siteUrl');
+       const shareBtn = document.getElementById('nativeShareBtn');
+
+       shareBtn.addEventListener('click', async () => {
+         const shareData = {
+           title: '秋高考査村',
+           text: '無料・匿名で使える過去問共有サイト',
+           url: urlInput.value
+         };
+
+         if (navigator.share) {
+           try {
+             await navigator.share(shareData);
+             showToast('共有しました！');
+           } catch (err) {
+             if (err.name !== 'AbortError') {
+               console.error('共有に失敗しました', err);
+               showToast('共有に失敗しました');
+             }
+           }
+         } else {
+           showToast('この端末は共有非対応です。URLをコピーして使ってください');
+         }
+       });
+     });
+
+     // Smooth scrolling for anchor links
+     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+       anchor.addEventListener('click', function (e) {
+         e.preventDefault();
+         const target = document.querySelector(this.getAttribute('href'));
+         if (target) {
+           target.scrollIntoView({
+             behavior: 'smooth',
+             block: 'start'
+           });
+         }
+       });
+     });
+
+     // Enhanced header scroll effect
+     let lastScrollTop = 0;
+     const header = document.querySelector('.header');
+     let ticking = false;
+
+     function updateHeader() {
+       const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+       
+       if (scrollTop > lastScrollTop && scrollTop > 100) {
+         header.style.transform = 'translateY(-100%)';
+         header.style.opacity = '0.95';
+       } else {
+         header.style.transform = 'translateY(0)';
+         header.style.opacity = '1';
+       }
+       
+       // Add blur effect based on scroll
+       if (scrollTop > 50) {
+         header.style.backdropFilter = 'blur(25px)';
+         header.style.webkitBackdropFilter = 'blur(25px)';
+       } else {
+         header.style.backdropFilter = 'blur(20px)';
+         header.style.webkitBackdropFilter = 'blur(20px)';
+       }
+       
+       lastScrollTop = scrollTop;
+       ticking = false;
+     }
+
+     window.addEventListener('scroll', () => {
+       if (!ticking) {
+         requestAnimationFrame(updateHeader);
+         ticking = true;
+       }
+     });
+
+     // Enhanced scroll indicator
+     window.addEventListener('scroll', () => {
+       const indicator = document.getElementById('scrollDownIndicator');
+       if (!indicator) return;
+       
+       const scrollPercent = window.scrollY / (window.innerHeight * 0.3);
+       const opacity = Math.max(0, 0.8 - scrollPercent);
+       
+       indicator.style.opacity = opacity;
+       indicator.style.transform = `translateX(-50%) translateY(${scrollPercent * 10}px)`;
+       indicator.style.pointerEvents = opacity > 0.1 ? 'auto' : 'none';
+     });
+
+     // Enhanced card animation with stagger effect
+     document.addEventListener('DOMContentLoaded', function() {
+       const cards = document.querySelectorAll('.card');
+       const observer = new IntersectionObserver((entries, obs) => {
+         entries.forEach((entry, index) => {
+           if (entry.isIntersecting) {
+             setTimeout(() => {
+               entry.target.classList.add('card-inview');
+             }, index * 100); // Stagger animation
+             obs.unobserve(entry.target);
+           }
+         });
+       }, { 
+         threshold: 0.1, 
+         rootMargin: '0px 0px -30px 0px' 
+       });
+       // BBSカードだけは別のObserverで監視
+       const bbsCard = document.querySelector('.bbs.card');
+       if (bbsCard) {
+         // ズーム倍率を考慮してrootMarginを動的に計算（下部を広げる）
+         const bbsZoom = 2.1;
+         const margin = Math.round(window.innerHeight * (bbsZoom - 1));
+         const bbsObserver = new IntersectionObserver((entries, obs) => {
+           entries.forEach((entry) => {
+             if (entry.isIntersecting) {
+               entry.target.classList.add('card-inview');
+               obs.unobserve(entry.target);
+             }
+           });
+         }, {
+           threshold: 0.01,
+           rootMargin: `0px 0px +${margin}px 0px`
+         });
+         bbsObserver.observe(bbsCard);
+       }
+       // 他のカードは従来通り
+       cards.forEach(card => {
+         if (!card.classList.contains('bbs')) observer.observe(card);
+       });
+     });
+
+     // Add touch feedback for interactive elements
+     document.addEventListener('DOMContentLoaded', function() {
+       const interactiveElements = document.querySelectorAll('.action-btn, .share-btn, .print-btn, .nav-link');
+       
+       interactiveElements.forEach(element => {
+         element.addEventListener('touchstart', function() {
+           this.style.transform = 'scale(0.98)';
+         });
+         
+         element.addEventListener('touchend', function() {
+           setTimeout(() => {
+             this.style.transform = '';
+           }, 150);
+         });
+       });
+     });
+
+     // Performance optimization: Debounce resize events
+     let resizeTimeout;
+     window.addEventListener('resize', () => {
+       clearTimeout(resizeTimeout);
+       resizeTimeout = setTimeout(() => {
+         // Recalculate any size-dependent elements if needed
+         const vh = window.innerHeight * 0.01;
+         document.documentElement.style.setProperty('--vh', `${vh}px`);
+       }, 250);
+     });
+
+     // Initialize viewport height for mobile
+     const vh = window.innerHeight * 0.01;
+     document.documentElement.style.setProperty('--vh', `${vh}px`);
+     
+     // ヘッダーの高さを動的に計算してメインコンテンツのマージンを調整
+     function adjustMainMargin() {
+       const header = document.querySelector('.header');
+       const main = document.querySelector('.main');
+       if (header && main) {
+         const headerHeight = header.offsetHeight;
+         const marginTop = headerHeight + 20; // ヘッダー高さ + 余白
+         main.style.marginTop = `${marginTop}px`;
+         main.style.minHeight = `calc(100vh - ${marginTop}px)`;
+       }
+     }
+     
+     // ページ読み込み時とリサイズ時に実行
+     window.addEventListener('load', adjustMainMargin);
+     window.addEventListener('resize', adjustMainMargin);
+     
+     // DOMContentLoadedでも実行（早期対応）
+     document.addEventListener('DOMContentLoaded', adjustMainMargin);
+
+     // フリーモード管理
+     function isInFreeMode() {
+       const freeModeEnd = localStorage.getItem('freeModeEnd');
+       if (!freeModeEnd) return false;
+       return new Date().getTime() < parseInt(freeModeEnd);
+     }
+     function updateFreeModeStatus() {
+       const status = document.getElementById('freeModeStatus');
+       if (isInFreeMode()) {
+         const freeModeEnd = parseInt(localStorage.getItem('freeModeEnd'));
+         const remaining = freeModeEnd - new Date().getTime();
+         if (remaining <= 0) {
+           localStorage.removeItem('freeModeEnd');
+           status.textContent = '問題アップロードで広告フリー';
+           status.className = 'free-mode-status ad';
+           return;
+         }
+         const hours = Math.floor(remaining / (60 * 60 * 1000));
+         const minutes = Math.floor((remaining % (60 * 60 * 1000)) / (60 * 1000));
+         const seconds = Math.floor((remaining % (60 * 1000)) / 1000);
+         status.textContent = `フリーモード ${hours}時間${minutes}分${seconds}秒`;
+         status.className = 'free-mode-status free';
+       } else {
+         status.textContent = '問題アップロードで広告フリー';
+         status.className = 'free-mode-status ad';
+       }
+     }
+     document.addEventListener('DOMContentLoaded', () => {
+       updateFreeModeStatus();
+       setInterval(updateFreeModeStatus, 1000);
+     });
+   </script>
+   <script>
+     const adminLoginBtn = document.getElementById('adminLoginBtn');
+     const adminLoginModal = document.getElementById('adminLoginModal');
+     const adminPinInput = document.getElementById('adminPinInput');
+     const adminPinError = document.getElementById('adminPinError');
+     const adminPinSubmit = document.getElementById('adminPinSubmit');
+     const adminPinCancel = document.getElementById('adminPinCancel');
+     const adminPinBtns = document.querySelectorAll('.pin-btn');
+     
+     let pinValue = '';
+     function openAdminModal() {
+       adminLoginModal.style.display = 'flex';
+       adminPinInput.value = '';
+       pinValue = '';
+       adminPinError.textContent = '';
+       setTimeout(()=>adminPinInput.focus(), 100);
+     }
+     function closeAdminModal() {
+       adminLoginModal.style.display = 'none';
+     }
+     adminLoginBtn.onclick = function(e) {
+       e.preventDefault();
+       openAdminModal();
+     };
+     adminPinCancel.onclick = function() {
+       closeAdminModal();
+     };
+     adminPinSubmit.onclick = tryAdminLogin;
+     adminPinInput.oninput = function(e) {
+       pinValue = adminPinInput.value.replace(/\D/g, '').slice(0,4);
+       adminPinInput.value = pinValue;
+       adminPinError.textContent = '';
+     };
+     adminPinInput.onkeydown = function(e) {
+       if (e.key === 'Enter') tryAdminLogin();
+       if (e.key === 'Backspace' && pinValue.length > 0) {
+         pinValue = pinValue.slice(0, -1);
+         adminPinInput.value = pinValue;
+         e.preventDefault();
+       }
+     };
+     adminPinBtns.forEach(btn => {
+       btn.onclick = function() {
+         if (btn.id === 'pinDelBtn') {
+           pinValue = pinValue.slice(0, -1);
+         } else if (pinValue.length < 4) {
+           pinValue += btn.textContent;
+         }
+         adminPinInput.value = pinValue;
+         adminPinError.textContent = '';
+       };
+     });
+     function tryAdminLogin() {
+       if (pinValue === '0611') {
+         closeAdminModal();
+         window.open('admin.html', '_blank', 'noopener');
+       } else {
+         adminPinError.textContent = '番号が違います';
+         adminPinInput.value = '';
+         pinValue = '';
+       }
+     }
+     // モーダル外クリックで閉じる
+     adminLoginModal.onclick = function(e) {
+       if (e.target === adminLoginModal) closeAdminModal();
+     };
+   </script>
 </body>
 </html> 
