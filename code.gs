@@ -450,9 +450,32 @@ function extractFileIdFromUrl(url) {
  * 管理者パスワード取得
  */
 function getAdminPasswords() {
-  // 環境変数からパスワードを取得（セキュリティ強化）
-  const envPassword = PropertiesService.getScriptProperties().getProperty('ADMIN_PASSWORD');
-  return envPassword ? [envPassword] : ['0611']; // フォールバック用
+  try {
+    // スプレッドシートのシート2のA1からパスワードハッシュを取得
+    const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+    const sheet2 = ss.getSheetByName('シート2');
+    
+    if (!sheet2) {
+      Logger.log('シート2が見つかりません。デフォルトパスワードを使用します。');
+      return ['0611']; // フォールバック用
+    }
+    
+    const passwordHash = sheet2.getRange('A1').getValue();
+    
+    if (!passwordHash || passwordHash === '') {
+      Logger.log('シート2のA1にパスワードハッシュが設定されていません。デフォルトパスワードを使用します。');
+      return ['0611']; // フォールバック用
+    }
+    
+    Logger.log('シート2のA1から取得したパスワードハッシュ: ' + passwordHash);
+    return [passwordHash];
+    
+  } catch (error) {
+    Logger.log('パスワード取得エラー: ' + error);
+    // 環境変数からパスワードを取得（セキュリティ強化）
+    const envPassword = PropertiesService.getScriptProperties().getProperty('ADMIN_PASSWORD');
+    return envPassword ? [envPassword] : ['0611']; // フォールバック用
+  }
 }
 
 /**
@@ -489,9 +512,34 @@ function checkAdminPassword(input) {
  * パスワードハッシュテスト用
  */
 function testPasswordHash() {
-  const testPassword = PropertiesService.getScriptProperties().getProperty('ADMIN_PASSWORD') || '0611';
-  const hash = Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_256, testPassword).map(b => ('0' + (b & 0xFF).toString(16)).slice(-2)).join('');
-  Logger.log('テストパスワード "' + testPassword + '" のハッシュ値: ' + hash);
+  try {
+    // スプレッドシートからパスワードハッシュを取得
+    const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+    const sheet2 = ss.getSheetByName('シート2');
+    
+    if (!sheet2) {
+      Logger.log('シート2が見つかりません');
+      return;
+    }
+    
+    const passwordHash = sheet2.getRange('A1').getValue();
+    
+    if (!passwordHash || passwordHash === '') {
+      Logger.log('シート2のA1にパスワードハッシュが設定されていません');
+      return;
+    }
+    
+    Logger.log('シート2のA1から取得したパスワードハッシュ: ' + passwordHash);
+    Logger.log('ハッシュ値の長さ: ' + passwordHash.length);
+    
+    // テスト用パスワードのハッシュを計算
+    const testPassword = 'test123';
+    const testHash = Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_256, testPassword).map(b => ('0' + (b & 0xFF).toString(16)).slice(-2)).join('');
+    Logger.log('テストパスワード "' + testPassword + '" のハッシュ値: ' + testHash);
+    
+  } catch (error) {
+    Logger.log('パスワードハッシュテストエラー: ' + error);
+  }
 }
 
 /**
