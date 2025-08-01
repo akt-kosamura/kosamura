@@ -454,35 +454,19 @@ function testPasswordHash() {
  * GASのdoGet/doPost関数
  */
 function doGet(e) {
-  // CORSヘッダーを設定
-  const headers = {
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type'
-  };
-  
   const { function: funcName } = e.parameter;
   
   switch (funcName) {
     case 'getData':
       return ContentService.createTextOutput(JSON.stringify(getData()))
-        .setMimeType(ContentService.MimeType.JSON)
-        .setHeaders(headers);
+        .setMimeType(ContentService.MimeType.JSON);
     default:
       return ContentService.createTextOutput(JSON.stringify({ error: 'Function not found' }))
-        .setMimeType(ContentService.MimeType.JSON)
-        .setHeaders(headers);
+        .setMimeType(ContentService.MimeType.JSON);
   }
 }
 
 function doPost(e) {
-  // CORSヘッダーを設定
-  const headers = {
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type'
-  };
-  
   const { function: funcName } = e.parameter;
   
   try {
@@ -500,74 +484,63 @@ function doPost(e) {
         
         const url = uploadFileAndRecord(grade, year, type, subject, stream, contentType, fileFormat, comment, fileBlob.getName(), base64, deviceInfo, fileSizeMB);
         return ContentService.createTextOutput(JSON.stringify({ url }))
-          .setMimeType(ContentService.MimeType.JSON)
-          .setHeaders(headers);
+          .setMimeType(ContentService.MimeType.JSON);
         
       case 'like':
         const likeId = e.parameter.id;
         const likeResult = like(likeId);
         return ContentService.createTextOutput(JSON.stringify(likeResult))
-          .setMimeType(ContentService.MimeType.JSON)
-          .setHeaders(headers);
+          .setMimeType(ContentService.MimeType.JSON);
         
       case 'unlike':
         const unlikeId = e.parameter.id;
         const unlikeResult = unlike(unlikeId);
         return ContentService.createTextOutput(JSON.stringify(unlikeResult))
-          .setMimeType(ContentService.MimeType.JSON)
-          .setHeaders(headers);
+          .setMimeType(ContentService.MimeType.JSON);
         
       case 'bad':
         const badId = e.parameter.id;
         const badResult = bad(badId);
         return ContentService.createTextOutput(JSON.stringify(badResult))
-          .setMimeType(ContentService.MimeType.JSON)
-          .setHeaders(headers);
+          .setMimeType(ContentService.MimeType.JSON);
         
       case 'unbad':
         const unbadId = e.parameter.id;
         const unbadResult = unbad(unbadId);
         return ContentService.createTextOutput(JSON.stringify(unbadResult))
-          .setMimeType(ContentService.MimeType.JSON)
-          .setHeaders(headers);
+          .setMimeType(ContentService.MimeType.JSON);
         
       case 'checkAdminPassword':
         const password = e.parameter.password;
         const authResult = checkAdminPassword(password);
         return ContentService.createTextOutput(JSON.stringify({ result: authResult }))
-          .setMimeType(ContentService.MimeType.JSON)
-          .setHeaders(headers);
+          .setMimeType(ContentService.MimeType.JSON);
         
       case 'deletePost':
         const deleteId = e.parameter.id;
         const deleteResult = deletePost(deleteId);
         return ContentService.createTextOutput(JSON.stringify({ success: deleteResult }))
-          .setMimeType(ContentService.MimeType.JSON)
-          .setHeaders(headers);
+          .setMimeType(ContentService.MimeType.JSON);
         
       case 'updatePost':
         const postData = JSON.parse(e.parameter.postData);
         const updateResult = updatePost(postData);
         return ContentService.createTextOutput(JSON.stringify({ result: updateResult }))
-          .setMimeType(ContentService.MimeType.JSON)
-          .setHeaders(headers);
+          .setMimeType(ContentService.MimeType.JSON);
         
       case 'deletePostsBulk':
         const ids = JSON.parse(e.parameter.ids);
         const bulkDeleteResult = deletePostsBulk(ids);
         return ContentService.createTextOutput(JSON.stringify({ success: bulkDeleteResult }))
-          .setMimeType(ContentService.MimeType.JSON)
-          .setHeaders(headers);
+          .setMimeType(ContentService.MimeType.JSON);
         
       default:
         return ContentService.createTextOutput(JSON.stringify({ error: 'Function not found' }))
-          .setMimeType(ContentService.MimeType.JSON)
-          .setHeaders(headers);
+          .setMimeType(ContentService.MimeType.JSON);
     }
   } catch (error) {
     Logger.log('doPost error: ' + error);
     return ContentService.createTextOutput(JSON.stringify({ error: error.message }))
-      .setMimeType(ContentService.MimeType.JSON)
-      .setHeaders(headers);
+      .setMimeType(ContentService.MimeType.JSON);
   }
 } 

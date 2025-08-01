@@ -1,338 +1,471 @@
 <!DOCTYPE html>
+
+<!-- 秋高秋高考査村 -->
+<!-- Ver.1.0.0 -->
+<!-- 2025/07/31 -->
+
+<!-- Admin Password = 0611 -->
+
+
 <html lang="ja">
 <head>
   <meta charset="UTF-8" />
-  <title>考査村 - スマートフォン版</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <style>
-    :root {
-      --bg-page: linear-gradient(135deg, #f0f0f5 0%, #e8e8ee 100%);
-      --bg-card: #ffffff;
-      --accent: #0071e3;
-      --accent-hover: #005bb5;
-      --radius: 12px;
-      --transition: 0.3s cubic-bezier(.4,0,.2,1);
-    }
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      background: var(--bg-page);
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      color: #1d1d20;
-      padding: 16px;
-      min-height: 100vh;
-    }
-    .container {
-      max-width: 100%;
-      margin: 0 auto;
-    }
-    .header {
-      text-align: center;
-      margin-bottom: 32px;
-      padding: 20px 0;
-    }
-    .site-title {
-      font-size: 2rem;
-      font-weight: 700;
-      letter-spacing: 0.04em;
-      color: var(--accent);
-      margin-bottom: 8px;
-    }
-    .site-subtitle {
-      font-size: 1rem;
-      color: #6e6e73;
-      margin-bottom: 16px;
-    }
-    .description {
-      font-size: 0.9rem;
-      color: #6e6e73;
-      line-height: 1.5;
-      margin-bottom: 24px;
-    }
-    .btn {
-      display: block;
-      width: 100%;
-      background: var(--accent);
-      color: white;
-      border: none;
-      padding: 16px 24px;
-      border-radius: 12px;
-      font-size: 1.1rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background-color 0.3s;
-      text-decoration: none;
-      text-align: center;
-      margin-bottom: 16px;
-    }
-    .btn:hover {
-      background: var(--accent-hover);
-    }
-    .btn-secondary {
-      background: #6c757d;
-    }
-    .btn-secondary:hover {
-      background: #5a6268;
-    }
-    .card {
-      background: var(--bg-card);
-      border-radius: 16px;
-      box-shadow: 0 4px 16px rgba(0,0,0,0.1);
-      padding: 24px;
-      margin-bottom: 20px;
-      transition: box-shadow var(--transition);
-    }
-    .card:hover {
-      box-shadow: 0 8px 32px rgba(0,0,0,0.15);
-    }
-    .stats {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 16px;
-      margin-bottom: 24px;
-    }
-    .stat-item {
-      text-align: center;
-      padding: 16px;
-      background: #f8f9fa;
-      border-radius: 12px;
-    }
-    .stat-number {
-      font-size: 1.5rem;
-      font-weight: 700;
-      color: var(--accent);
-      display: block;
-    }
-    .stat-label {
-      font-size: 0.9rem;
-      color: #6e6e73;
-      margin-top: 4px;
-    }
-    .recent-posts {
-      margin-top: 24px;
-    }
-    .post-item {
-      border: 1px solid #e1e1e1;
-      border-radius: 12px;
-      padding: 16px;
-      margin-bottom: 12px;
-      background: #f8f9fa;
-    }
-    .post-title {
-      font-weight: 600;
-      color: var(--accent);
-      margin-bottom: 8px;
-      word-break: break-word;
-    }
-    .post-meta {
-      font-size: 0.9rem;
-      color: #6e6e73;
-      margin-bottom: 8px;
-    }
-    .post-actions {
-      display: flex;
-      gap: 12px;
-      align-items: center;
-    }
-    .action-btn {
-      background: none;
-      border: 1px solid #e1e1e1;
-      border-radius: 8px;
-      padding: 8px 12px;
-      font-size: 0.9rem;
-      cursor: pointer;
-      transition: all 0.2s;
-      display: flex;
-      align-items: center;
-      gap: 4px;
-    }
-    .action-btn:hover {
-      background: #e8ecf2;
-    }
-    .action-btn.liked {
-      background: #d0e4fd;
-      border-color: var(--accent);
-      color: var(--accent);
-    }
-    .action-btn.bad {
-      background: #f8d7da;
-      border-color: #dc3545;
-      color: #dc3545;
-    }
-    .loading {
-      text-align: center;
-        padding: 20px;
-      color: #6c757d;
-    }
-    .error {
-      color: #dc3545;
-      background: #f8d7da;
-      border: 1px solid #f5c6cb;
-      border-radius: 8px;
-      padding: 12px;
-      margin-bottom: 16px;
-    }
-    .footer {
-      text-align: center;
-      margin-top: 32px;
-      padding-top: 24px;
-      border-top: 1px solid #e1e1e1;
-      color: #6e6e73;
-      font-size: 0.9rem;
-    }
-  </style>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>秋高考査村 - スマホ版</title>
+  <link rel="stylesheet" href="css/ph-index.css" />
 </head>
 <body>
-  <div class="container">
-    <div class="header">
-      <h1 class="site-title">考査村</h1>
-      <p class="site-subtitle">秋高生のための過去問共有サイト</p>
-      <p class="description">
-        過去問や参考資料を共有して、みんなで勉強をサポートし合いましょう。
-        スマートフォンからでも簡単にアップロード・検索ができます。
-      </p>
-          </div>
-
-    <div class="card">
-      <div class="stats">
-        <div class="stat-item">
-          <span class="stat-number" id="totalPosts">-</span>
-          <span class="stat-label">投稿数</span>
-              </div>
-        <div class="stat-item">
-          <span class="stat-number" id="totalLikes">-</span>
-          <span class="stat-label">いいね数</span>
-              </div>
-              </div>
-
-      <a href="gas-upload.html" class="btn">📤 ファイルをアップロード</a>
-      <a href="gas-search.html" class="btn btn-secondary">🔍 ファイルを検索</a>
-      <a href="gas-share.html" class="btn btn-secondary">📢 サイトを共有</a>
-    </div>
-
-    <div class="card">
-      <h2>最近の投稿</h2>
-      <div id="recentPosts" class="recent-posts">
-        <div class="loading">読み込み中...</div>
+  <!-- Header -->
+  <header class="header">
+    <div class="header-content">
+      <div class="header-title">
+        <div class="site-title">秋高考査村</div>
+        <div class="site-subtitle">無料・匿名で使える過去問共有サイト</div>
       </div>
+      <button class="nav-toggle" id="navToggle">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
     </div>
-
-    <div class="footer">
-      <p>© 2024 考査村 - 秋高生のための過去問共有サイト</p>
-      <p>スマートフォン版</p>
+    <nav class="nav-menu" id="navMenu">
+      <div class="nav-free-mode">
+        <div id="freeModeStatus" class="free-mode-status"></div>
       </div>
-    </div>
+      <ul class="nav-list">
+        <li class="nav-item">
+          <a href="ph-index.html" class="nav-link active">
+            <i class="fa-solid fa-home"></i> ホーム
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="upload.html" class="nav-link">
+            <i class="fa-solid fa-upload"></i> アップロード
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="search.html" class="nav-link">
+            <i class="fa-solid fa-database"></i> 問題データベース
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="share.html" class="nav-link">
+            <i class="fa-solid fa-share-nodes"></i> 共有・拡散
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="https://c.kuku.lu/hmc853pz" class="nav-link" target="_blank">
+            <i class="fa-solid fa-comments"></i> 掲示板
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="https://forms.gle/ZWtQCvecH4eZtTEU7" class="nav-link" target="_blank">
+            <i class="fa-solid fa-envelope"></i> 報告・問い合わせ
+          </a>
+        </li>
+      </ul>
+    </nav>
+  </header>
 
-  <script src="js/api.js"></script>
-  <script>
-    const GAS_URL = 'https://script.google.com/macros/s/1m8CK9hflCdy-Ll805tQRC_1N5AsoFp9disC9B0F8hzeDifdTSEGoBzQj/exec';
-    
-    // GAS URLを設定
-    if (window.kosamuraAPI) {
-      window.kosamuraAPI.baseURL = GAS_URL;
-    }
+  <!-- Main Content -->
+  <main class="main">
+    <!-- Intro Section: Hero + Main Actions Card -->
+    <section class="intro-section">
+      <!-- Hero Section -->
+      <section class="hero">
+        <h1 class="hero-title">秋高考査村へようこそ</h1>
+        <p class="hero-subtitle">考査問題に限らず、過去問を共有・検索できます</p>
+      </section>
 
-    let posts = [];
-
-    // ページ読み込み時にデータを取得
-    window.addEventListener('load', loadData);
-
-    async function loadData() {
-      try {
-        posts = await window.kosamuraAPI.getData();
-        updateStats();
-        displayRecentPosts();
-      } catch (error) {
-        console.error('データ読み込みエラー:', error);
-        document.getElementById('recentPosts').innerHTML = '<div class="error">データの読み込みに失敗しました</div>';
-      }
-    }
-
-    function updateStats() {
-      const totalPosts = posts.length;
-      const totalLikes = posts.reduce((sum, post) => sum + (post.likes || 0), 0);
-      
-      document.getElementById('totalPosts').textContent = totalPosts;
-      document.getElementById('totalLikes').textContent = totalLikes;
-    }
-
-    function displayRecentPosts() {
-      const recentPosts = document.getElementById('recentPosts');
-      
-      if (posts.length === 0) {
-        recentPosts.innerHTML = '<div class="loading">まだ投稿がありません</div>';
-        return;
-      }
-
-      // 最新の5件を表示
-      const recentPostsData = posts.slice(0, 5);
-      
-      const postsHTML = recentPostsData.map(post => `
-        <div class="post-item">
-          <div class="post-title">${post.filename || '無題'}</div>
-          <div class="post-meta">
-            ${post.grade}年 ${post.subject} - ${post.type} (${post.year}年)
-          </div>
-          <div class="post-actions">
-            <button class="action-btn ${post.userLiked ? 'liked' : ''}" onclick="toggleLike('${post.id}')">
-              👍 ${post.likes || 0}
-            </button>
-            <button class="action-btn ${post.userBad ? 'bad' : ''}" onclick="toggleBad('${post.id}')">
-              👎 ${post.bad || 0}
-            </button>
-            <a href="${post.url}" target="_blank" class="action-btn">
-              📄 表示
+      <!-- Main Actions Card -->
+      <div class="card main-card">
+        <div class="card-content">
+          <p class="card-description">
+            問題をアップロードすると、広告フリーモードが24時間追加されます。
+          </p>
+          
+          <div class="action-buttons">
+            <a href="upload.html" class="action-btn primary">
+              <i class="fa-solid fa-upload"></i>
+              <span>提供</span>
+            </a>
+            <a href="search.html" class="action-btn secondary">
+              <i class="fa-solid fa-database"></i>
+              <span>検索</span>
+            </a>
+            <a href="https://c.kuku.lu/hmc853pz" class="action-btn secondary" target="_blank">
+              <i class="fa-solid fa-comments"></i>
+              <span>掲示板</span>
             </a>
           </div>
         </div>
-      `).join('');
+      </div>
+    </section>
 
-      recentPosts.innerHTML = postsHTML;
+    <!-- Features Section -->
+    <section class="features-section">
+      <h2 class="section-title">主な機能</h2>
+      
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon">
+            <i class="fa-solid fa-upload"></i>
+          </div>
+          <h3 class="feature-title">問題アップロード</h3>
+          <p class="feature-description">
+            PDF、Word、Excel、画像ファイルをアップロードできます。アップロードすると広告フリーモードが24時間追加されます。
+          </p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">
+            <i class="fa-solid fa-search"></i>
+          </div>
+          <h3 class="feature-title">問題検索</h3>
+          <p class="feature-description">
+            学年、年度、科目、種類などで絞り込んで問題を検索できます。詳細なフィルター機能付き。
+          </p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">
+            <i class="fa-solid fa-share-nodes"></i>
+          </div>
+          <h3 class="feature-title">共有・拡散</h3>
+          <p class="feature-description">
+            考査村を友達に共有して、より多くの問題を集めましょう。SNSでの共有も簡単。
+          </p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">
+            <i class="fa-solid fa-comments"></i>
+          </div>
+          <h3 class="feature-title">掲示板</h3>
+          <p class="feature-description">
+            質問や相談、情報交換ができる掲示板です。匿名で投稿できます。
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="stats-section">
+      <h2 class="section-title">統計情報</h2>
+      
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-number" id="totalPosts">-</div>
+          <div class="stat-label">投稿数</div>
+        </div>
+        
+        <div class="stat-card">
+          <div class="stat-number" id="totalLikes">-</div>
+          <div class="stat-label">いいね数</div>
+        </div>
+        
+        <div class="stat-card">
+          <div class="stat-number" id="activeUsers">-</div>
+          <div class="stat-label">アクティブユーザー</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Recent Posts Section -->
+    <section class="recent-posts-section">
+      <h2 class="section-title">最新の投稿</h2>
+      
+      <div class="posts-grid" id="recentPosts">
+        <div class="loading-placeholder">
+          <div class="loading-spinner"></div>
+          <p>最新の投稿を読み込み中...</p>
+        </div>
+      </div>
+      
+      <div class="view-all-container">
+        <a href="search.html" class="view-all-btn">
+          すべての投稿を見る
+          <i class="fa-solid fa-arrow-right"></i>
+        </a>
+      </div>
+    </section>
+
+    <!-- Admin Section -->
+    <section class="admin-section">
+      <div class="admin-card">
+        <div class="admin-content">
+          <h3 class="admin-title">管理者の方へ</h3>
+          <p class="admin-description">
+            管理者機能にアクセスするには、パスワードが必要です。
+          </p>
+          <button class="admin-btn" id="adminLoginBtn">
+            <i class="fa-solid fa-lock"></i>
+            管理者ログイン
+          </button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Admin Login Modal -->
+  <div class="modal" id="adminLoginModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>管理者ログイン</h3>
+        <button class="modal-close" onclick="closeAdminModal()">
+          <i class="fa-solid fa-times"></i>
+        </button>
+      </div>
+      
+      <div class="modal-body">
+        <div class="pin-input-container">
+          <input type="password" id="adminPinInput" class="pin-input" placeholder="パスワードを入力" maxlength="4" readonly>
+          <div class="pin-error" id="adminPinError"></div>
+        </div>
+        
+        <div class="pin-keypad">
+          <div class="pin-row">
+            <button class="pin-btn" data-value="1">1</button>
+            <button class="pin-btn" data-value="2">2</button>
+            <button class="pin-btn" data-value="3">3</button>
+          </div>
+          <div class="pin-row">
+            <button class="pin-btn" data-value="4">4</button>
+            <button class="pin-btn" data-value="5">5</button>
+            <button class="pin-btn" data-value="6">6</button>
+          </div>
+          <div class="pin-row">
+            <button class="pin-btn" data-value="7">7</button>
+            <button class="pin-btn" data-value="8">8</button>
+            <button class="pin-btn" data-value="9">9</button>
+          </div>
+          <div class="pin-row">
+            <button class="pin-btn" data-value="0">0</button>
+            <button class="pin-btn" id="pinDelBtn">削除</button>
+            <button class="pin-btn" id="adminPinSubmit">OK</button>
+          </div>
+        </div>
+        
+        <div class="modal-actions">
+          <button class="btn-secondary" id="adminPinCancel">キャンセル</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-content">
+      <p class="footer-text">
+        Copyright© 2020 考査村 All Rights Reserved.
+      </p>
+    </div>
+  </footer>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/js/all.min.js"></script>
+  <script src="js/api.js"></script>
+  <script>
+    // Navigation Toggle
+    const navToggle = document.getElementById('navToggle');
+    const navMenu = document.getElementById('navMenu');
+    
+    navToggle.addEventListener('click', () => {
+      navMenu.classList.toggle('active');
+      navToggle.classList.toggle('active');
+    });
+
+    // Close menu when clicking outside
+    document.addEventListener('click', (e) => {
+      if (!navToggle.contains(e.target) && !navMenu.contains(e.target)) {
+        navMenu.classList.remove('active');
+        navToggle.classList.remove('active');
+      }
+    });
+
+    // Load recent posts
+    async function loadRecentPosts() {
+      try {
+        const data = await kosamuraAPI.getData();
+        const recentPosts = data.slice(0, 6); // Get latest 6 posts
+        
+        const postsContainer = document.getElementById('recentPosts');
+        
+        if (recentPosts.length === 0) {
+          postsContainer.innerHTML = '<p class="no-posts">まだ投稿がありません</p>';
+          return;
+        }
+        
+        postsContainer.innerHTML = recentPosts.map(post => `
+          <div class="post-card">
+            <div class="post-header">
+              <div class="post-meta">
+                <span class="post-grade">${post.grade}</span>
+                <span class="post-year">${post.year}</span>
+                <span class="post-subject">${post.subject}</span>
+              </div>
+              <div class="post-type">${post.type}</div>
+            </div>
+            <div class="post-content">
+              <div class="post-title">${post.contentType}</div>
+              <div class="post-format">${post.format}</div>
+            </div>
+            <div class="post-footer">
+              <div class="post-stats">
+                <span class="post-likes">❤ ${post.likes}</span>
+                <span class="post-bads">👎 ${post.bad}</span>
+              </div>
+              <div class="post-date">${post.date}</div>
+            </div>
+          </div>
+        `).join('');
+        
+      } catch (error) {
+        console.error('Error loading recent posts:', error);
+        document.getElementById('recentPosts').innerHTML = '<p class="error">投稿の読み込みに失敗しました</p>';
+      }
     }
 
-    async function toggleLike(id) {
+    // Load stats
+    async function loadStats() {
       try {
-        const post = posts.find(p => p.id === id);
-        if (!post) return;
+        const data = await kosamuraAPI.getData();
+        
+        document.getElementById('totalPosts').textContent = data.length;
+        
+        const totalLikes = data.reduce((sum, post) => sum + (post.likes || 0), 0);
+        document.getElementById('totalLikes').textContent = totalLikes;
+        
+        // Active users (unique IPs in last 30 days)
+        const thirtyDaysAgo = new Date();
+        thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+        
+        const recentPosts = data.filter(post => {
+          const postDate = new Date(post.date);
+          return postDate > thirtyDaysAgo;
+        });
+        
+        const uniqueIPs = new Set(recentPosts.map(post => post.publicIP).filter(ip => ip && ip !== 'Unknown'));
+        document.getElementById('activeUsers').textContent = uniqueIPs.size;
+        
+      } catch (error) {
+        console.error('Error loading stats:', error);
+      }
+    }
 
-        if (post.userLiked) {
-          await window.kosamuraAPI.unlike(id);
-          post.likes = Math.max(0, (post.likes || 0) - 1);
-          post.userLiked = false;
+    // Free mode status
+    function isInFreeMode() {
+      const freeModeEnd = localStorage.getItem('freeModeEnd');
+      if (!freeModeEnd) return false;
+      return new Date().getTime() < parseInt(freeModeEnd);
+    }
+    
+    function updateFreeModeStatus() {
+      const status = document.getElementById('freeModeStatus');
+      if (isInFreeMode()) {
+        const freeModeEnd = parseInt(localStorage.getItem('freeModeEnd'));
+        const remaining = freeModeEnd - new Date().getTime();
+        if (remaining <= 0) {
+          localStorage.removeItem('freeModeEnd');
+          status.textContent = '問題アップロードで広告フリー';
+          status.className = 'free-mode-status ad';
+          return;
+        }
+        const hours = Math.floor(remaining / (60 * 60 * 1000));
+        const minutes = Math.floor((remaining % (60 * 60 * 1000)) / (60 * 1000));
+        const seconds = Math.floor((remaining % (60 * 1000)) / 1000);
+        status.textContent = `フリーモード ${hours}時間${minutes}分${seconds}秒`;
+        status.className = 'free-mode-status free';
       } else {
-          await window.kosamuraAPI.like(id);
-          post.likes = (post.likes || 0) + 1;
-          post.userLiked = true;
-        }
-
-        updateStats();
-        displayRecentPosts();
-      } catch (error) {
-        console.error('いいねエラー:', error);
-        alert('いいねの処理に失敗しました');
+        status.textContent = '問題アップロードで広告フリー';
+        status.className = 'free-mode-status ad';
       }
     }
 
-    async function toggleBad(id) {
-      try {
-        const post = posts.find(p => p.id === id);
-        if (!post) return;
-
-        if (post.userBad) {
-          await window.kosamuraAPI.unbad(id);
-          post.bad = Math.max(0, (post.bad || 0) - 1);
-          post.userBad = false;
-        } else {
-          await window.kosamuraAPI.bad(id);
-          post.bad = (post.bad || 0) + 1;
-          post.userBad = true;
+    // Admin login functionality
+    const adminLoginBtn = document.getElementById('adminLoginBtn');
+    const adminLoginModal = document.getElementById('adminLoginModal');
+    const adminPinInput = document.getElementById('adminPinInput');
+    const adminPinError = document.getElementById('adminPinError');
+    const adminPinSubmit = document.getElementById('adminPinSubmit');
+    const adminPinCancel = document.getElementById('adminPinCancel');
+    const adminPinBtns = document.querySelectorAll('.pin-btn');
+    
+    let pinValue = '';
+    
+    function openAdminModal() {
+      adminLoginModal.style.display = 'flex';
+      adminPinInput.value = '';
+      pinValue = '';
+      adminPinError.textContent = '';
+      setTimeout(() => adminPinInput.focus(), 100);
+    }
+    
+    function closeAdminModal() {
+      adminLoginModal.style.display = 'none';
+    }
+    
+    adminLoginBtn.onclick = function(e) {
+      e.preventDefault();
+      openAdminModal();
+    };
+    
+    adminPinCancel.onclick = function() {
+      closeAdminModal();
+    };
+    
+    adminPinSubmit.onclick = tryAdminLogin;
+    
+    adminPinInput.oninput = function(e) {
+      pinValue = adminPinInput.value.replace(/\D/g, '').slice(0, 4);
+      adminPinInput.value = pinValue;
+      adminPinError.textContent = '';
+    };
+    
+    adminPinInput.onkeydown = function(e) {
+      if (e.key === 'Enter') tryAdminLogin();
+      if (e.key === 'Backspace' && pinValue.length > 0) {
+        pinValue = pinValue.slice(0, -1);
+        adminPinInput.value = pinValue;
+        e.preventDefault();
+      }
+    };
+    
+    adminPinBtns.forEach(btn => {
+      btn.onclick = function() {
+        if (btn.id === 'pinDelBtn') {
+          pinValue = pinValue.slice(0, -1);
+        } else if (pinValue.length < 4) {
+          pinValue += btn.textContent;
         }
-
-        displayRecentPosts();
-      } catch (error) {
-        console.error('バッドエラー:', error);
-        alert('バッドの処理に失敗しました');
+        adminPinInput.value = pinValue;
+        adminPinError.textContent = '';
+      };
+    });
+    
+    function tryAdminLogin() {
+      if (pinValue === '0611') {
+        closeAdminModal();
+        window.open('admin.html', '_blank', 'noopener');
+      } else {
+        adminPinError.textContent = '番号が違います';
+        adminPinInput.value = '';
+        pinValue = '';
       }
     }
+    
+    // Close modal when clicking outside
+    adminLoginModal.onclick = function(e) {
+      if (e.target === adminLoginModal) closeAdminModal();
+    };
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', () => {
+      updateFreeModeStatus();
+      setInterval(updateFreeModeStatus, 1000);
+      
+      loadRecentPosts();
+      loadStats();
+    });
   </script>
 </body>
-</html>
+</html> 

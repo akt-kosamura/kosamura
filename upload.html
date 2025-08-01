@@ -627,7 +627,6 @@
               afterBtns.style.display = 'block';
               fileViewLink.style.display = 'inline-block';
             fileViewLink.href = result.url || '#';
-              fileViewLink.download = filename;
           } catch (error) {
             throw new Error('アップロード失敗: ' + error.message);
           }
