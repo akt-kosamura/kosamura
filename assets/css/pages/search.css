@@ -101,16 +101,19 @@ h1 {
 
 .filter-row {
   display: flex; 
-  flex-wrap: wrap; 
-  justify-content: center;
+  flex-wrap: nowrap; 
+  justify-content: flex-start;
   align-items: center; 
   gap: 1rem;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .filter-group {
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  flex-shrink: 0;
 }
 
 .filter-group label {
@@ -157,15 +160,18 @@ h1 {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   gap: 1rem;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .controls-left, .controls-right {
   display: flex;
   align-items: center;
   gap: 1rem;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
+  flex-shrink: 0;
 }
 
 .controls-left label {
@@ -174,6 +180,7 @@ h1 {
   gap: 0.5rem;
   font-size: 0.9rem;
   color: #666;
+  white-space: nowrap;
 }
 
 .controls-right {
@@ -393,12 +400,14 @@ th.hidden-col, td.hidden-col { display: none; }
   
   .filter-row {
     gap: 0.5rem;
+    overflow-x: auto;
   }
   
   .filter-group {
-    flex-direction: column;
-    align-items: stretch;
+    flex-direction: row;
+    align-items: center;
     gap: 0.25rem;
+    flex-shrink: 0;
   }
   
   .filter-group select {
@@ -406,15 +415,17 @@ th.hidden-col, td.hidden-col { display: none; }
   }
   
   .controls-section {
-    flex-direction: column;
-    align-items: stretch;
+    flex-direction: row;
+    align-items: center;
     gap: 1rem;
     padding: 1rem;
+    overflow-x: auto;
   }
   
   .controls-left, .controls-right {
-    justify-content: center;
+    justify-content: flex-start;
     gap: 0.5rem;
+    flex-shrink: 0;
   }
   
   .table-card {
@@ -451,25 +462,28 @@ th.hidden-col, td.hidden-col { display: none; }
 
 @media (max-width: 480px) {
   .filter-buttons {
-    flex-direction: column;
-    width: 100%;
+    flex-direction: row;
+    gap: 0.5rem;
   }
   
   #btnClearFilters, #btnRefresh {
-    width: 100%;
+    width: auto;
   }
   
   .controls-left {
-    flex-direction: column;
-    align-items: stretch;
+    flex-direction: row;
+    align-items: center;
+    flex-wrap: nowrap;
   }
   
   .controls-right {
-    justify-content: stretch;
+    flex-direction: row;
+    align-items: center;
+    flex-wrap: nowrap;
   }
   
   .controls-right select {
-    flex: 1;
+    width: auto;
   }
 }
 .free-mode-status {
