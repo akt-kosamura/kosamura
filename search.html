@@ -332,124 +332,40 @@ function showAdPopup(fileUrl) {
     });
 
     document.querySelectorAll('.btn-like').forEach(btn => {
-      btn.onclick = async () => {
-        // 連続クリック防止
-        if (btn.disabled) return;
-        btn.disabled = true;
-        
-        const id = btn.dataset.id;
-        const prev = localStorage.getItem('vote_' + id);
-        const tr = btn.closest('tr');
+      btn.onclick = () => {
+        const id = btn.dataset.id, prev = localStorage.getItem('vote_' + id), tr = btn.closest('tr');
         const badBtn = tr.querySelector('.btn-bad');
-        let count = parseInt(btn.textContent.replace(/\D/g,''), 10);
-        
-        try {
-          if (prev === 'good') {
-            // いいねを取り消し
-            btn.classList.remove('active');
-            localStorage.removeItem('vote_' + id);
-            btn.textContent = `❤ ${--count}`;
-            
-            // データベース更新
-            await kosamuraAPI.unlike(Number(id));
-          } else {
-            // 反対の評価があれば取り消し
-            if (prev === 'bad') {
-              let bc = parseInt(badBtn.textContent.replace(/\D/g,''), 10);
-              badBtn.classList.remove('active');
-              localStorage.removeItem('vote_' + id);
-              badBtn.textContent = `👎 ${--bc}`;
-              
-              // バッド取り消しを先に実行
-              await kosamuraAPI.unbad(Number(id));
-            }
-            
-            // いいねを追加
-            btn.classList.add('active');
-            localStorage.setItem('vote_' + id, 'good');
-            btn.textContent = `❤ ${++count}`;
-            
-            // データベース更新
-            await kosamuraAPI.like(Number(id));
+        let count = parseInt(btn.textContent.replace(/\D/g,''),10);
+        if (prev==='good') {
+          btn.classList.remove('active'); localStorage.removeItem('vote_' + id); kosamuraAPI.unlike(Number(id));
+          btn.textContent = `❤ ${--count}`;
+        } else {
+          if (prev==='bad') {
+            let bc = parseInt(badBtn.textContent.replace(/\D/g,''),10);
+            badBtn.classList.remove('active'); localStorage.removeItem('vote_' + id); kosamuraAPI.unbad(Number(id));
+            badBtn.textContent = `👎 ${--bc}`;
           }
-        } catch (e) {
-          console.error('いいね処理エラー:', e);
-          // エラー時は元の状態に戻す
-          if (prev === 'good') {
-            btn.classList.add('active');
-            localStorage.setItem('vote_' + id, 'good');
-            btn.textContent = `❤ ${++count}`;
-          } else {
-            btn.classList.remove('active');
-            localStorage.removeItem('vote_' + id);
-            btn.textContent = `❤ ${--count}`;
-          }
-        } finally {
-          // ボタンを再度有効化
-          setTimeout(() => {
-            btn.disabled = false;
-          }, 1000); // 1秒後に再度クリック可能
+          btn.classList.add('active'); localStorage.setItem('vote_' + id, 'good'); kosamuraAPI.like(Number(id));
+          btn.textContent = `❤ ${++count}`;
         }
       };
     });
     document.querySelectorAll('.btn-bad').forEach(btn => {
-      btn.onclick = async () => {
-        // 連続クリック防止
-        if (btn.disabled) return;
-        btn.disabled = true;
-        
-        const id = btn.dataset.id;
-        const prev = localStorage.getItem('vote_' + id);
-        const tr = btn.closest('tr');
+      btn.onclick = () => {
+        const id = btn.dataset.id, prev = localStorage.getItem('vote_' + id), tr = btn.closest('tr');
         const likeBtn = tr.querySelector('.btn-like');
-        let count = parseInt(btn.textContent.replace(/\D/g,''), 10);
-        
-        try {
-          if (prev === 'bad') {
-            // バッドを取り消し
-            btn.classList.remove('active');
-            localStorage.removeItem('vote_' + id);
-            btn.textContent = `👎 ${--count}`;
-            
-            // データベース更新
-            await kosamuraAPI.unbad(Number(id));
-          } else {
-            // 反対の評価があれば取り消し
-            if (prev === 'good') {
-              let lc = parseInt(likeBtn.textContent.replace(/\D/g,''), 10);
-              likeBtn.classList.remove('active');
-              localStorage.removeItem('vote_' + id);
-              likeBtn.textContent = `❤ ${--lc}`;
-              
-              // いいね取り消しを先に実行
-              await kosamuraAPI.unlike(Number(id));
-            }
-            
-            // バッドを追加
-            btn.classList.add('active');
-            localStorage.setItem('vote_' + id, 'bad');
-            btn.textContent = `👎 ${++count}`;
-            
-            // データベース更新
-            await kosamuraAPI.bad(Number(id));
+        let count = parseInt(btn.textContent.replace(/\D/g,''),10);
+        if (prev==='bad') {
+          btn.classList.remove('active'); localStorage.removeItem('vote_' + id); kosamuraAPI.unbad(Number(id));
+          btn.textContent = `👎 ${--count}`;
+        } else {
+          if (prev==='good') {
+            let lc = parseInt(likeBtn.textContent.replace(/\D/g,''),10);
+            likeBtn.classList.remove('active'); localStorage.removeItem('vote_' + id); kosamuraAPI.unlike(Number(id));
+            likeBtn.textContent = `❤ ${--lc}`;
           }
-        } catch (e) {
-          console.error('バッド処理エラー:', e);
-          // エラー時は元の状態に戻す
-          if (prev === 'bad') {
-            btn.classList.add('active');
-            localStorage.setItem('vote_' + id, 'bad');
-            btn.textContent = `👎 ${++count}`;
-          } else {
-            btn.classList.remove('active');
-            localStorage.removeItem('vote_' + id);
-            btn.textContent = `👎 ${--count}`;
-          }
-        } finally {
-          // ボタンを再度有効化
-          setTimeout(() => {
-            btn.disabled = false;
-          }, 1000); // 1秒後に再度クリック可能
+          btn.classList.add('active'); localStorage.setItem('vote_' + id, 'bad'); kosamuraAPI.bad(Number(id));
+          btn.textContent = `👎 ${++count}`;
         }
       };
     });
