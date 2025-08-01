@@ -5,8 +5,8 @@ class KosamuraAPI {
     if (baseURL) {
       this.baseURL = baseURL;
     } else {
-      // 現在のページのプロトコルとホストを使用
-      this.baseURL = window.location.origin;
+      // GASのURLをデフォルトとして設定
+      this.baseURL = 'https://script.google.com/macros/s/YOUR_GAS_SCRIPT_ID/exec';
     }
     // GAS互換APIのみを使用
     this.gasAPI = new GASCompatibleAPI(this.baseURL);
@@ -15,7 +15,7 @@ class KosamuraAPI {
   // データ取得（GAS運用時と同じ）
   async getData() {
     try {
-      const response = await fetch(`${this.baseURL}/exec?function=getData`);
+      const response = await fetch(`${this.baseURL}?function=getData`);
       if (!response.ok) throw new Error('データ取得に失敗しました');
       return await response.json();
     } catch (error) {
@@ -49,7 +49,7 @@ class KosamuraAPI {
       formData.append('fileSizeMB', fileSizeMB);
       formData.append('deviceInfo', JSON.stringify(deviceInfo));
 
-      const response = await fetch(`${this.baseURL}/exec?function=uploadFileAndRecord`, {
+      const response = await fetch(`${this.baseURL}?function=uploadFileAndRecord`, {
         method: 'POST',
         body: formData
       });
@@ -68,7 +68,7 @@ class KosamuraAPI {
       const formData = new FormData();
       formData.append('id', id);
 
-      const response = await fetch(`${this.baseURL}/exec?function=like`, {
+      const response = await fetch(`${this.baseURL}?function=like`, {
         method: 'POST',
         body: formData
       });
@@ -86,7 +86,7 @@ class KosamuraAPI {
       const formData = new FormData();
       formData.append('id', id);
 
-      const response = await fetch(`${this.baseURL}/exec?function=unlike`, {
+      const response = await fetch(`${this.baseURL}?function=unlike`, {
         method: 'POST',
         body: formData
       });
@@ -104,7 +104,7 @@ class KosamuraAPI {
       const formData = new FormData();
       formData.append('id', id);
 
-      const response = await fetch(`${this.baseURL}/exec?function=bad`, {
+      const response = await fetch(`${this.baseURL}?function=bad`, {
         method: 'POST',
         body: formData
       });
@@ -122,7 +122,7 @@ class KosamuraAPI {
       const formData = new FormData();
       formData.append('id', id);
 
-      const response = await fetch(`${this.baseURL}/exec?function=unbad`, {
+      const response = await fetch(`${this.baseURL}?function=unbad`, {
         method: 'POST',
         body: formData
       });
@@ -140,7 +140,7 @@ class KosamuraAPI {
       const formData = new FormData();
       formData.append('password', password);
 
-      const response = await fetch(`${this.baseURL}/exec?function=checkAdminPassword`, {
+      const response = await fetch(`${this.baseURL}?function=checkAdminPassword`, {
         method: 'POST',
         body: formData
       });
@@ -159,7 +159,7 @@ class KosamuraAPI {
       const formData = new FormData();
       formData.append('id', id);
 
-      const response = await fetch(`${this.baseURL}/exec?function=deletePost`, {
+      const response = await fetch(`${this.baseURL}?function=deletePost`, {
         method: 'POST',
         body: formData
       });
@@ -177,7 +177,7 @@ class KosamuraAPI {
       const formData = new FormData();
       formData.append('postData', JSON.stringify(postData));
 
-      const response = await fetch(`${this.baseURL}/exec?function=updatePost`, {
+      const response = await fetch(`${this.baseURL}?function=updatePost`, {
         method: 'POST',
         body: formData
       });
@@ -195,7 +195,7 @@ class KosamuraAPI {
       const formData = new FormData();
       formData.append('ids', JSON.stringify(ids));
 
-      const response = await fetch(`${this.baseURL}/exec?function=deletePostsBulk`, {
+      const response = await fetch(`${this.baseURL}?function=deletePostsBulk`, {
         method: 'POST',
         body: formData
       });
@@ -208,52 +208,61 @@ class KosamuraAPI {
   }
 }
 
-// グローバルAPIインスタンス
+// グローバルインスタンスを作成
 window.kosamuraAPI = new KosamuraAPI();
 
 // Google Apps Script互換性レイヤー（GAS運用時と同じ）
 window.google = {
   script: {
     run: {
-      // データ取得（withSuccessHandler対応）
-      withSuccessHandler: function(callback) {
-        return {
-          getData: function() {
-            kosamuraAPI.getData().then(callback).catch(console.error);
-          }
-        };
+      getData: function() {
+        return new Promise((resolve) => {
+          kosamuraAPI.getData()
+            .then(data => resolve(data))
+            .catch(() => resolve([]));
+        });
       },
       
-      // いいね・バッド（直接呼び出し対応）
+      uploadFileAndRecord: function(grade, year, type, subject, stream, contentType, fileFormat, comment, filename, base64, deviceInfo, fileSizeMB) {
+        return new Promise((resolve, reject) => {
+          kosamuraAPI.uploadFileAndRecord(grade, year, type, subject, stream, contentType, fileFormat, comment, filename, base64, deviceInfo, fileSizeMB)
+            .then(url => resolve(url))
+            .catch(error => reject(error));
+        });
+      },
+      
       like: function(id) {
-        kosamuraAPI.like(id).catch(console.error);
+        return new Promise((resolve) => {
+          kosamuraAPI.like(id)
+            .then(result => resolve(result))
+            .catch(() => resolve(0));
+        });
       },
+      
       unlike: function(id) {
-        kosamuraAPI.unlike(id).catch(console.error);
+        return new Promise((resolve) => {
+          kosamuraAPI.unlike(id)
+            .then(result => resolve(result))
+            .catch(() => resolve(0));
+        });
       },
+      
       bad: function(id) {
-        kosamuraAPI.bad(id).catch(console.error);
+        return new Promise((resolve) => {
+          kosamuraAPI.bad(id)
+            .then(result => resolve(result))
+            .catch(() => resolve(0));
+        });
       },
+      
       unbad: function(id) {
-        kosamuraAPI.unbad(id).catch(console.error);
+        return new Promise((resolve) => {
+          kosamuraAPI.unbad(id)
+            .then(result => resolve(result))
+            .catch(() => resolve(0));
+        });
       },
       
-      // ファイルアップロード（withSuccessHandler/withFailureHandler対応）
-      withSuccessHandler: function(successCallback) {
-        return {
-          withFailureHandler: function(failureCallback) {
-            return {
-              uploadFileAndRecord: function(grade, year, type, subject, stream, contentType, fileFormat, comment, filename, base64, deviceInfo, fileSizeMB) {
-                kosamuraAPI.uploadFileAndRecord(grade, year, type, subject, stream, contentType, fileFormat, comment, filename, base64, deviceInfo, fileSizeMB)
-                  .then(successCallback)
-                  .catch(failureCallback);
-              }
-            };
-          }
-        };
-      },
-      
-      // 管理者機能（GAS運用時と同じ動作）
       checkAdminPassword: function(password) {
         return new Promise((resolve) => {
           kosamuraAPI.checkAdminPassword(password)
