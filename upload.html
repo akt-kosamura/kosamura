@@ -602,32 +602,32 @@
           
           // kosamuraAPIを使用してアップロード
           try {
-            const result = await kosamuraAPI.uploadFileAndRecord(
+            const url = await kosamuraAPI.uploadFileAndRecord(
               grade, year, type, subject, stream, contentType, fileFormat, comment, filename, b64, deviceInfo, fileSizeMB || 0
             );
             
-              // アップロード完了
-              window.isUploading = false;
-              btn.classList.remove('loading');
-              btn.textContent = 'アップロード完了';
-              message.style.display = 'block';
-              message.textContent = 'アップロード成功　考査村が進歩しました。ご協力ありがとうございます。';
-              message.style.background = '#e0ffe0';
-              message.style.color = '#166616';
-              message.style.border = '1px solid #a0dca0';
-              // フリーモード加算
-              let now = Date.now();
-              let freeModeEnd = parseInt(localStorage.getItem('freeModeEnd') || '0');
-              let newEnd = Math.max(now, freeModeEnd) + 24*60*60*1000;
-              localStorage.setItem('freeModeEnd', newEnd.toString());
-              updateFreeModeStatus();
-              // ボタン表示
-              const afterBtns = document.getElementById('afterUploadBtns');
-              const fileViewLink = document.getElementById('fileViewLink');
-              afterBtns.style.display = 'block';
-              fileViewLink.style.display = 'inline-block';
-                          fileViewLink.href = result.url || '#';
-              fileViewLink.download = filename;
+            // アップロード完了
+            window.isUploading = false;
+            btn.classList.remove('loading');
+            btn.textContent = 'アップロード完了';
+            message.style.display = 'block';
+            message.textContent = 'アップロード成功　考査村が進歩しました。ご協力ありがとうございます。';
+            message.style.background = '#e0ffe0';
+            message.style.color = '#166616';
+            message.style.border = '1px solid #a0dca0';
+            // フリーモード加算
+            let now = Date.now();
+            let freeModeEnd = parseInt(localStorage.getItem('freeModeEnd') || '0');
+            let newEnd = Math.max(now, freeModeEnd) + 24*60*60*1000;
+            localStorage.setItem('freeModeEnd', newEnd.toString());
+            updateFreeModeStatus();
+            // ボタン表示
+            const afterBtns = document.getElementById('afterUploadBtns');
+            const fileViewLink = document.getElementById('fileViewLink');
+            afterBtns.style.display = 'block';
+            fileViewLink.style.display = 'inline-block';
+            fileViewLink.href = url || '#';
+            fileViewLink.download = filename;
           } catch (error) {
             throw new Error('アップロード失敗: ' + error.message);
           }

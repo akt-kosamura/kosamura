@@ -27,7 +27,10 @@ class KosamuraAPI {
   // ファイルアップロード（GAS運用時と同じ）
   async uploadFileAndRecord(grade, year, type, subject, stream, contentType, fileFormat, comment, filename, base64, deviceInfo, fileSizeMB) {
     try {
-      // Base64をBlobに変換
+      // GASのdoPost関数が期待する形式でFormDataを作成
+      const formData = new FormData();
+      
+      // ファイルデータをBlobとして追加
       const byteCharacters = atob(base64);
       const byteNumbers = new Array(byteCharacters.length);
       for (let i = 0; i < byteCharacters.length; i++) {
@@ -35,9 +38,8 @@ class KosamuraAPI {
       }
       const byteArray = new Uint8Array(byteNumbers);
       const blob = new Blob([byteArray], { type: 'application/octet-stream' });
-
-      const formData = new FormData();
-      formData.append('file', blob, filename);
+      
+      // GASのdoPost関数が期待する形式でデータを追加
       formData.append('grade', grade);
       formData.append('year', year);
       formData.append('type', type);
@@ -48,15 +50,31 @@ class KosamuraAPI {
       formData.append('comment', comment);
       formData.append('fileSizeMB', fileSizeMB);
       formData.append('deviceInfo', JSON.stringify(deviceInfo));
+      
+      // GASのdoPost関数が期待する形式でファイルデータを追加
+      // GASでは e.postData.getBlob() でファイルデータを取得し、
+      // fileBlob.getName() でファイル名を取得する
+      formData.append('file', blob, filename);
 
       const response = await fetch(`${this.baseURL}?function=uploadFileAndRecord`, {
         method: 'POST',
         body: formData
       });
-      if (!response.ok) throw new Error('アップロードに失敗しました');
+      
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`アップロードに失敗しました: ${errorText}`);
+      }
+      
       const result = await response.json();
+      
       // GASの戻り値形式に合わせる（直接URL文字列を返す）
-      return result.result || result || '';
+      if (result.error) {
+        throw new Error(result.error);
+      }
+      
+      // resultが直接URL文字列の場合と、result.urlの場合の両方に対応
+      return result.url || result || '';
     } catch (error) {
       console.error('uploadFileAndRecord error:', error);
       throw error;
