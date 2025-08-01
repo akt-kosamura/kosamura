@@ -18,58 +18,7 @@ body {
   font-size: 16px;
 }
 
-header {
-  position: fixed; top: 0; left: 0; right: 0;
-  background: #ffffff; box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-  z-index: 1000;
-}
-.header-inner {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 16px 2%;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 16px;
-}
-.header-title {
-  display: flex;
-  gap: 19px;
-  align-items: center;
-  flex-wrap: wrap;
-  justify-content: flex-start;
-}
-.site-title {
-  font-size: 1.5rem;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  color: #0071e3;
-  display: inline-block;
-}
-.site-subtitle { font-size: 0.9rem; color: #6e6e73; }
-.free-mode-timer {
-  background: #00d084;
-  color: white;
-  padding: 0.2rem 0.5rem;
-  border-radius: 4px;
-  font-size: 0.8rem;
-  font-weight: bold;
-}
-nav { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
-nav ul { display: flex; justify-content: center; list-style: none; white-space: nowrap; }
-nav a {
-  display: block; padding: 0.5rem 1rem;
-  color: #1d1d20; text-decoration: none;
-  border-bottom: 1px solid #ccc;
-  transition: background 0.2s;
-  font-size: 0.95rem;
-}
-nav a:hover { background: #e8ecf2; }
-nav a.active {
-  background: #d0e4fd;
-  border-bottom: 3px solid var(--accent);
-}
+
 
 .page-container {
   max-width: 1400px;
@@ -101,12 +50,10 @@ h1 {
 
 .filter-row {
   display: flex; 
-  flex-wrap: nowrap; 
+  flex-wrap: wrap; 
   justify-content: flex-start;
-  align-items: center; 
+  align-items: flex-start; 
   gap: 1rem;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
 }
 
 .filter-group {
@@ -373,18 +320,6 @@ th.hidden-col, td.hidden-col { display: none; }
 
 /* モバイル対応 */
 @media (max-width: 768px) {
-  .header-inner {
-    flex-direction: column;
-    text-align: center;
-  }
-  .header-title {
-    flex-direction: column;
-    gap: 0.5rem;
-  }
-  nav ul {
-    flex-wrap: wrap;
-    justify-content: center;
-  }
   
   .page-container {
     padding: 1rem 0.5rem;
@@ -485,27 +420,4 @@ th.hidden-col, td.hidden-col { display: none; }
   .controls-right select {
     width: auto;
   }
-}
-.free-mode-status {
-  min-width: 120px;
-  text-align: right;
-  font-size: 0.92rem;
-  font-weight: bold;
-  padding: 0.25em 0.9em;
-  border-radius: 6px;
-  margin-left: 1.5em;
-  margin-right: 0.2em;
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  height: 2.1em;
-  box-sizing: border-box;
-}
-.free-mode-status.free {
-  background: #00d084;
-  color: #fff;
-}
-.free-mode-status.ad {
-  background: #e0e0e0;
-  color: #444;
 }
