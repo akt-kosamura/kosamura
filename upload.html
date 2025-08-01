@@ -1,540 +1,541 @@
 <!DOCTYPE html>
+<!-- 秋高秋高考査村 -->
+<!-- Ver.1.0.0 -->
+<!-- 2025/07/31 -->
+<!-- Admin Password = 0611 -->
 <html lang="ja">
 <head>
   <meta charset="UTF-8" />
-  <title>PDFアップロード - 秋高考査村</title>
-  <meta name="viewport" content="width=1200" />
-  <style>
-    html { overflow-y: scroll; }
-    :root {
-      --bg-page: linear-gradient(135deg, #f0f0f5 0%, #e8e8ee 100%);
-      --bg-card: #ffffff;
-      --accent: #0071e3;
-      --accent-hover: #005bb5;
-      --radius: 12px;
-      --transition: 0.3s cubic-bezier(.4,0,.2,1);
-      font-size: 18px;
-    }
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      background: var(--bg-page);
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      color: #1d1d20;
-      padding-top: 64px;
-      padding-left: 32px;
-      padding-right: 32px;
-    }
-    header {
-      position: fixed;
-      top: 0; left: 0; right: 0;
-      background: var(--bg-card);
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-      z-index: 1000;
-    }
-    .header-inner {
-      max-width: 1200px; margin: 0 auto;
-      padding: 16px 24px;
-      display: flex; align-items: center;
-      justify-content: space-between;
-      flex-wrap: wrap; gap: 16px;
-    }
-    .header-title {
-      display: flex;
-      gap: 19px;
-      align-items: center;
-      flex-wrap: wrap;
-      justify-content: flex-start;
-    }
-    .site-title {
-      font-size: 1.5rem;
-      font-weight: 700;
-      letter-spacing: 0.04em;
-      color: #0071e3;
-      display: inline-block;
-    }
-    .site-subtitle { font-size: 0.9rem; color: #6e6e73; }
-    nav { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
-    nav ul { display: flex; justify-content: center; list-style: none; white-space: nowrap; }
-    nav a {
-      display: block; padding: 8px 16px;
-      color: #1d1d20; text-decoration: none;
-      border-bottom: 1px solid #ccc;
-      transition: background 0.2s;
-      font-size: 15px;
-    }
-    nav a:hover { background: #e8ecf2; }
-    nav a.active {
-      background: #d0e4fd;
-      border-bottom: 3px solid var(--accent);
-    }
-    main {
-      max-width: 1400px;
-      margin: 96px auto 32px;
-      padding-left: 32px;
-      padding-right: 32px;
-      box-sizing: border-box;
-    }
-    h1 {
-      text-align: center;
-      font-size: 2rem;
-      margin-bottom: 1rem;
-      background: linear-gradient(90deg, var(--accent), #5ac8fa);
-      -webkit-background-clip: text;
-      color: transparent;
-    }
-    .subtitle {
-      text-align: center; font-size: 19px;
-      margin-bottom: 32px; color: #6e6e73;
-    }
-    .card {
-      background: var(--bg-card);
-      border-radius: 12px;
-      box-shadow: 0 4px 16px rgba(0,0,0,0.1);
-      max-width: 800px;
-      width: 100%;
-      margin: 0 auto 10px auto;
-      padding: 24px 40px 10px 40px;
-      transition: box-shadow var(--transition);
-      box-sizing: border-box;
-      word-break: break-word;
-      overflow: hidden;
-    }
-    .card:hover { box-shadow: 0 8px 32px rgba(0,0,0,0.15); }
-    .form-group {
-      margin-bottom: 24px;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-    .form-group label {
-      font-weight: 600;
-      color: #1d1d20;
-      font-size: 16px;
-    }
-    .form-group input,
-    .form-group select,
-    .form-group textarea {
-      padding: 12px 16px;
-      border: 2px solid #e5e5e7;
-      border-radius: 8px;
-      font-size: 16px;
-      transition: border-color var(--transition);
-      background: #ffffff;
-    }
-    .form-group input:focus,
-    .form-group select:focus,
-    .form-group textarea:focus {
-      outline: none;
-      border-color: var(--accent);
-      box-shadow: 0 0 0 3px rgba(0, 113, 227, 0.1);
-    }
-    .form-group textarea {
-      resize: vertical;
-      min-height: 100px;
-      font-family: inherit;
-    }
-    .file-input-wrapper {
-      position: relative;
-      display: inline-block;
-      width: 100%;
-    }
-    .file-input {
-      position: absolute;
-      opacity: 0;
-      width: 100%;
-      height: 100%;
-      cursor: pointer;
-    }
-    .file-input-label {
-      display: block;
-      padding: 16px;
-      border: 2px dashed #e5e5e7;
-      border-radius: 8px;
-      text-align: center;
-      cursor: pointer;
-      transition: all var(--transition);
-      background: #f9f9f9;
-    }
-    .file-input-label:hover {
-      border-color: var(--accent);
-      background: #f0f8ff;
-    }
-    .file-input:focus + .file-input-label {
-      border-color: var(--accent);
-      box-shadow: 0 0 0 3px rgba(0, 113, 227, 0.1);
-    }
-    .submit-btn {
-      background: var(--accent);
-      color: white;
-      border: none;
-      padding: 16px 32px;
-      border-radius: 8px;
-      font-size: 16px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background var(--transition);
-      width: 100%;
-      margin-top: 16px;
-    }
-    .submit-btn:hover {
-      background: var(--accent-hover);
-    }
-    .submit-btn:disabled {
-      background: #ccc;
-      cursor: not-allowed;
-    }
-    .loading {
-      display: none;
-      text-align: center;
-      margin: 20px 0;
-    }
-    .loading.show {
-      display: block;
-    }
-    .spinner {
-      border: 3px solid #f3f3f3;
-      border-top: 3px solid var(--accent);
-      border-radius: 50%;
-      width: 30px;
-      height: 30px;
-      animation: spin 1s linear infinite;
-      margin: 0 auto 10px;
-    }
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-    .success-message {
-      display: none;
-      background: #d4edda;
-      color: #155724;
-      padding: 16px;
-      border-radius: 8px;
-      margin-top: 16px;
-      text-align: center;
-    }
-    .error-message {
-      display: none;
-      background: #f8d7da;
-      color: #721c24;
-      padding: 16px;
-      border-radius: 8px;
-      margin-top: 16px;
-      text-align: center;
-    }
-    .file-info {
-      margin-top: 8px;
-      font-size: 14px;
-      color: #6e6e73;
-    }
-    .file-size {
-      font-weight: 600;
-      color: var(--accent);
-    }
-    @media (max-width: 768px) {
-      body {
-        padding-left: 16px;
-        padding-right: 16px;
-      }
-      main {
-        padding-left: 16px;
-        padding-right: 16px;
-      }
-      .card {
-        padding: 20px;
-      }
-      h1 {
-        font-size: 1.5rem;
-      }
-      .subtitle {
-        font-size: 16px;
-      }
-    }
-  </style>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>秋高考査村 - アップロード</title>
+  <link rel="stylesheet" href="css/upload.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
 </head>
 <body>
   <header>
     <div class="header-inner">
       <div class="header-title">
-        <div>
-          <div class="site-title">考査村</div>
-          <div class="site-subtitle">秋田高校 考査問題共有プラットフォーム</div>
-        </div>
+        <div class="site-title">秋高考査村</div>
+        <div class="site-subtitle">秋田県立秋田高等学校</div>
       </div>
-      <nav>
-        <ul>
-          <li><a href="gas-index.html">ホーム</a></li>
-          <li><a href="gas-upload.html" class="active">アップロード</a></li>
-          <li><a href="gas-search.html">検索</a></li>
-          <li><a href="gas-share.html">共有</a></li>
-        </ul>
-      </nav>
+      <div class="free-mode-status free">
+        <i class="fas fa-star"></i>
+        フリーモード
+      </div>
     </div>
+    <nav>
+      <ul>
+        <li><a href="index.html">ホーム</a></li>
+        <li><a href="upload.html" class="active">アップロード</a></li>
+        <li><a href="search.html">問題データベース</a></li>
+        <li><a href="share.html">共有・拡散</a></li>
+        <li><a href="https://c.kuku.lu/hmc853pz" target="_blank">掲示板</a></li>
+        <li><a href="https://forms.gle/ZWtQCvecH4eZtTEU7" target="_blank">報告・問い合わせ</a></li>
+      </ul>
+    </nav>
   </header>
 
   <main>
-    <h1>ファイルアップロード</h1>
-    <p class="subtitle">過去の考査問題や資料を共有しましょう</p>
+    <h1>アップロード</h1>
+    <p class="subtitle">問題・解答をアップロードして共有しましょう</p>
 
     <div class="card">
-      <form id="uploadForm">
-        <div class="form-group">
-          <label for="grade">学年 *</label>
-          <select id="grade" name="grade" required>
-            <option value="">選択してください</option>
-            <option value="1年">1年</option>
-            <option value="2年">2年</option>
-            <option value="3年">3年</option>
-          </select>
-        </div>
-
-        <div class="form-group">
-          <label for="year">年度 *</label>
-          <select id="year" name="year" required>
-            <option value="">選択してください</option>
-            <option value="2024">2024年度</option>
-            <option value="2023">2023年度</option>
-            <option value="2022">2022年度</option>
-            <option value="2021">2021年度</option>
-            <option value="2020">2020年度</option>
-          </select>
-        </div>
-
-        <div class="form-group">
-          <label for="type">種類 *</label>
-          <select id="type" name="type" required>
-            <option value="">選択してください</option>
-            <option value="中間考査">中間考査</option>
-            <option value="期末考査">期末考査</option>
-            <option value="実力考査">実力考査</option>
-            <option value="模擬考査">模擬考査</option>
-            <option value="その他">その他</option>
-          </select>
-        </div>
-
-        <div class="form-group">
-          <label for="subject">科目 *</label>
-          <select id="subject" name="subject" required>
-            <option value="">選択してください</option>
-            <option value="国語">国語</option>
-            <option value="数学">数学</option>
-            <option value="英語">英語</option>
-            <option value="理科">理科</option>
-            <option value="社会">社会</option>
-            <option value="その他">その他</option>
-          </select>
-        </div>
-
-        <div class="form-group">
-          <label for="stream">文理区分 *</label>
-          <select id="stream" name="stream" required>
-            <option value="">選択してください</option>
-            <option value="文系">文系</option>
-            <option value="理系">理系</option>
-            <option value="共通">共通</option>
-          </select>
-        </div>
-
-        <div class="form-group">
-          <label for="contentType">内容 *</label>
-          <select id="contentType" name="contentType" required>
-            <option value="">選択してください</option>
-            <option value="問題">問題</option>
-            <option value="解説">解説</option>
-            <option value="解答">解答</option>
-            <option value="問題＆解説">問題＆解説</option>
-            <option value="その他">その他</option>
-          </select>
-        </div>
-
-        <div class="form-group">
-          <label for="fileFormat">ファイル形式 *</label>
-          <select id="fileFormat" name="fileFormat" required>
-            <option value="">選択してください</option>
-            <option value="PDF">PDF</option>
-            <option value="Word">Word</option>
-            <option value="Excel">Excel</option>
-            <option value="一太郎">一太郎</option>
-            <option value="画像">画像</option>
-            <option value="その他">その他</option>
-          </select>
-        </div>
-
-        <div class="form-group">
-          <label for="comment">コメント</label>
-          <textarea id="comment" name="comment" placeholder="追加の情報があれば入力してください"></textarea>
-        </div>
-
-        <div class="form-group">
-          <label for="file">ファイル *</label>
-          <div class="file-input-wrapper">
-            <input type="file" id="file" name="file" class="file-input" accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png,.gif" required>
-            <label for="file" class="file-input-label">
-              <strong>ファイルを選択</strong><br>
-              <small>PDF, Word, Excel, 画像ファイルに対応</small>
-            </label>
-          </div>
-          <div class="file-info" id="fileInfo"></div>
-        </div>
-
-        <button type="submit" class="submit-btn" id="submitBtn">アップロード</button>
-      </form>
-
-      <div class="loading" id="loading">
-        <div class="spinner"></div>
-        <p>アップロード中...</p>
+      <div class="card-title">
+        <span class="step-label">Step 1: ファイル選択</span>
       </div>
-
-      <div class="success-message" id="successMessage">
-        <strong>アップロード完了！</strong><br>
-        ファイルが正常にアップロードされました。
+      <div class="card-content">
+        <div class="file-input-wrapper" id="fileInputWrapper">
+          <input type="file" id="fileInput" multiple accept="image/*,.pdf" style="display: none;" />
+          <button type="button" class="custom-file-btn" id="customFileBtn">
+            <svg class="file-svg" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 2V8M12 8L15 5M12 8L9 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M20 12V18C20 19.1046 19.1046 20 18 20H6C4.89543 20 4 19.1046 4 18V12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <span class="file-btn-label">ファイルを選択またはドラッグ&ドロップ</span>
+          </button>
+        </div>
+        <ul id="fileList"></ul>
+        <button type="button" class="continue-btn" id="continueBtn" style="display: none;">次へ進む</button>
       </div>
+    </div>
 
-      <div class="error-message" id="errorMessage">
-        <strong>エラーが発生しました</strong><br>
-        <span id="errorText"></span>
+    <div class="card" id="step2Card" style="display: none;">
+      <div class="card-title">
+        <span class="step-label">Step 2: 情報入力</span>
+        <button type="button" class="back-btn" id="backBtn">← 戻る</button>
+      </div>
+      <div class="card-content">
+        <table class="form-table">
+          <tr>
+            <td>学年</td>
+            <td>
+              <select id="grade" required>
+                <option value="">選択してください</option>
+                <option value="1年">1年</option>
+                <option value="2年">2年</option>
+                <option value="3年">3年</option>
+              </select>
+            </td>
+          </tr>
+          <tr>
+            <td>年度</td>
+            <td>
+              <select id="year" required>
+                <option value="">選択してください</option>
+                <option value="2024">2024年度</option>
+                <option value="2023">2023年度</option>
+                <option value="2022">2022年度</option>
+                <option value="2021">2021年度</option>
+                <option value="2020">2020年度</option>
+              </select>
+            </td>
+          </tr>
+          <tr>
+            <td>種類</td>
+            <td>
+              <div class="radios">
+                <label><input type="radio" name="type" value="中間考査" required> 中間考査</label>
+                <label><input type="radio" name="type" value="期末考査"> 期末考査</label>
+                <label><input type="radio" name="type" value="実力考査"> 実力考査</label>
+                <label><input type="radio" name="type" value="その他"> その他</label>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td>科目</td>
+            <td>
+              <select id="subject" required>
+                <option value="">選択してください</option>
+                <option value="国語">国語</option>
+                <option value="数学">数学</option>
+                <option value="英語">英語</option>
+                <option value="理科">理科</option>
+                <option value="社会">社会</option>
+                <option value="その他">その他</option>
+              </select>
+            </td>
+          </tr>
+          <tr>
+            <td>ストリーム</td>
+            <td>
+              <div class="radios">
+                <label><input type="radio" name="stream" value="特進" required> 特進</label>
+                <label><input type="radio" name="stream" value="普通"> 普通</label>
+                <label><input type="radio" name="stream" value="その他"> その他</label>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td>コメント</td>
+            <td>
+              <textarea id="comment" placeholder="問題の特徴や注意点などを記入してください（任意）"></textarea>
+            </td>
+          </tr>
+        </table>
+        <button type="button" class="upload-btn" id="uploadBtn">アップロード</button>
+        <div id="successMsg" class="success-msg" style="display: none;"></div>
       </div>
     </div>
   </main>
 
-  <script src="js/gas-api.js"></script>
+  <!-- プレビューモーダル -->
+  <div class="preview-modal" id="previewModal">
+    <div class="preview-content">
+      <button class="preview-close" id="previewClose">&times;</button>
+      <img id="previewImage" src="" alt="プレビュー" />
+    </div>
+  </div>
+
   <script src="js/api.js"></script>
   <script>
-    // GASのURLを設定
-    const GAS_URL = 'https://script.google.com/macros/s/1m8CK9hflCdy-Ll805tQRC_1N5AsoFp9disC9B0F8hzeDifdTSEGoBzQj/exec';
-    
-    // APIクライアントをGAS用に設定
-    if (window.kosamuraAPI) {
-      window.kosamuraAPI.baseURL = GAS_URL;
+    let selectedFiles = [];
+    let currentStep = 1;
+
+    // ファイル選択処理
+    const fileInput = document.getElementById('fileInput');
+    const customFileBtn = document.getElementById('customFileBtn');
+    const fileInputWrapper = document.getElementById('fileInputWrapper');
+    const fileList = document.getElementById('fileList');
+    const continueBtn = document.getElementById('continueBtn');
+    const step2Card = document.getElementById('step2Card');
+    const backBtn = document.getElementById('backBtn');
+    const uploadBtn = document.getElementById('uploadBtn');
+    const successMsg = document.getElementById('successMsg');
+
+    // ファイル選択ボタンクリック
+    customFileBtn.addEventListener('click', () => {
+      fileInput.click();
+    });
+
+    // ファイル選択処理
+    fileInput.addEventListener('change', handleFileSelect);
+
+    // ドラッグ&ドロップ処理
+    fileInputWrapper.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      fileInputWrapper.classList.add('dragover');
+    });
+
+    fileInputWrapper.addEventListener('dragleave', () => {
+      fileInputWrapper.classList.remove('dragover');
+    });
+
+    fileInputWrapper.addEventListener('drop', (e) => {
+      e.preventDefault();
+      fileInputWrapper.classList.remove('dragover');
+      const files = Array.from(e.dataTransfer.files);
+      handleFiles(files);
+    });
+
+    // ファイル処理
+    function handleFileSelect(e) {
+      const files = Array.from(e.target.files);
+      handleFiles(files);
     }
 
-    document.addEventListener('DOMContentLoaded', function() {
-      const form = document.getElementById('uploadForm');
-      const fileInput = document.getElementById('file');
-      const fileInfo = document.getElementById('fileInfo');
-      const submitBtn = document.getElementById('submitBtn');
-      const loading = document.getElementById('loading');
-      const successMessage = document.getElementById('successMessage');
-      const errorMessage = document.getElementById('errorMessage');
-      const errorText = document.getElementById('errorText');
-
-      // ファイル選択時の処理
-      fileInput.addEventListener('change', function(e) {
-        const file = e.target.files[0];
-        if (file) {
-          const sizeMB = (file.size / (1024 * 1024)).toFixed(2);
-          fileInfo.innerHTML = `
-            選択されたファイル: <strong>${file.name}</strong><br>
-            サイズ: <span class="file-size">${sizeMB} MB</span>
-          `;
-        } else {
-          fileInfo.innerHTML = '';
+    function handleFiles(files) {
+      const validFiles = files.filter(file => {
+        const isValidType = file.type.startsWith('image/') || file.type === 'application/pdf';
+        if (!isValidType) {
+          alert(`${file.name} は対応していないファイル形式です。画像またはPDFファイルを選択してください。`);
         }
+        return isValidType;
       });
 
-      // フォーム送信時の処理
-      form.addEventListener('submit', async function(e) {
-        e.preventDefault();
+      selectedFiles = selectedFiles.concat(validFiles);
+      updateFileList();
+      updateContinueButton();
+    }
 
-        const formData = new FormData(form);
-        const file = formData.get('file');
-
-        if (!file) {
-          showError('ファイルが選択されていません');
-          return;
+    // ファイルリスト更新
+    function updateFileList() {
+      fileList.innerHTML = '';
+      
+      selectedFiles.forEach((file, index) => {
+        const li = document.createElement('li');
+        li.className = 'file-item';
+        li.setAttribute('data-index', index);
+        
+        const handle = document.createElement('span');
+        handle.className = 'handle';
+        handle.innerHTML = '⋮⋮';
+        
+        const fileNumber = document.createElement('div');
+        fileNumber.className = 'file-number';
+        fileNumber.textContent = index + 1;
+        
+        const fileIcon = document.createElement('div');
+        fileIcon.className = 'file-icon';
+        
+        if (file.type.startsWith('image/')) {
+          const img = document.createElement('img');
+          img.src = URL.createObjectURL(file);
+          img.alt = file.name;
+          img.addEventListener('click', () => showPreview(img.src));
+          fileIcon.appendChild(img);
+        } else {
+          fileIcon.innerHTML = '<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M14 2H6C4.89543 2 4 2.89543 4 4V20C4 21.1046 4.89543 22 6 22H18C19.1046 22 20 21.1046 20 20V8L14 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M14 2V8H20" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
         }
-
-        // ファイルサイズチェック（50MB制限）
-        const fileSizeMB = file.size / (1024 * 1024);
-        if (fileSizeMB > 50) {
-          showError('ファイルサイズが50MBを超えています');
-          return;
-        }
-
-        // デバイス情報を取得
-        const deviceInfo = {
-          userAgent: navigator.userAgent,
-          platform: navigator.platform,
-          screenWidth: screen.width,
-          screenHeight: screen.height,
-          windowWidth: window.innerWidth,
-          windowHeight: window.innerHeight,
-          publicIP: 'Unknown', // 実際のIP取得はサーバーサイドで
-          privateIP: 'Unknown'
-        };
-
-        // ファイルをBase64に変換
-        const reader = new FileReader();
-        reader.onload = async function(e) {
-          const base64 = e.target.result.split(',')[1]; // データURLからBase64部分を抽出
-
-          try {
-            showLoading(true);
-            hideMessages();
-
-            // GAS互換APIでアップロード
-            const url = await google.script.run.uploadFileAndRecord(
-              formData.get('grade'),
-              formData.get('year'),
-              formData.get('type'),
-              formData.get('subject'),
-              formData.get('stream'),
-              formData.get('contentType'),
-              formData.get('fileFormat'),
-              formData.get('comment'),
-              file.name,
-              base64,
-              deviceInfo,
-              fileSizeMB
-            );
-
-            showSuccess();
-            form.reset();
-            fileInfo.innerHTML = '';
-
-          } catch (error) {
-            console.error('Upload error:', error);
-            showError('アップロードに失敗しました: ' + error.message);
-          } finally {
-            showLoading(false);
+        
+        const fileName = document.createElement('div');
+        fileName.className = 'file-name';
+        fileName.textContent = file.name;
+        
+        const removeBtn = document.createElement('button');
+        removeBtn.className = 'remove-btn';
+        removeBtn.innerHTML = '×';
+        removeBtn.addEventListener('click', () => removeFile(index));
+        
+        li.appendChild(handle);
+        li.appendChild(fileNumber);
+        li.appendChild(fileIcon);
+        li.appendChild(fileName);
+        li.appendChild(removeBtn);
+        fileList.appendChild(li);
+      });
+      
+      // Sortable.jsでドラッグ&ドロップ並び替え
+      if (selectedFiles.length > 1) {
+        new Sortable(fileList, {
+          handle: '.handle',
+          animation: 150,
+          onEnd: function(evt) {
+            const oldIndex = evt.oldIndex;
+            const newIndex = evt.newIndex;
+            const file = selectedFiles.splice(oldIndex, 1)[0];
+            selectedFiles.splice(newIndex, 0, file);
+            updateFileList();
           }
-        };
-
-        reader.readAsDataURL(file);
-      });
-
-      function showLoading(show) {
-        if (show) {
-          loading.classList.add('show');
-          submitBtn.disabled = true;
-        } else {
-          loading.classList.remove('show');
-          submitBtn.disabled = false;
-        }
+        });
       }
+    }
 
-      function showSuccess() {
-        successMessage.style.display = 'block';
-        errorMessage.style.display = 'none';
-        setTimeout(() => {
-          successMessage.style.display = 'none';
-        }, 5000);
+    // ファイル削除
+    function removeFile(index) {
+      selectedFiles.splice(index, 1);
+      updateFileList();
+      updateContinueButton();
+    }
+
+    // 次へ進むボタン更新
+    function updateContinueButton() {
+      if (selectedFiles.length > 0) {
+        continueBtn.style.display = 'block';
+      } else {
+        continueBtn.style.display = 'none';
       }
+    }
 
-      function showError(message) {
-        errorText.textContent = message;
-        errorMessage.style.display = 'block';
-        successMessage.style.display = 'none';
-        setTimeout(() => {
-          errorMessage.style.display = 'none';
-        }, 5000);
-      }
+    // 次へ進む
+    continueBtn.addEventListener('click', () => {
+      currentStep = 2;
+      document.querySelector('.card').style.display = 'none';
+      step2Card.style.display = 'block';
+    });
 
-      function hideMessages() {
-        successMessage.style.display = 'none';
-        errorMessage.style.display = 'none';
+    // 戻る
+    backBtn.addEventListener('click', () => {
+      currentStep = 1;
+      step2Card.style.display = 'none';
+      document.querySelector('.card').style.display = 'block';
+    });
+
+    // プレビュー表示
+    function showPreview(src) {
+      const modal = document.getElementById('previewModal');
+      const img = document.getElementById('previewImage');
+      img.src = src;
+      modal.classList.add('show');
+    }
+
+    // プレビュー閉じる
+    document.getElementById('previewClose').addEventListener('click', () => {
+      document.getElementById('previewModal').classList.remove('show');
+    });
+
+    document.getElementById('previewModal').addEventListener('click', (e) => {
+      if (e.target.id === 'previewModal') {
+        e.target.classList.remove('show');
       }
     });
+
+    // アップロード処理
+    uploadBtn.addEventListener('click', async () => {
+      // バリデーション
+      const grade = document.getElementById('grade').value;
+      const year = document.getElementById('year').value;
+      const type = document.querySelector('input[name="type"]:checked')?.value;
+      const subject = document.getElementById('subject').value;
+      const stream = document.querySelector('input[name="stream"]:checked')?.value;
+      const comment = document.getElementById('comment').value;
+
+      if (!grade || !year || !type || !subject || !stream) {
+        alert('すべての必須項目を入力してください。');
+        return;
+      }
+
+      if (selectedFiles.length === 0) {
+        alert('ファイルを選択してください。');
+        return;
+      }
+
+      uploadBtn.disabled = true;
+      uploadBtn.classList.add('loading');
+      uploadBtn.textContent = 'アップロード中...';
+
+      try {
+        // ファイル処理
+        let processedFiles = [];
+        
+        for (let i = 0; i < selectedFiles.length; i++) {
+          const file = selectedFiles[i];
+          
+          if (file.type.startsWith('image/')) {
+            // 画像処理
+            const processedImage = await processImage(file);
+            processedFiles.push(processedImage);
+          } else if (file.type === 'application/pdf') {
+            // PDF処理
+            const processedPdf = await processPdf(file);
+            processedFiles.push(processedPdf);
+          }
+        }
+
+        // PDF結合（複数ファイルの場合）
+        let finalFile;
+        if (processedFiles.length === 1) {
+          finalFile = processedFiles[0];
+        } else {
+          finalFile = await mergePdfs(processedFiles);
+        }
+
+        // デバイス情報取得
+        const deviceInfo = await getDeviceInfo();
+
+        // アップロード実行
+        const result = await kosamuraAPI.uploadFileAndRecord(
+          grade,
+          year,
+          type,
+          subject,
+          stream,
+          finalFile.contentType,
+          finalFile.format,
+          comment,
+          finalFile.filename,
+          finalFile.base64,
+          deviceInfo,
+          finalFile.sizeMB
+        );
+
+        // 成功メッセージ表示
+        successMsg.textContent = `アップロード成功！ファイルID: ${result.fileId}`;
+        successMsg.style.display = 'block';
+        
+        // フォームリセット
+        selectedFiles = [];
+        updateFileList();
+        updateContinueButton();
+        document.getElementById('grade').value = '';
+        document.getElementById('year').value = '';
+        document.querySelectorAll('input[name="type"]').forEach(radio => radio.checked = false);
+        document.getElementById('subject').value = '';
+        document.querySelectorAll('input[name="stream"]').forEach(radio => radio.checked = false);
+        document.getElementById('comment').value = '';
+        
+        // Step 1に戻る
+        currentStep = 1;
+        step2Card.style.display = 'none';
+        document.querySelector('.card').style.display = 'block';
+
+      } catch (error) {
+        console.error('アップロードエラー:', error);
+        alert('アップロードに失敗しました: ' + error.message);
+      } finally {
+        uploadBtn.disabled = false;
+        uploadBtn.classList.remove('loading');
+        uploadBtn.textContent = 'アップロード';
+      }
+    });
+
+    // 画像処理
+    async function processImage(file) {
+      return new Promise((resolve) => {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        const img = new Image();
+        
+        img.onload = () => {
+          // キャンバスサイズ設定
+          const maxWidth = 1920;
+          const maxHeight = 1080;
+          let { width, height } = img;
+          
+          if (width > maxWidth || height > maxHeight) {
+            const ratio = Math.min(maxWidth / width, maxHeight / height);
+            width *= ratio;
+            height *= ratio;
+          }
+          
+          canvas.width = width;
+          canvas.height = height;
+          
+          // グレースケール変換
+          ctx.filter = 'grayscale(100%)';
+          ctx.drawImage(img, 0, 0, width, height);
+          
+          // Base64変換
+          const base64 = canvas.toDataURL('image/jpeg', 0.8).split(',')[1];
+          
+          resolve({
+            filename: file.name.replace(/\.[^/.]+$/, '.jpg'),
+            contentType: 'image/jpeg',
+            format: 'JPEG',
+            base64: base64,
+            sizeMB: (base64.length * 0.75) / (1024 * 1024)
+          });
+        };
+        
+        img.src = URL.createObjectURL(file);
+      });
+    }
+
+    // PDF処理
+    async function processPdf(file) {
+      return new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const base64 = e.target.result.split(',')[1];
+          resolve({
+            filename: file.name,
+            contentType: 'application/pdf',
+            format: 'PDF',
+            base64: base64,
+            sizeMB: file.size / (1024 * 1024)
+          });
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+
+    // PDF結合
+    async function mergePdfs(pdfFiles) {
+      const { PDFDocument } = PDFLib;
+      const mergedPdf = await PDFDocument.create();
+      
+      for (const pdfFile of pdfFiles) {
+        if (pdfFile.format === 'PDF') {
+          const pdfBytes = Uint8Array.from(atob(pdfFile.base64), c => c.charCodeAt(0));
+          const pdf = await PDFDocument.load(pdfBytes);
+          const pages = await mergedPdf.copyPages(pdf, pdf.getPageIndices());
+          pages.forEach(page => mergedPdf.addPage(page));
+        }
+      }
+      
+      const mergedBytes = await mergedPdf.save();
+      const base64 = btoa(String.fromCharCode(...mergedBytes));
+      
+      return {
+        filename: 'merged_document.pdf',
+        contentType: 'application/pdf',
+        format: 'PDF',
+        base64: base64,
+        sizeMB: (base64.length * 0.75) / (1024 * 1024)
+      };
+    }
+
+    // デバイス情報取得
+    async function getDeviceInfo() {
+      const info = {
+        userAgent: navigator.userAgent,
+        platform: navigator.platform,
+        language: navigator.language,
+        screenWidth: screen.width,
+        screenHeight: screen.height,
+        timestamp: new Date().toISOString()
+      };
+      
+      // IPアドレス取得（RTCPeerConnection使用）
+      try {
+        const pc = new RTCPeerConnection();
+        pc.createDataChannel('');
+        const offer = await pc.createOffer();
+        await pc.setLocalDescription(offer);
+        
+        // 注意: この方法は実際のIP取得には使用されていません
+        // セキュリティ上の理由で実際のIPは取得できません
+        info.ipInfo = 'IP取得不可（セキュリティ制限）';
+      } catch (error) {
+        info.ipInfo = 'IP取得エラー';
+      }
+      
+      return JSON.stringify(info);
+    }
+
+    // 初期化
+    updateContinueButton();
   </script>
 </body>
 </html> 
