@@ -740,7 +740,41 @@
     document.addEventListener('DOMContentLoaded', () => {
       updateFreeModeStatus();
       setInterval(updateFreeModeStatus, 1000);
+      
+      // 統計情報を読み込み
+      loadStats();
     });
+    
+    // 統計情報読み込み
+    async function loadStats() {
+      try {
+        const stats = await google.script.run.getStats();
+        
+        // 投稿数を表示
+        const totalPostsElement = document.getElementById('totalPosts');
+        if (totalPostsElement) {
+          totalPostsElement.textContent = stats.totalPosts.toLocaleString();
+        }
+        
+        // いいね数を表示
+        const totalLikesElement = document.getElementById('totalLikes');
+        if (totalLikesElement) {
+          totalLikesElement.textContent = stats.totalLikes.toLocaleString();
+        }
+        
+        // アクティブユーザー数を表示
+        const activeUsersElement = document.getElementById('activeUsers');
+        if (activeUsersElement) {
+          activeUsersElement.textContent = stats.activeUsers.toLocaleString();
+        }
+      } catch (error) {
+        console.error('統計情報の読み込みに失敗しました:', error);
+        // エラー時はデフォルト値を表示
+        document.getElementById('totalPosts').textContent = '0';
+        document.getElementById('totalLikes').textContent = '0';
+        document.getElementById('activeUsers').textContent = '0';
+      }
+    }
   </script>
   <script>
     const adminLoginBtn = document.getElementById('adminLoginBtn');

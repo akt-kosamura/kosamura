@@ -223,6 +223,19 @@ class KosamuraAPI {
       throw error;
     }
   }
+
+  // 統計情報取得（GAS運用時と同じ）
+  async getStats() {
+    try {
+      const response = await fetch(`${this.baseURL}?function=getStats`);
+      if (!response.ok) throw new Error('統計情報の取得に失敗しました');
+      const result = await response.json();
+      return result.result || result || { totalPosts: 0, totalLikes: 0, activeUsers: 0 };
+    } catch (error) {
+      console.error('getStats error:', error);
+      return { totalPosts: 0, totalLikes: 0, activeUsers: 0 };
+    }
+  }
 }
 
 // グローバルインスタンスを作成
@@ -306,6 +319,14 @@ window.google = {
       
       deletePostsBulk: function(ids) {
         kosamuraAPI.deletePostsBulk(ids).catch(console.error);
+      },
+      
+      getStats: function() {
+        return new Promise((resolve) => {
+          kosamuraAPI.getStats()
+            .then(stats => resolve(stats))
+            .catch(() => resolve({ totalPosts: 0, totalLikes: 0, activeUsers: 0 }));
+        });
       }
     }
   }

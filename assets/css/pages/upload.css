@@ -40,7 +40,7 @@ h1 {
 .card {
   background: var(--bg-card);
   border-radius: 12px;
-  box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+  box-shadow: none;
   max-width: 800px;
   width: 100%;
   margin: 0 auto 10px auto;
@@ -51,7 +51,7 @@ h1 {
   overflow: hidden;
 }
 .card:hover {
-  box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+  box-shadow: none;
 }
 .card-title {
   padding: 8px 32px 18px 32px;
@@ -93,6 +93,10 @@ h1 {
   opacity: 1;
   max-height: 2000px;
   position: relative;
+  border: none;
+  box-shadow: none;
+  background: var(--bg-card);
+  border-radius: 0;
 }
 .card-content.closed {
   opacity: 0;
@@ -368,4 +372,12 @@ textarea::placeholder {
   margin: 0 auto;
   max-width: 90%;
 }
-/* フリーモード表示デザインはcommon.cssで統一 */ 
+/* フリーモード表示デザインはcommon.cssで統一 */
+
+/* Step2専用スタイル */
+.step2-card {
+  box-shadow: none !important;
+}
+.step2-card:hover {
+  box-shadow: none !important;
+} 
