@@ -276,6 +276,13 @@ th.hidden-col, td.hidden-col { display: none; }
 .btn-like.active { background: #0071e3; color: white; }
 .btn-bad.active  { background: #d36c6c; color: white; }
 
+/* ボタン無効化時のスタイル */
+.btn-like:disabled, .btn-bad:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
 .extra-link {
   color: var(--accent);
   text-decoration: none;
