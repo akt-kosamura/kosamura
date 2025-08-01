@@ -1,9 +1,9 @@
 // Code.gs for 考査村
 
-// アップロード先フォルダのID
-const FOLDER_ID = '1xx-N4rKwFTk83iIxSOCEhctJQv-3rZrC';
-// スプレッドシートID
-const SPREADSHEET_ID = '14uI1FoXUWg_deV-ZGSYY85JREyLyZY4YVqpKka35sZw';
+// アップロード先フォルダのID（環境変数から取得）
+const FOLDER_ID = PropertiesService.getScriptProperties().getProperty('FOLDER_ID') || '1xx-N4rKwFTk83iIxSOCEhctJQv-3rZrC';
+// スプレッドシートID（環境変数から取得）
+const SPREADSHEET_ID = PropertiesService.getScriptProperties().getProperty('SPREADSHEET_ID') || '14uI1FoXUWg_deV-ZGSYY85JREyLyZY4YVqpKka35sZw';
 const SHEET_NAME = 'シート1';
 
 /**
@@ -418,7 +418,9 @@ function extractFileIdFromUrl(url) {
  * 管理者パスワード取得
  */
 function getAdminPasswords() {
-  return ['0611']; // GAS運用時のデフォルトパスワード
+  // 環境変数からパスワードを取得（セキュリティ強化）
+  const envPassword = PropertiesService.getScriptProperties().getProperty('ADMIN_PASSWORD');
+  return envPassword ? [envPassword] : ['0611']; // フォールバック用
 }
 
 /**
@@ -455,7 +457,7 @@ function checkAdminPassword(input) {
  * パスワードハッシュテスト用
  */
 function testPasswordHash() {
-  const testPassword = '0611';
+  const testPassword = PropertiesService.getScriptProperties().getProperty('ADMIN_PASSWORD') || '0611';
   const hash = Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_256, testPassword).map(b => ('0' + (b & 0xFF).toString(16)).slice(-2)).join('');
   Logger.log('テストパスワード "' + testPassword + '" のハッシュ値: ' + hash);
 }
