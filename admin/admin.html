@@ -5,266 +5,365 @@
   <title>管理ページ - 考査村</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
-    body { font-family: sans-serif; margin: 2em; background: #f7f7f7; }
-    table { border-collapse: collapse; width: 100%; background: #fff; }
-    th, td { border: 1px solid #ccc; padding: 6px 8px; font-size: 15px; }
-    th { background: #e0e0e0; }
-    tr:nth-child(even) { background: #f9f9f9; }
-    button { padding: 3px 10px; font-size: 14px; }
-    .filter-btn { margin-left: 4px; }
-    .del-btn { color: #fff; background: #d33; border: none; border-radius: 3px; }
-    .del-btn:hover { background: #a00; }
-    .edit-btn { color: #fff; background: #0071e3; border: none; border-radius: 3px; margin-right: 4px; }
-    .edit-btn:hover { background: #0051a3; }
-    .filter-row input, .filter-row select { font-size: 14px; padding: 2px 4px; }
+    body {
+      font-family: "MS UI Gothic", "MS Sans Serif", sans-serif;
+      background-color: #ffffe0;
+      margin: 0;
+      padding: 0;
+    }
     
-    /* 編集モーダル用スタイル */
+
+    
+    .sidebar {
+      width: 250px;
+      background-color: #f0f0f0;
+      padding: 20px;
+      border-right: 2px solid #ccc;
+      position: fixed;
+      left: 0;
+      top: 0;
+      height: 100vh;
+    }
+    
+    .main-content {
+      flex: 1;
+      padding: 20px;
+      margin-left: 290px;
+      margin-top: 0;
+    }
+    
+    .page-title {
+      font-size: 24px;
+      font-weight: bold;
+      color: #0066cc;
+      margin-bottom: 20px;
+      border-bottom: 2px solid #0066cc;
+      padding-bottom: 10px;
+    }
+    
+    .nav-menu {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    
+    .nav-menu li {
+      margin-bottom: 8px;
+    }
+    
+    .nav-menu a {
+      display: block;
+      padding: 8px 12px;
+      text-decoration: underline;
+      color: #0066cc;
+      background-color: transparent;
+      border: none;
+    }
+    
+    .nav-menu a:hover {
+      background-color: transparent;
+      color: #003366;
+    }
+    
+    .nav-menu a.active {
+      background-color: transparent;
+      color: #003366;
+      font-weight: bold;
+      text-decoration: none;
+    }
+    
+    .logout-link {
+      margin-top: 20px;
+      padding-top: 15px;
+      border-top: 1px solid #ccc;
+    }
+    
+    .logout-link a {
+      color: #cc0000 !important;
+      font-weight: bold;
+      text-decoration: underline;
+    }
+    
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background-color: white;
+      border: 1px solid #ccc;
+    }
+    
+    th, td {
+      border: 1px solid #ccc;
+      padding: 8px;
+      text-align: left;
+    }
+    
+    th {
+      background-color: #e8e8e8;
+      font-weight: bold;
+    }
+    
+    button {
+      background-color: #e8e8e8;
+      border: 1px solid #ccc;
+      padding: 6px 12px;
+      cursor: pointer;
+      font-family: inherit;
+    }
+    
+    button:hover {
+      background-color: #d0d0d0;
+    }
+    
+    input, select, textarea {
+      border: 1px solid #ccc;
+      padding: 4px;
+      font-family: inherit;
+    }
+    
     .edit-modal {
       display: none;
       position: fixed;
-      z-index: 9999;
-      left: 0;
       top: 0;
-      width: 100vw;
-      height: 100vh;
-      background: rgba(0,0,0,0.5);
-      align-items: center;
-      justify-content: center;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.5);
+      z-index: 1000;
     }
+    
     .edit-modal-content {
-      background: #fff;
-      border-radius: 8px;
-      padding: 24px;
-      box-shadow: 0 4px 24px rgba(0,0,0,0.2);
-      min-width: 500px;
-      max-width: 90vw;
-      max-height: 90vh;
-      overflow-y: auto;
+      background-color: white;
+      margin: 50px auto;
+      padding: 20px;
+      width: 80%;
+      max-width: 600px;
+      border: 2px solid #ccc;
     }
+    
     .edit-form {
       display: grid;
-      grid-template-columns: 120px 1fr;
-      gap: 12px 16px;
-      align-items: start;
+      grid-template-columns: 1fr 2fr;
+      gap: 10px;
+      align-items: center;
     }
-    .edit-form label {
-      font-weight: bold;
-      font-size: 14px;
-      color: #333;
-      padding-top: 8px;
-    }
-    .edit-form input, .edit-form textarea, .edit-form select {
-      padding: 8px 12px;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-      font-size: 14px;
-      width: 100%;
-      box-sizing: border-box;
-    }
-    .edit-form textarea {
-      resize: vertical;
-      min-height: 60px;
-      grid-column: 2;
-    }
-    .edit-form .readonly-field {
-      background: #f5f5f5;
-      color: #666;
-      cursor: not-allowed;
-    }
+    
     .edit-buttons {
-      display: flex;
-      gap: 8px;
-      justify-content: flex-end;
-      margin-top: 20px;
       grid-column: 1 / -1;
+      text-align: center;
+      margin-top: 20px;
     }
-    .edit-buttons button {
-      padding: 8px 16px;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 14px;
-    }
-    .save-btn {
-      background: #0071e3;
-      color: #fff;
-    }
-    .save-btn:hover {
-      background: #0051a3;
-    }
-    .cancel-btn {
-      background: #ccc;
-      color: #333;
-    }
-    .cancel-btn:hover {
-      background: #aaa;
-    }
+    
     .save-btn:disabled {
       background: #ccc;
       cursor: not-allowed;
     }
-    .save-btn:disabled:hover {
-      background: #ccc;
-    }
+    
     .sortable {
       cursor: pointer;
       user-select: none;
       position: relative;
     }
+    
     .sortable:hover {
       background-color: #f0f0f0;
     }
+    
     .sortable.asc::after {
       content: ' ▲';
-      color: #0071e3;
+      color: #0066cc;
       font-weight: bold;
     }
+    
     .sortable.desc::after {
       content: ' ▼';
-      color: #0071e3;
+      color: #0066cc;
       font-weight: bold;
+    }
+    
+    .login-container {
+      max-width: 400px;
+      margin: 100px auto;
+      background-color: white;
+      padding: 30px;
+      border: 2px solid #ccc;
+    }
+    
+    .login-title {
+      font-size: 20px;
+      font-weight: bold;
+      color: #0066cc;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    
+    .login-form {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+    
+    .login-button {
+      background-color: #0066cc;
+      color: white;
+      border: none;
+      padding: 10px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    
+    .login-button:hover {
+      background-color: #0052a3;
+    }
+    
+    .login-instructions {
+      margin-top: 15px;
+      font-size: 12px;
+      color: #666;
+      text-align: center;
     }
   </style>
 </head>
 <body>
-  <div style="font-size:1.5em; font-weight:bold; margin-bottom:0.5em;">管理画面</div>
-  <nav style="margin-bottom:1.2em; display:flex; align-items:center;">
-    <a href="../index.html" style="margin-right:1em; text-decoration:none;">▶ ホーム</a>
-    <a href="../pages/upload.html" style="margin-right:1em; text-decoration:none;">▶ アップロード</a>
-    <a href="../pages/search.html" style="margin-right:1em; text-decoration:none;">▶ データベース</a>
-    <a href="../pages/share.html" style="margin-right:1em; text-decoration:none;">▶ 共有・拡散</a>
-    <a href="../ph-index.html" style="margin-right:1em; text-decoration:none;">▶ スマホ版</a>
-    <a href="admin.html" style="margin-right:1em; text-decoration:none; font-weight:bold;">▶ 管理画面</a>
-    <a href="password-generator.html" style="margin-right:1em; text-decoration:none;">▶ ハッシュ値変換ツール</a>
-    <span style="flex:1"></span>
-    <a href="#" onclick="logout(); return false;" style="text-decoration:none; color:#d33; font-weight:bold;">▶ ログアウト</a>
-  </nav>
-  <div id="loginForm" style="display:none; margin:2em 0; text-align:center;">
-    <div style="max-width:400px; margin:0 auto; padding:2em; background:#fff; border-radius:8px; box-shadow:0 2px 10px rgba(0,0,0,0.1);">
-      <h2 style="margin-bottom:1.5em; color:#333;">管理画面ログイン</h2>
-      <div style="margin-bottom:1em;">
-        <input type="password" id="adminPass" placeholder="パスワードを入力してください" 
-               style="width:100%; padding:12px; border:1px solid #ccc; border-radius:4px; font-size:16px; box-sizing:border-box;"
-               onkeypress="if(event.key==='Enter') login();">
+  <div class="sidebar">
+    <div class="page-title">管理画面</div>
+    <ul class="nav-menu">
+      <li><a href="../index.html">▶ ホーム</a></li>
+      <li><a href="../pages/upload.html">▶ アップロード</a></li>
+      <li><a href="../pages/search.html">▶ データベース</a></li>
+      <li><a href="../pages/share.html">▶ 共有・拡散</a></li>
+      <li><a href="../ph-index.html">▶ スマホ版</a></li>
+      <li><a href="admin.html" class="active">▶ 管理画面</a></li>
+      <li><a href="password-generator.html">▶ ハッシュ値変換ツール</a></li>
+      <li class="logout-link"><a href="#" onclick="logout(); return false;">▶ ログアウト</a></li>
+    </ul>
+  </div>
+  
+  <div class="main-content">
+      <div id="loginForm" style="display:none;">
+        <div class="login-container">
+          <div class="login-title">管理画面ログイン</div>
+          <div class="login-form">
+            <label for="adminPass">パスワード:</label>
+            <input type="password" id="adminPass" placeholder="パスワードを入力してください" onkeypress="if(event.key==='Enter') login();">
+            <button onclick="login()" class="login-button">ログイン</button>
+          </div>
+          <div class="login-instructions">
+            パスワードはスプレッドシートのシート2のA1に保存されています
+          </div>
+        </div>
       </div>
-      <button onclick="login()" 
-              style="width:100%; padding:12px; background:#0071e3; color:#fff; border:none; border-radius:4px; font-size:16px; cursor:pointer;">
-        ログイン
-      </button>
-      <div style="margin-top:1em; font-size:14px; color:#666;">
-        パスワードはスプレッドシートのシート2のA1に保存されています
+      
+      <div id="adminContent" style="display:none;">
+        <div class="page-title">考査村 管理システム</div>
+        <div style="margin:1em 0; display:flex; align-items:center; gap:1em;">
+          <button id="deleteSelectedBtn">選択した投稿を一括削除</button>
+          <span id="deleteProgress" style="display:none;">削除中...</span>
+          <label style="display:flex; align-items:center; gap:0.5em; margin-left:1em;">
+            <input type="checkbox" id="showDeviceInfo" style="margin:0;">
+            <span>デバイス情報表示</span>
+          </label>
+        </div>
+        <table id="postTable">
+          <thead>
+            <tr id="headerRow">
+              <th><input type="checkbox" id="checkAll"></th>
+              <th data-key="id" class="sortable">ID</th>
+              <th data-key="grade" class="sortable">学年</th>
+              <th data-key="year" class="sortable">年度</th>
+              <th data-key="type" class="sortable">種類</th>
+              <th data-key="subject" class="sortable">科目</th>
+              <th data-key="stream" class="sortable">文理区分</th>
+              <th data-key="contentType" class="sortable">内容</th>
+              <th data-key="format" class="sortable">形式</th>
+              <th data-key="comment" class="sortable">コメント</th>
+              <th data-key="fileSize" class="sortable">ファイルサイズ</th>
+              <th data-key="url">URL</th>
+              <th data-key="date" class="sortable">日付</th>
+              <th data-key="likes" class="sortable">いいね</th>
+              <th data-key="bad" class="sortable">バッド</th>
+              <th>操作</th>
+            </tr>
+            <tr id="deviceHeaderRow" style="display:none;">
+              <th><input type="checkbox" id="checkAllDevice"></th>
+              <th data-key="id" class="sortable">ID</th>
+              <th data-key="grade" class="sortable">学年</th>
+              <th data-key="year" class="sortable">年度</th>
+              <th data-key="type" class="sortable">種類</th>
+              <th data-key="subject" class="sortable">科目</th>
+              <th data-key="stream" class="sortable">文理区分</th>
+              <th data-key="contentType" class="sortable">内容</th>
+              <th data-key="format" class="sortable">形式</th>
+              <th data-key="comment" class="sortable">コメント</th>
+              <th data-key="fileSize" class="sortable">ファイルサイズ</th>
+              <th data-key="url">URL</th>
+              <th data-key="date" class="sortable">日付</th>
+              <th data-key="likes" class="sortable">いいね</th>
+              <th data-key="bad" class="sortable">バッド</th>
+              <th data-key="publicIP" class="sortable">公開IP</th>
+              <th data-key="privateIP" class="sortable">プライベートIP</th>
+              <th data-key="userAgent" class="sortable">User-Agent</th>
+              <th data-key="platform" class="sortable">プラットフォーム</th>
+              <th data-key="screenResolution" class="sortable">画面解像度</th>
+              <th data-key="windowSize" class="sortable">ウィンドウサイズ</th>
+              <th>操作</th>
+            </tr>
+            <tr class="filter-row">
+              <td></td>
+              <td><input type="text" id="filter-id" style="width:4em"></td>
+              <td><input type="text" id="filter-grade" style="width:4em"></td>
+              <td><input type="text" id="filter-year" style="width:5em"></td>
+              <td><input type="text" id="filter-type" style="width:5em"></td>
+              <td><input type="text" id="filter-subject" style="width:5em"></td>
+              <td><input type="text" id="filter-stream" style="width:5em"></td>
+              <td><input type="text" id="filter-contentType" style="width:5em"></td>
+              <td><input type="text" id="filter-format" style="width:4em"></td>
+              <td><input type="text" id="filter-comment" style="width:6em"></td>
+              <td><input type="text" id="filter-fileSize" style="width:4em"></td>
+              <td></td>
+              <td></td>
+              <td><input type="text" id="filter-likes" style="width:3em"></td>
+              <td><input type="text" id="filter-bad" style="width:3em"></td>
+              <td><button id="filterBtn">絞込</button><button id="clearBtn">解除</button></td>
+            </tr>
+            <tr class="filter-row" id="deviceFilterRow" style="display:none;">
+              <td></td>
+              <td><input type="text" id="filter-id-device" style="width:4em"></td>
+              <td><input type="text" id="filter-grade-device" style="width:4em"></td>
+              <td><input type="text" id="filter-year-device" style="width:5em"></td>
+              <td><input type="text" id="filter-type-device" style="width:5em"></td>
+              <td><input type="text" id="filter-subject-device" style="width:5em"></td>
+              <td><input type="text" id="filter-stream-device" style="width:5em"></td>
+              <td><input type="text" id="filter-contentType-device" style="width:5em"></td>
+              <td><input type="text" id="filter-format-device" style="width:4em"></td>
+              <td><input type="text" id="filter-comment-device" style="width:6em"></td>
+              <td><input type="text" id="filter-fileSize-device" style="width:4em"></td>
+              <td></td>
+              <td></td>
+              <td><input type="text" id="filter-likes-device" style="width:3em"></td>
+              <td><input type="text" id="filter-bad-device" style="width:3em"></td>
+              <td><input type="text" id="filter-publicIP-device" style="width:6em"></td>
+              <td><input type="text" id="filter-privateIP-device" style="width:6em"></td>
+              <td><input type="text" id="filter-userAgent-device" style="width:8em"></td>
+              <td><input type="text" id="filter-platform-device" style="width:6em"></td>
+              <td><input type="text" id="filter-screenResolution-device" style="width:6em"></td>
+              <td><input type="text" id="filter-windowSize-device" style="width:6em"></td>
+              <td><button id="filterBtnDevice">絞込</button><button id="clearBtnDevice">解除</button></td>
+            </tr>
+          </thead>
+          <tbody id="postTbody">
+            <tr><td colspan="15" style="text-align:center; color:#888;">読み込み中...</td></tr>
+          </tbody>
+        </table>
       </div>
     </div>
-  </div>
-  <div id="adminContent" style="display:none;">
-    <div style="margin:1em 0; display:flex; align-items:center; gap:1em;">
-      <button id="deleteSelectedBtn">選択した投稿を一括削除</button>
-      <span id="deleteProgress" style="display:none; color:#d33;">削除中...</span>
-      <label style="display:flex; align-items:center; gap:0.5em; margin-left:1em;">
-        <input type="checkbox" id="showDeviceInfo" style="margin:0;">
-        <span>デバイス情報表示</span>
-      </label>
-    </div>
-    <table id="postTable">
-      <thead>
-        <tr id="headerRow">
-          <th><input type="checkbox" id="checkAll"></th>
-          <th data-key="id" class="sortable">ID</th>
-          <th data-key="grade" class="sortable">学年</th>
-          <th data-key="year" class="sortable">年度</th>
-          <th data-key="type" class="sortable">種類</th>
-          <th data-key="subject" class="sortable">科目</th>
-          <th data-key="stream" class="sortable">文理区分</th>
-          <th data-key="contentType" class="sortable">内容</th>
-          <th data-key="format" class="sortable">形式</th>
-          <th data-key="comment" class="sortable">コメント</th>
-          <th data-key="fileSize" class="sortable">ファイルサイズ</th>
-          <th data-key="url">URL</th>
-          <th data-key="date" class="sortable">日付</th>
-          <th data-key="likes" class="sortable">いいね</th>
-          <th data-key="bad" class="sortable">バッド</th>
-          <th>操作</th>
-        </tr>
-        <tr id="deviceHeaderRow" style="display:none;">
-          <th><input type="checkbox" id="checkAllDevice"></th>
-          <th data-key="id" class="sortable">ID</th>
-          <th data-key="grade" class="sortable">学年</th>
-          <th data-key="year" class="sortable">年度</th>
-          <th data-key="type" class="sortable">種類</th>
-          <th data-key="subject" class="sortable">科目</th>
-          <th data-key="stream" class="sortable">文理区分</th>
-          <th data-key="contentType" class="sortable">内容</th>
-          <th data-key="format" class="sortable">形式</th>
-          <th data-key="comment" class="sortable">コメント</th>
-          <th data-key="fileSize" class="sortable">ファイルサイズ</th>
-          <th data-key="url">URL</th>
-          <th data-key="date" class="sortable">日付</th>
-          <th data-key="likes" class="sortable">いいね</th>
-          <th data-key="bad" class="sortable">バッド</th>
-          <th data-key="publicIP" class="sortable">公開IP</th>
-          <th data-key="privateIP" class="sortable">プライベートIP</th>
-          <th data-key="userAgent" class="sortable">User-Agent</th>
-          <th data-key="platform" class="sortable">プラットフォーム</th>
-          <th data-key="screenResolution" class="sortable">画面解像度</th>
-          <th data-key="windowSize" class="sortable">ウィンドウサイズ</th>
-          <th>操作</th>
-        </tr>
-        <tr class="filter-row">
-          <td></td>
-          <td><input type="text" id="filter-id" style="width:4em"></td>
-          <td><input type="text" id="filter-grade" style="width:4em"></td>
-          <td><input type="text" id="filter-year" style="width:5em"></td>
-          <td><input type="text" id="filter-type" style="width:5em"></td>
-          <td><input type="text" id="filter-subject" style="width:5em"></td>
-          <td><input type="text" id="filter-stream" style="width:5em"></td>
-          <td><input type="text" id="filter-contentType" style="width:5em"></td>
-          <td><input type="text" id="filter-format" style="width:4em"></td>
-          <td><input type="text" id="filter-comment" style="width:6em"></td>
-          <td><input type="text" id="filter-fileSize" style="width:4em"></td>
-          <td></td>
-          <td></td>
-          <td><input type="text" id="filter-likes" style="width:3em"></td>
-          <td><input type="text" id="filter-bad" style="width:3em"></td>
-          <td><button id="filterBtn" class="filter-btn">絞込</button><button id="clearBtn" class="filter-btn">解除</button></td>
-        </tr>
-        <tr class="filter-row" id="deviceFilterRow" style="display:none;">
-          <td></td>
-          <td><input type="text" id="filter-id-device" style="width:4em"></td>
-          <td><input type="text" id="filter-grade-device" style="width:4em"></td>
-          <td><input type="text" id="filter-year-device" style="width:5em"></td>
-          <td><input type="text" id="filter-type-device" style="width:5em"></td>
-          <td><input type="text" id="filter-subject-device" style="width:5em"></td>
-          <td><input type="text" id="filter-stream-device" style="width:5em"></td>
-          <td><input type="text" id="filter-contentType-device" style="width:5em"></td>
-          <td><input type="text" id="filter-format-device" style="width:4em"></td>
-          <td><input type="text" id="filter-comment-device" style="width:6em"></td>
-          <td><input type="text" id="filter-fileSize-device" style="width:4em"></td>
-          <td></td>
-          <td></td>
-          <td><input type="text" id="filter-likes-device" style="width:3em"></td>
-          <td><input type="text" id="filter-bad-device" style="width:3em"></td>
-          <td><input type="text" id="filter-publicIP-device" style="width:6em"></td>
-          <td><input type="text" id="filter-privateIP-device" style="width:6em"></td>
-          <td><input type="text" id="filter-userAgent-device" style="width:8em"></td>
-          <td><input type="text" id="filter-platform-device" style="width:6em"></td>
-          <td><input type="text" id="filter-screenResolution-device" style="width:6em"></td>
-          <td><input type="text" id="filter-windowSize-device" style="width:6em"></td>
-          <td><button id="filterBtnDevice" class="filter-btn">絞込</button><button id="clearBtnDevice" class="filter-btn">解除</button></td>
-        </tr>
-      </thead>
-      <tbody id="postTbody">
-        <tr><td colspan="15" style="text-align:center; color:#888;">読み込み中...</td></tr>
-      </tbody>
-    </table>
-  </div>
 
   <!-- 編集モーダル -->
-  <div id="editModal" class="edit-modal">
+  <div id="editModal" class="edit-modal" style="display:none;">
     <div class="edit-modal-content">
       <h3>投稿を編集</h3>
       <form class="edit-form" id="editForm">
         <label for="edit-id">ID:</label>
-        <div id="edit-id-display" class="readonly-field" style="padding: 8px 12px; border: 1px solid #ccc; border-radius: 4px; background: #f5f5f5; color: #666;"></div>
+        <div id="edit-id-display" style="padding: 8px 12px; border: 1px solid #ccc; background: #f5f5f5; color: #666;"></div>
         
         <label for="edit-grade">学年:</label>
         <select id="edit-grade">
@@ -318,43 +417,14 @@
         <input type="number" id="edit-bad" min="0">
         
         <label for="edit-fileSize">ファイルサイズ:</label>
-        <input type="number" id="edit-fileSize" min="0" step="0.01" readonly class="readonly-field">
+        <input type="number" id="edit-fileSize" min="0" step="0.01" readonly>
         
         <label for="edit-comment">コメント:</label>
         <textarea id="edit-comment"></textarea>
         
-        <!-- デバイス情報（読み取り専用） -->
-        <div style="grid-column: 1 / -1; margin-top: 20px; padding-top: 20px; border-top: 1px solid #ccc;">
-          <h4 style="margin-bottom: 15px; color: #666;">デバイス情報（読み取り専用）</h4>
-        </div>
-        <div>
-          <label for="edit-publicIP">公開IPアドレス:</label>
-          <input type="text" id="edit-publicIP" readonly class="readonly-field">
-        </div>
-        <div>
-          <label for="edit-privateIP">プライベートIPアドレス:</label>
-          <input type="text" id="edit-privateIP" readonly class="readonly-field">
-        </div>
-        <div>
-          <label for="edit-userAgent">User-Agent:</label>
-          <input type="text" id="edit-userAgent" readonly class="readonly-field">
-        </div>
-        <div>
-          <label for="edit-platform">プラットフォーム:</label>
-          <input type="text" id="edit-platform" readonly class="readonly-field">
-        </div>
-        <div>
-          <label for="edit-screenResolution">画面解像度:</label>
-          <input type="text" id="edit-screenResolution" readonly class="readonly-field">
-        </div>
-        <div>
-          <label for="edit-windowSize">ウィンドウサイズ:</label>
-          <input type="text" id="edit-windowSize" readonly class="readonly-field">
-        </div>
-        
         <div class="edit-buttons">
-          <button type="button" class="cancel-btn" onclick="closeEditModal()">キャンセル</button>
-          <button type="button" class="save-btn" id="saveEditBtn" onclick="saveEdit()">保存</button>
+          <button type="button" onclick="closeEditModal()">キャンセル</button>
+          <button type="button" id="saveEditBtn" onclick="saveEdit()">保存</button>
         </div>
       </form>
     </div>
@@ -580,13 +650,7 @@
       document.getElementById('edit-likes').value = row.likes || 0;
       document.getElementById('edit-bad').value = row.bad || 0;
       
-      // デバイス情報を設定（読み取り専用）
-      document.getElementById('edit-publicIP').value = row.publicIP || '';
-      document.getElementById('edit-privateIP').value = row.privateIP || '';
-      document.getElementById('edit-userAgent').value = row.userAgent || '';
-      document.getElementById('edit-platform').value = row.platform || '';
-      document.getElementById('edit-screenResolution').value = row.screenResolution || '';
-      document.getElementById('edit-windowSize').value = row.windowSize || '';
+
       
       // モーダルを表示
       document.getElementById('editModal').style.display = 'flex';
