@@ -19,12 +19,12 @@
       <div id="freeModeStatus" class="free-mode-status"></div>
       <nav>
         <ul>
-          <li><a href="../index.html">ホーム</a></li>
-          <li><a href="upload.html">アップロード</a></li>
-          <li><a href="search.html">問題データベース</a></li>
-          <li><a href="share.html" class="active">共有・拡散</a></li>
-          <li><a href="https://c.kuku.lu/hmc853pz" target="_blank">掲示板</a></li>
-          <li><a href="https://forms.gle/ZWtQCvecH4eZtTEU7" target="_blank">報告・問い合わせ</a></li>
+          <li><a href="../index.html"><i class="fa-solid fa-home"></i> ホーム</a></li>
+          <li><a href="upload.html"><i class="fa-solid fa-upload"></i> アップロード</a></li>
+          <li><a href="search.html"><i class="fa-solid fa-database"></i> 問題データベース</a></li>
+          <li><a href="share.html" class="active"><i class="fa-solid fa-share-nodes"></i> 共有・拡散</a></li>
+          <li><a href="https://c.kuku.lu/hmc853pz" target="_blank"><i class="fa-solid fa-comments"></i> 掲示板</a></li>
+          <li><a href="https://forms.gle/ZWtQCvecH4eZtTEU7" target="_blank"><i class="fa-solid fa-envelope"></i> 報告・問い合わせ</a></li>
         </ul>
       </nav>
     </div>
@@ -71,36 +71,52 @@
   <div class="copyright-note">Copyright© 2020 考査村 All Rights Reserved.</div><br><br>
 
   <script>
-    // フリーモードカウントダウン
-    function isInFreeMode() {
-      const freeModeEnd = localStorage.getItem('freeModeEnd')
-      if (!freeModeEnd) return false
-      return new Date().getTime() < parseInt(freeModeEnd)
+    // フリーモードカウントダウン（最適化版）
+    let freeModeEnd = null
+    let lastUpdateTime = 0
+    
+    function getFreeModeEnd() {
+      if (!freeModeEnd) {
+        freeModeEnd = localStorage.getItem('freeModeEnd')
+      }
+      return freeModeEnd
     }
+    
     function updateFreeModeStatus() {
       const status = document.getElementById('freeModeStatus')
       if (!status) return
-      if (isInFreeMode()) {
-        const freeModeEnd = parseInt(localStorage.getItem('freeModeEnd'))
-        const remaining = freeModeEnd - new Date().getTime()
-        if (remaining <= 0) {
+      
+      const currentTime = new Date().getTime()
+      const endTime = getFreeModeEnd()
+      
+      if (!endTime || currentTime >= parseInt(endTime)) {
+        if (endTime && currentTime >= parseInt(endTime)) {
           localStorage.removeItem('freeModeEnd')
-          status.textContent = '問題アップロードで広告フリー'
-          status.className = 'free-mode-status ad'
-          return
+          freeModeEnd = null
         }
-        const hours   = Math.floor(remaining / (60 * 60 * 1000))
-        const minutes = Math.floor((remaining % (60 * 60 * 1000)) / (60 * 1000))
-        const seconds = Math.floor((remaining % (60 * 1000)) / 1000)
-        status.textContent = `フリーモード ${hours}時間${minutes}分${seconds}秒`
+        const newText = '問題アップロードで広告フリー'
+        if (status.textContent !== newText) {
+          status.textContent = newText
+          status.className = 'free-mode-status ad'
+        }
+        return
+      }
+      
+      const remaining = parseInt(endTime) - currentTime
+      const hours = Math.floor(remaining / (60 * 60 * 1000))
+      const minutes = Math.floor((remaining % (60 * 60 * 1000)) / (60 * 1000))
+      const seconds = Math.floor((remaining % (60 * 1000)) / 1000)
+      
+      const newText = `フリーモード ${hours}時間${minutes}分${seconds}秒`
+      if (status.textContent !== newText) {
+        status.textContent = newText
         status.className = 'free-mode-status free'
-      } else {
-        status.textContent = '問題アップロードで広告フリー'
-        status.className = 'free-mode-status ad'
       }
     }
+    
     // フリーモード表示を即座に更新
     updateFreeModeStatus()
+    // 1秒間隔で更新（パフォーマンス最適化）
     setInterval(updateFreeModeStatus, 1000)
     
     document.addEventListener('DOMContentLoaded', () => {

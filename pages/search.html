@@ -6,6 +6,7 @@
   <title>問題データベース - 秋高考査村</title>
   <link rel="stylesheet" href="../assets/css/common.css" />
   <link rel="stylesheet" href="../assets/css/pages/search.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 </head>
 <body>
   <header>
@@ -17,12 +18,12 @@
       <div id="freeModeStatus" class="free-mode-status"></div>
       <nav>
         <ul>
-          <li><a href="../index.html">ホーム</a></li>
-          <li><a href="upload.html">アップロード</a></li>
-          <li><a href="search.html" class="active">問題データベース</a></li>
-          <li><a href="share.html">共有・拡散</a></li>
-          <li><a href="https://c.kuku.lu/hmc853pz" target="_blank">掲示板</a></li>
-          <li><a href="https://forms.gle/ZWtQCvecH4eZtTEU7" target="_blank">報告・問い合わせ</a></li>
+          <li><a href="../index.html"><i class="fa-solid fa-home"></i> ホーム</a></li>
+          <li><a href="upload.html"><i class="fa-solid fa-upload"></i> アップロード</a></li>
+          <li><a href="search.html" class="active"><i class="fa-solid fa-database"></i> 問題データベース</a></li>
+          <li><a href="share.html"><i class="fa-solid fa-share-nodes"></i> 共有・拡散</a></li>
+          <li><a href="https://c.kuku.lu/hmc853pz" target="_blank"><i class="fa-solid fa-comments"></i> 掲示板</a></li>
+          <li><a href="https://forms.gle/ZWtQCvecH4eZtTEU7" target="_blank"><i class="fa-solid fa-envelope"></i> 報告・問い合わせ</a></li>
         </ul>
       </nav>
     </div>
@@ -122,9 +123,9 @@
 
       <div class="controls-section">
         <div class="controls-left">
-          <label><input type="checkbox" id="toggleDate" checked> アップロード</label>
-          <label><input type="checkbox" id="toggleFormatCol"> 形式</label>
-          <label><input type="checkbox" id="toggleEval" checked> 評価</label>
+          <label><input type="checkbox" id="toggleDate" checked> 投稿時間表示</label>
+          <label><input type="checkbox" id="toggleFormatCol"> ファイル形式表示</label>
+          <label><input type="checkbox" id="toggleEval" checked> 評価表示</label>
           <label>
             コメント表示：
             <select id="commentMode">
@@ -457,12 +458,12 @@ function showAdPopup(fileUrl) {
       const safe = String(item.comment || '').replace(/</g,'&lt;').replace(/>/g,'&gt;');
       const rel = formatRelativeTime(item.date);
       tr.innerHTML = `
-        <td>${String(item.grade || '')}</td>
-        <td>${String(item.year || '')}</td>
-        <td>${String(item.type || '')}</td>
-        <td>${String(item.subject || '')}</td>
-        <td>${String(item.stream || '')}</td>
-        <td>${String(item.contentType || '')}</td>
+        <td class="grade-cell">${String(item.grade || '')}</td>
+        <td class="year-cell">${String(item.year || '')}</td>
+        <td class="type-cell">${String(item.type || '')}</td>
+        <td class="subject-cell">${String(item.subject || '')}</td>
+        <td class="stream-cell">${String(item.stream || '')}</td>
+        <td class="content-cell">${String(item.contentType || '')}</td>
         <td class="format-cell">${String(item.format || '')}</td>
         <td class="comment-cell" data-comment="${safe}"><div class="comment-text">${safe}</div></td>
         <td class="link-cell"><a href="#" class="view-link" data-url="${String(item.url || '')}">見る</a></td>
