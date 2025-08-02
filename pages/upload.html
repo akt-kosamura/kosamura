@@ -353,15 +353,13 @@
       // カード遷移アニメーション
       function openCard(card) {
         card.querySelector('.card-content').classList.remove('closed');
-        card.style.paddingTop = '';
-        card.style.paddingBottom = '2.5rem';
+        card.classList.remove('card-closed');
         const title = card.querySelector('.card-title');
         if (title) title.style.borderBottom = 'none';
       }
       function closeCard(card) {
         card.querySelector('.card-content').classList.add('closed');
-        card.style.paddingTop = '1rem';
-        card.style.paddingBottom = '0';
+        card.classList.add('card-closed');
         const title = card.querySelector('.card-title');
         if (title) title.style.borderBottom = 'none';
       }

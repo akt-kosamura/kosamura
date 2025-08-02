@@ -19,7 +19,7 @@ body {
 
 main {
   max-width: 1400px;
-  margin: 96px auto 32px;
+  margin: 96px auto 0;
   padding-left: 32px;
   padding-right: 32px;
   box-sizing: border-box;
@@ -46,7 +46,7 @@ h1 {
   box-shadow:0 .25rem 1rem rgba(0,0,0,.1);
   max-width:800px;
   width:100%;
-  margin:0 auto 2.5rem;
+  margin:0 auto 0.5rem;
   padding:2rem;
   transition:box-shadow var(--transition);
   box-sizing:border-box;
@@ -92,6 +92,16 @@ h1 {
 
 
 /* 共有ページ専用スタイル */
+/* ナビゲーションリンクの中央揃え強化 */
+nav ul {
+  justify-content: center !important;
+  text-align: center !important;
+}
+
+nav {
+  text-align: center !important;
+}
+
 .share-description {
   text-align: center;
   font-size: 1.1rem;
@@ -234,11 +244,13 @@ h1 {
 }
 
 .copyright-note {
-  text-align: center;
-  font-size: 0.9rem;
-  color: #6c757d;
-  margin-top: 2rem;
-  padding: 1rem;
+  font-size: 20px !important;
+  color: #888 !important;
+  text-align: center !important;
+  margin-top: 16px !important;
+  margin-bottom: 8px !important;
+  padding: 0 !important;
+  border-top: none !important;
 }
 
 /* コピー用トースト */
@@ -347,6 +359,7 @@ h1 {
   .share-url-input {
     font-size: 0.9rem;
     padding: 0.8rem;
+    text-align: center;
   }
   
   .copy-btn, .share-btn, .print-btn {

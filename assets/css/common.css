@@ -157,7 +157,7 @@ main {
   max-width: 1200px;
   margin: 96px auto 0;
   padding: 2rem 20px;
-  min-height: calc(100vh - 80px);
+  min-height: auto;
 }
 
 h1 {
@@ -453,7 +453,7 @@ tr:hover {
   text-align: center;
   color: var(--gray-500);
   font-size: 0.9rem;
-  padding: 2rem 0;
+  padding: 1rem 0;
   border-top: 1px solid var(--gray-200);
-  margin-top: 2rem;
+  margin-top: 0.5rem;
 } 

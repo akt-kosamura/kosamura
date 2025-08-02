@@ -44,17 +44,21 @@ h1 {
   max-width: 800px;
   width: 100%;
   margin: 0 auto 10px auto;
-  padding: 24px 40px 10px 40px;
-  transition: box-shadow var(--transition);
+  padding: 20px 40px 20px 40px;
+  transition: box-shadow var(--transition), padding 0.3s ease;
   box-sizing: border-box;
   word-break: break-word;
   overflow: hidden;
+}
+
+.card.card-closed {
+  padding: 16px 40px 16px 40px;
 }
 .card:hover {
   box-shadow: 0 8px 24px rgba(0,0,0,0.15);
 }
 .card-title {
-  padding: 8px 32px 18px 32px;
+  padding: 8px 32px 12px 32px;
   font-size: 18px;
   font-weight: bold;
   color: var(--accent);
@@ -65,6 +69,10 @@ h1 {
   justify-content: space-between;
   user-select: none;
   margin-top: 3px;
+}
+
+.card.card-closed .card-title {
+  padding: 12px 32px 8px 32px;
 }
 .card-title .step-label {
   font-size: 17px;
@@ -103,6 +111,7 @@ h1 {
   max-height: 0;
   padding-top: 0 !important;
   padding-bottom: 0 !important;
+  margin-top: 0 !important;
   margin-bottom: 0 !important;
   height: 0 !important;
   min-height: 0 !important;

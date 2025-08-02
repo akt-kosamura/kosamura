@@ -71,11 +71,21 @@ main {
 
 .filter-row {
   display: flex; 
-  flex-wrap: nowrap; 
-  justify-content: flex-start;
+  flex-wrap: wrap; 
+  justify-content: center;
   align-items: center; 
   gap: 1.5rem;
   min-width: max-content;
+}
+
+.filter-fields {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 1.5rem;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 0.5rem;
+  max-width: 100%;
 }
 
 .filter-group {
@@ -159,6 +169,50 @@ main {
   line-height: 1;
   margin-bottom: 0;
   padding-bottom: 0;
+  cursor: pointer;
+}
+
+/* カスタムチェックボックススタイル */
+.controls-left input[type="checkbox"] {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  width: 18px;
+  height: 18px;
+  border: 2px solid #ccc;
+  border-radius: 3px;
+  background: #fff;
+  cursor: pointer;
+  position: relative;
+  transition: all var(--transition);
+  flex-shrink: 0;
+}
+
+.controls-left input[type="checkbox"]:checked {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+.controls-left input[type="checkbox"]:checked::after {
+  content: '';
+  position: absolute;
+  left: 4px;
+  top: 1px;
+  width: 7px;
+  height: 11px;
+  border: solid white;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+.controls-left input[type="checkbox"]:hover {
+  border-color: var(--accent);
+  transform: scale(1.05);
+}
+
+.controls-left input[type="checkbox"]:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(0, 113, 227, 0.2);
 }
 
 .controls-right label {
@@ -346,6 +400,39 @@ th.hidden-col, td.hidden-col { display: none; }
   opacity: 0.6;
   cursor: not-allowed;
   pointer-events: none;
+}
+
+/* リンクボタンスタイル */
+.link-cell {
+  width: 80px;
+  min-width: 80px;
+  text-align: center;
+}
+
+.view-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: 1px solid #e0e0e0;
+  background: #f8f9fa;
+  color: #666;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all var(--transition);
+  font-size: 0.85rem;
+  font-weight: 500;
+  min-width: 60px;
+  white-space: nowrap;
+}
+
+.view-link:hover {
+  background: #e9ecef;
+  border-color: #ced4da;
+  transform: translateY(-1px);
+  color: var(--accent);
+  text-decoration: none;
 }
 
 .extra-link {
@@ -567,3 +654,27 @@ th.hidden-col, td.hidden-col { display: none; }
 }
 
 /* フリーモード表示デザインはcommon.cssで統一 */
+
+/* フィルターエリアが狭い時のボタン改行 */
+@media (max-width: 1400px) {
+  .filter-row {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .filter-fields {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .filter-buttons {
+    flex-wrap: wrap;
+    justify-content: center;
+    width: 100%;
+    margin-top: 0.5rem;
+  }
+  
+  #btnClearFilters, #btnRefresh {
+    min-width: 120px;
+  }
+}
