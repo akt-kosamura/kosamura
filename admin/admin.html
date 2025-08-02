@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <title>管理ページ - 考査村</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=1200, initial-scale=0.3, user-scalable=yes" />
   <style>
     body {
       font-family: "MS UI Gothic", "MS Sans Serif", sans-serif;
@@ -225,14 +225,15 @@
 </head>
 <body>
   <div class="sidebar">
-    <div class="page-title">管理画面</div>
+    <div class="page-title">投稿管理システム</div>
     <ul class="nav-menu">
       <li><a href="../index.html">▶ ホーム</a></li>
       <li><a href="../pages/upload.html">▶ アップロード</a></li>
       <li><a href="../pages/search.html">▶ データベース</a></li>
       <li><a href="../pages/share.html">▶ 共有・拡散</a></li>
-      <li><a href="../ph-index.html">▶ スマホ版</a></li>
-      <li><a href="admin.html" class="active">▶ 管理画面</a></li>
+             <li><a href="../ph-index.html">▶ スマホ版</a></li>
+       <li style="border-top: 1px solid #ccc; margin-top: 15px; padding-top: 15px;"></li>
+       <li><a href="admin.html" class="active">▶ 投稿管理システム</a></li>
       <li><a href="password-generator.html">▶ ハッシュ値変換ツール</a></li>
       <li class="logout-link"><a href="#" onclick="logout(); return false;">▶ ログアウト</a></li>
     </ul>
@@ -241,15 +242,14 @@
   <div class="main-content">
       <div id="loginForm" style="display:none;">
         <div class="login-container">
-          <div class="login-title">管理画面ログイン</div>
+          <div class="login-title">管理画面へ進む</div>
           <div class="login-form">
             <label for="adminPass">パスワード:</label>
             <input type="password" id="adminPass" placeholder="パスワードを入力してください" onkeypress="if(event.key==='Enter') login();">
             <button onclick="login()" class="login-button">ログイン</button>
           </div>
           <div class="login-instructions">
-            パスワードはスプレッドシートのシート2のA1に保存されています
-          </div>
+            パスワードを忘れた時：ハッシュ値で上書き</div>
         </div>
       </div>
       
@@ -724,14 +724,19 @@
       }
     };
     
-    // ページ離脱時の警告
-    window.addEventListener('beforeunload', function(e) {
-      if (isSaving) {
-        e.preventDefault();
-        e.returnValue = '保存中です。ページを離れると処理が中断される可能性があります。';
-        return e.returnValue;
-      }
-    });
+         // ページ離脱時の警告
+     window.addEventListener('beforeunload', function(e) {
+       if (isSaving) {
+         e.preventDefault();
+         e.returnValue = '保存中です。ページを離れると処理が中断される可能性があります。';
+         return e.returnValue;
+       }
+       
+       // タブを閉じたときにログアウト
+       if (localStorage.getItem('admin_auth') === 'ok') {
+         localStorage.removeItem('admin_auth');
+       }
+     });
     
     // 削除処理
     async function deletePost(id) {
