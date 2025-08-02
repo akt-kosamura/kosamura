@@ -625,6 +625,9 @@ function doGet(e) {
     case 'getData':
       return ContentService.createTextOutput(JSON.stringify(getData()))
         .setMimeType(ContentService.MimeType.JSON);
+    case 'getStats':
+      return ContentService.createTextOutput(JSON.stringify(getStats()))
+        .setMimeType(ContentService.MimeType.JSON);
     case 'testFolderId':
       return ContentService.createTextOutput(JSON.stringify({ result: testCurrentFolderId() }))
         .setMimeType(ContentService.MimeType.JSON);
@@ -714,4 +717,62 @@ function doPost(e) {
     return ContentService.createTextOutput(JSON.stringify({ error: error.message }))
       .setMimeType(ContentService.MimeType.JSON);
   }
-} 
+}
+
+/**
+ * 統計情報を取得する関数
+ * @return {Object} 統計情報オブジェクト
+ */
+function getStats() {
+  try {
+    const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+    const sheet = ss.getSheetByName(SHEET_NAME);
+    
+    if (!sheet) {
+      throw new Error(SHEET_NAME + ' が見つかりません');
+    }
+    
+    // スプレッドシートの行数を取得（ヘッダー行を除く）
+    const lastRow = sheet.getLastRow();
+    const totalPosts = Math.max(0, lastRow - 1); // ヘッダー行を除く
+    
+    // いいね数の合計を計算
+    let totalLikes = 0;
+    if (lastRow > 1) {
+      const likeRange = sheet.getRange(2, 8, lastRow - 1, 1).getValues(); // H列（いいね数）
+      likeRange.forEach(row => {
+        const likeCount = parseInt(row[0]) || 0;
+        totalLikes += likeCount;
+      });
+    }
+    
+    // アクティブユーザー数（過去30日以内に投稿したユーザー数）
+    let activeUsers = 0;
+    if (lastRow > 1) {
+      const dateRange = sheet.getRange(2, 11, lastRow - 1, 1).getValues(); // K列（アップロード日時）
+      const thirtyDaysAgo = new Date();
+      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+      
+      dateRange.forEach(row => {
+        const uploadDate = new Date(row[0]);
+        if (uploadDate >= thirtyDaysAgo) {
+          activeUsers++;
+        }
+      });
+    }
+    
+    return {
+      totalPosts: totalPosts,
+      totalLikes: totalLikes,
+      activeUsers: activeUsers
+    };
+    
+  } catch (error) {
+    Logger.log('getStats error: ' + error);
+    return {
+      totalPosts: 0,
+      totalLikes: 0,
+      activeUsers: 0
+    };
+  }
+}

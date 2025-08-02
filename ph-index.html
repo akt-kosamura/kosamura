@@ -750,7 +750,9 @@
     // 統計情報読み込み
     async function loadStats() {
       try {
-        const stats = await google.script.run.getStats();
+        // GASのgetStats関数を呼び出し
+        const response = await fetch(`${window.location.origin}/exec?function=getStats`);
+        const stats = await response.json();
         
         // 投稿数を表示
         const totalPostsElement = document.getElementById('totalPosts');
