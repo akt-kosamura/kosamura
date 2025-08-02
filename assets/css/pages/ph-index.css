@@ -243,7 +243,7 @@
     /* Main Content */
     .main {
       margin-top: 70px;
-      padding: 0 16px 40px;
+      padding: 0 8px 40px;
       min-height: calc(100vh - 120px);
     }
 
@@ -283,7 +283,7 @@
       -webkit-backdrop-filter: blur(20px);
       border-radius: 20px;
       box-shadow: 0 8px 32px rgba(59, 130, 246, 0.12);
-      margin-bottom: 12px;
+      margin-bottom: 8px;
       overflow: hidden;
       border: 1px solid rgba(255, 255, 255, 0.3);
       transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
@@ -292,12 +292,12 @@
 
     /* YouTube動画カードの特別なスタイル */
     .card.notice {
-      margin-top: 12px;
+      margin-top: 8px;
     }
 
     /* 掲示板カードの特別なスタイル */
     .card.notice + .card.notice {
-      margin-top: 16px;
+      margin-top: 12px;
     }
 
     .card::before {
@@ -322,7 +322,7 @@
     }
 
     .card-content {
-      padding: 12px;
+      padding: 8px;
     }
 
     .card-title {
@@ -724,7 +724,7 @@
     /* Responsive adjustments */
     @media (max-width: 375px) {
       .main {
-        padding: 0 12px 40px;
+        padding: 0 6px 40px;
       }
       
       .hero-title {
@@ -732,7 +732,7 @@
       }
       
       .card-content {
-        padding: 10px;
+        padding: 6px;
       }
       
       .site-title {
@@ -870,7 +870,7 @@
 
     /* Features Section */
     .features-section {
-      margin-bottom: 32px;
+      margin-bottom: 24px;
     }
 
     .section-title {
@@ -878,14 +878,14 @@
       font-weight: 700;
       color: #3b82f6;
       text-align: center;
-      margin-bottom: 24px;
+      margin-bottom: 16px;
       line-height: 1.3;
     }
 
     .features-grid {
       display: grid;
       grid-template-columns: 1fr;
-      gap: 16px;
+      gap: 12px;
     }
 
     .feature-card {
@@ -893,7 +893,7 @@
       backdrop-filter: blur(20px);
       -webkit-backdrop-filter: blur(20px);
       border-radius: 16px;
-      padding: 20px;
+      padding: 16px;
       border: 1px solid rgba(255, 255, 255, 0.3);
       transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       text-align: center;
@@ -935,13 +935,13 @@
 
     /* Stats Section */
     .stats-section {
-      margin-bottom: 32px;
+      margin-bottom: 24px;
     }
 
     .stats-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 12px;
+      gap: 8px;
     }
 
     .stat-card {
@@ -949,7 +949,7 @@
       backdrop-filter: blur(20px);
       -webkit-backdrop-filter: blur(20px);
       border-radius: 12px;
-      padding: 16px;
+      padding: 12px;
       text-align: center;
       border: 1px solid rgba(255, 255, 255, 0.3);
       transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -975,7 +975,7 @@
 
     /* Recent Posts Section */
     .recent-posts-section {
-      margin-bottom: 32px;
+      margin-bottom: 24px;
     }
 
     .posts-grid {
