@@ -32,134 +32,116 @@
     <h1>問題データベース</h1>
     <div class="subtitle">フィルターを使って検索できます</div>
 
-    <div class="filter-section">
-      <div class="filter-row">
-        <div class="filter-group">
-          <label for="grade">学年</label>
-          <select id="grade">
-            <option value="">指定しない</option>
-            <option>高1</option><option>高2</option><option>高3</option>
-          </select>
-        </div>
 
-        <div class="filter-group">
-          <label for="year">年度</label>
-          <select id="year">
-            <option value="">指定しない</option>
-                <option>2020（R2）</option>
-                <option>2021（R3）</option>
-                <option>2022（R4）</option>
-                <option>2023（R5）</option>
-                <option>2024（R6）</option>
-                <option>2025（R7）</option>
-          </select>
-        </div>
+    <div class="combined-section">
+      <div class="filter-section">
+        <div class="filter-row">
+          <div class="filter-group">
+            <label for="grade">学年</label>
+            <select id="grade">
+              <option value="">指定しない</option>
+              <option>高1</option><option>高2</option><option>高3</option>
+            </select>
+          </div>
 
-        <div class="filter-group">
-          <label for="type">種類</label>
-          <select id="type">
-            <option value="">指定しない</option>
-            <option>前期中間</option>
-            <option>前期期末</option>
-            <option>後期中間</option>
-            <option>後期期末</option>
-            <option>考査以外</option>
-          </select>
-        </div>
+          <div class="filter-group">
+            <label for="year">年度</label>
+            <select id="year">
+              <option value="">指定しない</option>
+                  <option>2020（R2）</option>
+                  <option>2021（R3）</option>
+                  <option>2022（R4）</option>
+                  <option>2023（R5）</option>
+                  <option>2024（R6）</option>
+                  <option>2025（R7）</option>
+            </select>
+          </div>
 
-        <div class="filter-group">
-          <label for="subject">科目</label>
-          <select id="subject">
-            <option value="">指定しない</option>
-            <option>現国・論国</option>
-            <option>言文・古探</option>
-            <option>数学Ⅰ・Ⅱ・Ⅲ</option>
-            <option>数学Ａ・Ｂ・Ｃ</option>
-            <option>英語コミュ</option>
-            <option>論理表現</option>
-            <option>化学・化学基礎</option>
-            <option>生物・生物基礎</option>
-            <option>物理・物理基礎</option>
-            <option>地学・地学基礎</option>
-            <option>地理</option>
-            <option>日本史</option>
-            <option>世界史</option>
-            <option>公共</option>
-            <option>情報</option>
-            <option>保健体育</option>
-            <option>家庭科</option>
-            <option>国語</option>
-            <option>数学</option>
-            <option>理科</option>
-            <option>英語</option>
-            <option>地歴</option>
-            <option>その他</option>
-          </select>
-        </div>
+          <div class="filter-group">
+            <label for="type">種類</label>
+            <select id="type">
+              <option value="">指定しない</option>
+              <option>前期中間</option>
+              <option>前期期末</option>
+              <option>後期中間</option>
+              <option>後期期末</option>
+              <option>考査以外</option>
+            </select>
+          </div>
 
-        <div class="filter-group">
-          <label for="stream">文理区分</label>
-          <select id="stream">
-            <option value="">指定しない</option>
-            <option>区分なし</option>
-            <option>理系のみ</option>
-            <option>文系のみ</option>
-            <option>理数科のみ</option>
-          </select>
-        </div>
+          <div class="filter-group">
+            <label for="subject">科目</label>
+            <select id="subject">
+              <option value="">指定しない</option>
+              <option>現国・論国</option>
+              <option>言文・古探</option>
+              <option>数学Ⅰ・Ⅱ・Ⅲ</option>
+              <option>数学Ａ・Ｂ・Ｃ</option>
+              <option>英語コミュ</option>
+              <option>論理表現</option>
+              <option>化学・化学基礎</option>
+              <option>生物・生物基礎</option>
+              <option>物理・物理基礎</option>
+              <option>地学・地学基礎</option>
+              <option>地理</option>
+              <option>日本史</option>
+              <option>世界史</option>
+              <option>公共</option>
+              <option>情報</option>
+              <option>保健体育</option>
+              <option>家庭科</option>
+              <option>国語</option>
+              <option>数学</option>
+              <option>理科</option>
+              <option>英語</option>
+              <option>地歴</option>
+              <option>その他</option>
+            </select>
+          </div>
 
-        <div class="filter-group">
-          <label for="contentType">内容</label>
-          <select id="contentType">
-            <option value="">指定しない</option>
-            <option>問題</option>
-            <option>解答</option>
-            <option>解説</option>
-            <option>セット</option>
-          </select>
-        </div>
+          <div class="filter-group">
+            <label for="stream">文理区分</label>
+            <select id="stream">
+              <option value="">指定しない</option>
+              <option>区分なし</option>
+              <option>理系のみ</option>
+              <option>文系のみ</option>
+              <option>理数科のみ</option>
+            </select>
+          </div>
 
-        <div class="filter-group">
-          <label for="formatSelect">ファイル形式</label>
-          <select id="formatSelect">
-            <option value="">指定しない</option>
-            <option>PDF</option>
-            <option>Word</option>
-            <option>Excel</option>
-            <option>一太郎</option>
-            <option>画像</option>
-          </select>
-        </div>
-
-        <div class="filter-buttons">
-          <button id="btnClearFilters">解除</button>
-          <button id="btnRefresh">更新</button>
+          <div class="filter-buttons">
+            <button id="btnClearFilters">解除</button>
+            <button id="btnRefresh">更新</button>
+          </div>
         </div>
       </div>
-    </div>
 
-    <div class="controls-section">
-      <div class="controls-left">
-        <label><input type="checkbox" id="toggleDate" checked> アップロード</label>
-        <label><input type="checkbox" id="toggleFormatCol"> 形式</label>
-        <label><input type="checkbox" id="toggleEval" checked> 評価</label>
-        <label>
-          コメント表示：
-          <select id="commentMode">
-            <option value="compact">1行表示</option>
-            <option value="lines3">3行表示</option>
-            <option value="none">非表示</option>
+      <div class="section-divider"></div>
+
+      <div class="controls-section">
+        <div class="controls-left">
+          <label><input type="checkbox" id="toggleDate" checked> アップロード</label>
+          <label><input type="checkbox" id="toggleFormatCol"> 形式</label>
+          <label><input type="checkbox" id="toggleEval" checked> 評価</label>
+          <label>
+            コメント表示：
+            <select id="commentMode">
+              <option value="compact">1行表示</option>
+              <option value="lines3">3行表示</option>
+              <option value="none">非表示</option>
+            </select>
+          </label>
+        </div>
+        <div class="controls-right">
+          <label>並び替え：</label>
+          <select id="sortMenu">
+            <option value="upload_desc">アップロード順▼</option>
+            <option value="upload_asc">アップロード順▲</option>
+            <option value="year_desc">年度順▼</option>
+            <option value="year_asc">年度順▲</option>
           </select>
-        </label>
-      </div>
-      <div class="controls-right">
-        <label>並び順：</label>
-        <select id="sortMenu">
-          <option value="upload_desc">アップロード順▼</option>
-          <option value="upload_asc">アップロード順▲</option>
-          <option value="year_desc">年度順▼</option>
-          <option value="year_asc">年度順▲</option>
-        </select>
+        </div>
       </div>
     </div>
 
@@ -191,13 +173,18 @@
         </thead>
         <tbody id="resultBody">
           <tr id="loadingRow">
-            <td colspan="11" style="text-align:center;color:#666">読み込み中…（表は横スクロール対応）</td>
+                         <td colspan="11" style="text-align:center;color:#666">
+               <div class="loading-placeholder">
+                 <div class="loading-spinner"></div>
+                 <p>読み込み中…（表は横スクロール対応）</p>
+               </div>
+             </td>
           </tr>
         </tbody>
       </table>
-    </div>
+        </div>
   </div>
-<div class="copyright-note">Copyright© 2020 考査村 All Rights Reserved.</div><br>
+  <div class="copyright-note">Copyright© 2020 考査村 All Rights Reserved.</div><br>
 <style>
 .copyright-note {
   font-size: 20px;
@@ -338,19 +325,19 @@ function showAdPopup(fileUrl) {
         const badBtn = tr.querySelector('.btn-bad');
         let count = parseInt(btn.textContent.replace(/\D/g,''),10);
         console.log('Like button clicked:', { id, prev, count, buttonText: btn.textContent, buttonElement: btn, buttonClass: btn.className });
-        if (prev==='good') {
-          btn.classList.remove('active'); localStorage.removeItem('vote_' + id); kosamuraAPI.unlike(Number(id));
-          btn.textContent = `❤ ${--count}`;
-          console.log('Unlike:', { newCount: count, newText: btn.textContent, buttonElement: btn, buttonClass: btn.className });
-        } else {
-          if (prev==='bad') {
-            let bc = parseInt(badBtn.textContent.replace(/\D/g,''),10);
-            badBtn.classList.remove('active'); localStorage.removeItem('vote_' + id); kosamuraAPI.unbad(Number(id));
-            badBtn.textContent = `👎 ${--bc}`;
-            console.log('Unbad:', { newCount: bc, newText: badBtn.textContent, buttonElement: badBtn, buttonClass: badBtn.className });
-          }
-          btn.classList.add('active'); localStorage.setItem('vote_' + id, 'good'); kosamuraAPI.like(Number(id));
-          btn.textContent = `❤ ${++count}`;
+                 if (prev==='good') {
+           btn.classList.remove('active'); localStorage.removeItem('vote_' + id); kosamuraAPI.unlike(Number(id));
+           btn.textContent = `${--count}`;
+           console.log('Unlike:', { newCount: count, newText: btn.textContent, buttonElement: btn, buttonClass: btn.className });
+         } else {
+                     if (prev==='bad') {
+             let bc = parseInt(badBtn.textContent.replace(/\D/g,''),10);
+             badBtn.classList.remove('active'); localStorage.removeItem('vote_' + id); kosamuraAPI.unbad(Number(id));
+             badBtn.textContent = `${--bc}`;
+             console.log('Unbad:', { newCount: bc, newText: badBtn.textContent, buttonElement: badBtn, buttonClass: badBtn.className });
+           }
+           btn.classList.add('active'); localStorage.setItem('vote_' + id, 'good'); kosamuraAPI.like(Number(id));
+           btn.textContent = `${++count}`;
           console.log('Like:', { newCount: count, newText: btn.textContent, buttonElement: btn, buttonClass: btn.className });
         }
       };
@@ -361,19 +348,19 @@ function showAdPopup(fileUrl) {
         const likeBtn = tr.querySelector('.btn-like');
         let count = parseInt(btn.textContent.replace(/\D/g,''),10);
         console.log('Bad button clicked:', { id, prev, count, buttonText: btn.textContent });
-        if (prev==='bad') {
-          btn.classList.remove('active'); localStorage.removeItem('vote_' + id); kosamuraAPI.unbad(Number(id));
-          btn.textContent = `👎 ${--count}`;
-          console.log('Unbad:', { newCount: count, newText: btn.textContent });
-        } else {
-          if (prev==='good') {
-            let lc = parseInt(likeBtn.textContent.replace(/\D/g,''),10);
-            likeBtn.classList.remove('active'); localStorage.removeItem('vote_' + id); kosamuraAPI.unlike(Number(id));
-            likeBtn.textContent = `❤ ${--lc}`;
-            console.log('Unlike:', { newCount: lc, newText: likeBtn.textContent });
-          }
-          btn.classList.add('active'); localStorage.setItem('vote_' + id, 'bad'); kosamuraAPI.bad(Number(id));
-          btn.textContent = `👎 ${++count}`;
+                 if (prev==='bad') {
+           btn.classList.remove('active'); localStorage.removeItem('vote_' + id); kosamuraAPI.unbad(Number(id));
+           btn.textContent = `${--count}`;
+           console.log('Unbad:', { newCount: count, newText: btn.textContent });
+         } else {
+                     if (prev==='good') {
+             let lc = parseInt(likeBtn.textContent.replace(/\D/g,''),10);
+             likeBtn.classList.remove('active'); localStorage.removeItem('vote_' + id); kosamuraAPI.unlike(Number(id));
+             likeBtn.textContent = `${--lc}`;
+             console.log('Unlike:', { newCount: lc, newText: likeBtn.textContent });
+           }
+           btn.classList.add('active'); localStorage.setItem('vote_' + id, 'bad'); kosamuraAPI.bad(Number(id));
+           btn.textContent = `${++count}`;
           console.log('Bad:', { newCount: count, newText: btn.textContent });
         }
       };
@@ -408,7 +395,7 @@ function showAdPopup(fileUrl) {
   // データ取得
   async function fetchData() {
     const tbody = document.getElementById('resultBody');
-    tbody.innerHTML = '<tr id="loadingRow"><td colspan="11" style="text-align:center;color:#666">読み込み中…（表は横スクロール対応）</td></tr>';
+    tbody.innerHTML = '<tr id="loadingRow"><td colspan="11" style="text-align:center;color:#666"><div class="loading-placeholder"><div class="loading-spinner"></div><p>読み込み中…（表は横スクロール対応）</p></div></td></tr>';
     try {
       const data = await kosamuraAPI.getData();
       buildRows(data);
@@ -429,9 +416,9 @@ function showAdPopup(fileUrl) {
     data.forEach(item => {
       const vt = localStorage.getItem('vote_' + item.id);
       const tr = document.createElement('tr');
-      ['grade','year','type','subject','stream','contentType','format'].forEach(k => {
-        tr.dataset[k] = String(item[k] || '');
-      });
+             ['grade','year','type','subject','stream'].forEach(k => {
+         tr.dataset[k] = String(item[k] || '');
+       });
       tr.dataset.date = String(item.date || '');
       const safe = String(item.comment || '').replace(/</g,'&lt;').replace(/>/g,'&gt;');
       const rel = formatRelativeTime(item.date);
@@ -446,26 +433,46 @@ function showAdPopup(fileUrl) {
         <td><a href="#" class="view-link" data-url="${String(item.url || '')}">見る</a></td>
         <td class="comment-cell" data-comment="${safe}"><div class="comment-text">${safe}</div></td>
         <td class="col-date date-cell">${rel}</td>
-        <td class="col-eval eval-cell">
-          <button class="btn-like${vt==='good'?' active':''}" data-id="${item.id}">❤ ${item.likes || 0}</button>
-          <button class="btn-bad${vt==='bad'?' active':''}" data-id="${item.id}">👎 ${item.bad || 0}</button>
-        </td>`;
+                 <td class="col-eval eval-cell">
+           <button class="btn-like${vt==='good'?' active':''}" data-id="${item.id}">${item.likes || 0}</button>
+           <button class="btn-bad${vt==='bad'?' active':''}" data-id="${item.id}">${item.bad || 0}</button>
+         </td>`;
       tbody.appendChild(tr);
-    });
-    attachHandlers();
-    applyFilters();
-    applySort();
-    applyColumns();
-  }
+         });
+     attachHandlers();
+     applyFilters();
+     applySort();
+     applyColumns();
+   }
 
   // フィルタ適用
   function applyFilters() {
+    let visibleCount = 0;
     document.querySelectorAll('#resultBody tr').forEach(tr => {
       if (!tr.dataset) return;
-      const ok = ['grade','year','type','subject','stream','contentType','format']
+      const ok = ['grade','year','type','subject','stream']
         .every(k => !filter[k] || tr.dataset[k] === filter[k]);
       tr.style.display = ok ? '' : 'none';
+      if (ok) visibleCount++;
     });
+    
+    // フィルターが適用されているかチェック
+    const hasActiveFilters = Object.values(filter).some(value => value !== '');
+    
+    // フィルターが適用されていて、表示される行がない場合
+    if (hasActiveFilters && visibleCount === 0) {
+      const tbody = document.getElementById('resultBody');
+      const noResultsRow = document.createElement('tr');
+      noResultsRow.innerHTML = '<td colspan="11" style="text-align:center;color:#666">一致するものはありませんでした。</td>';
+      noResultsRow.id = 'noResultsRow';
+      tbody.appendChild(noResultsRow);
+    } else {
+      // 結果がある場合は「一致するものはありませんでした。」の行を削除
+      const noResultsRow = document.getElementById('noResultsRow');
+      if (noResultsRow) {
+        noResultsRow.remove();
+      }
+    }
   }
 
   // ソート適用
@@ -548,13 +555,12 @@ function showAdPopup(fileUrl) {
   document.addEventListener('DOMContentLoaded', () => {
     updateFreeModeStatus();
     setInterval(updateFreeModeStatus, 1000);
-    ['grade','year','type','subject','stream','contentType'].forEach(id => {
+    ['grade','year','type','subject','stream'].forEach(id => {
       document.getElementById(id).onchange = e => { filter[id] = e.target.value; applyFilters(); };
     });
-    document.getElementById('formatSelect').onchange = e => { filter.format = e.target.value; applyFilters(); };
     document.getElementById('btnClearFilters').onclick = () => {
-      ['grade','year','type','subject','stream','contentType','format'].forEach(k => {
-        const el = k==='format' ? document.getElementById('formatSelect') : document.getElementById(k);
+      ['grade','year','type','subject','stream'].forEach(k => {
+        const el = document.getElementById(k);
         el.value = ''; filter[k] = '';
       });
       applyFilters();
@@ -565,8 +571,8 @@ function showAdPopup(fileUrl) {
     document.getElementById('toggleEval').onchange = applyColumns;
     document.getElementById('commentMode').onchange = applyColumns;
     document.getElementById('sortMenu').onchange = applySort;
-    applyColumns();
-    fetchData();
+         applyColumns();
+     fetchData();
 
     // 横スクロール誘導アニメーションを数秒だけ表示（オーバーレイ）
     const overlay = document.getElementById('scroll-hint-overlay');

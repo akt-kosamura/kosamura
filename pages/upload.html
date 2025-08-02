@@ -74,7 +74,7 @@
         </div>
       </div>
     </div>
-    <div class="card step2-card" id="step2Card" style="margin-top:2.5rem;">
+    <div class="card" id="step2Card" style="margin-top:2.5rem;">
       <div class="card-title" id="step2Title">
         <span class="step-label">Step2 情報入力</span>
         <button type="button" class="back-btn" id="backToStep1Btn">ファイル編集に戻る</button>
@@ -144,8 +144,8 @@
               </td>
             </tr>
           </table>
-          <button type="submit" class="upload-btn" style="margin-top:1.2em;">アップロード</button>
-          <div style="margin-top:1em; margin-bottom:0.7em; color:#0071e3; font-size:0.98em; line-height:1.6; text-align:center;">
+          <button type="submit" class="upload-btn" id="uploadButton" style="margin-top:1.2em;">アップロード</button>
+          <div id="uploadInfo" style="margin-top:1em; margin-bottom:0.7em; color:#0071e3; font-size:0.98em; line-height:1.6; text-align:center;">
             アップロードには時間がかかる場合もあります。改善中です。<br>
             アップロード後にフリーモードの時間が24時間追加されます。
           </div>
@@ -356,12 +356,12 @@
         card.style.paddingTop = '';
         card.style.paddingBottom = '2.5rem';
         const title = card.querySelector('.card-title');
-        if (title) title.style.borderBottom = '1px solid #e0e0e0';
+        if (title) title.style.borderBottom = 'none';
       }
       function closeCard(card) {
         card.querySelector('.card-content').classList.add('closed');
         card.style.paddingTop = '1rem';
-        card.style.paddingBottom = '1rem';
+        card.style.paddingBottom = '0';
         const title = card.querySelector('.card-title');
         if (title) title.style.borderBottom = 'none';
       }
@@ -611,6 +611,13 @@
             window.isUploading = false;
             btn.classList.remove('loading');
             btn.textContent = 'アップロード完了';
+            
+            // アップロードボタンと説明文を非表示
+            const uploadButton = document.getElementById('uploadButton');
+            const uploadInfo = document.getElementById('uploadInfo');
+            if (uploadButton) uploadButton.style.display = 'none';
+            if (uploadInfo) uploadInfo.style.display = 'none';
+            
             message.style.display = 'block';
             message.textContent = 'アップロード成功　考査村が進歩しました。ご協力ありがとうございます。';
             message.style.background = '#e0ffe0';
@@ -657,13 +664,17 @@
         message.style.display = 'none';
         document.getElementById('afterUploadBtns').style.display = 'none';
         fileViewLink.style.display = 'none';
-        // アップロードボタンの状態リセット
-        const uploadBtn = metaForm.querySelector('button[type="submit"].upload-btn');
-        if (uploadBtn) {
-          uploadBtn.disabled = false;
-          uploadBtn.classList.remove('loading');
-          uploadBtn.textContent = 'アップロード';
+        
+        // アップロードボタンと説明文を再表示
+        const uploadButton = document.getElementById('uploadButton');
+        const uploadInfo = document.getElementById('uploadInfo');
+        if (uploadButton) {
+          uploadButton.style.display = 'block';
+          uploadButton.disabled = false;
+          uploadButton.classList.remove('loading');
+          uploadButton.textContent = 'アップロード';
         }
+        if (uploadInfo) uploadInfo.style.display = 'block';
       });
     });
   </script>

@@ -40,7 +40,7 @@ h1 {
 .card {
   background: var(--bg-card);
   border-radius: 12px;
-  box-shadow: none;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.1);
   max-width: 800px;
   width: 100%;
   margin: 0 auto 10px auto;
@@ -51,14 +51,14 @@ h1 {
   overflow: hidden;
 }
 .card:hover {
-  box-shadow: none;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.15);
 }
 .card-title {
   padding: 8px 32px 18px 32px;
   font-size: 18px;
   font-weight: bold;
   color: var(--accent);
-  border-bottom: 1px solid #e0e0e0;
+  border-bottom: none;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -145,14 +145,14 @@ select, textarea {
   font-size: 15px;
   border: 1px solid #d1d1d6;
   border-radius: 12px;
-  transition: border-color var(--transition), box-shadow var(--transition), transform var(--transition);
+  transition: border-color var(--transition), transform var(--transition);
   appearance: none;
   background: #f9f9fb;
 }
 select:focus, textarea:focus {
   outline: none;
   border-color: var(--accent);
-  box-shadow: 0 0 0 5px rgba(0,113,227,0.3);
+  box-shadow: none;
   transform: translateY(-1px);
 }
 textarea {
@@ -174,11 +174,13 @@ textarea::placeholder {
 .radios input { margin-right: 6px; accent-color: var(--accent); }
 .upload-btn {
   display: block; width: 100%;
-  padding: 12px; margin-top: 24px; margin-bottom: 16px;
+  padding: 16px 12px; margin-top: 24px; margin-bottom: 16px;
   background: var(--accent); color: #fff;
   font-size: 16px; border: none;
   border-radius: 12px; cursor: pointer;
   transition: background var(--transition), transform var(--transition);
+  min-height: 48px;
+  line-height: 1.2;
 }
 .upload-btn.loading {
   background: var(--accent-hover);
@@ -374,10 +376,22 @@ textarea::placeholder {
 }
 /* フリーモード表示デザインはcommon.cssで統一 */
 
-/* Step2専用スタイル */
-.step2-card {
-  box-shadow: none !important;
+/* Step2専用スタイル - 参考コードと同じ見た目にするため削除 */ 
+
+/* metaFormの枠を削除 */
+#metaForm {
+  border: none;
+  box-shadow: none;
+  background: transparent;
+  border-radius: 0;
+  padding: 0;
+  margin: 0;
 }
-.step2-card:hover {
+
+/* form-tableのcommon.cssスタイルを上書き */
+.form-table {
   box-shadow: none !important;
+  background: transparent !important;
+  border-radius: 0 !important;
+  overflow: visible !important;
 } 
