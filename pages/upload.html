@@ -31,6 +31,15 @@
   <main>
     <h1>PDFアップロード</h1>
     <div class="subtitle">複数の画像やPDFを1つにまとめて、直接アップロードできます。</div>
+    
+    <!-- 写真撮影時の注意ボタン -->
+    <div style="text-align: center; margin-bottom: 1rem;">
+      <button type="button" id="photoGuideBtn" style="padding: 0.8em 1.5em; border-radius: 8px; border: 1px solid #0071e3; background: #fff; color: #0071e3; font-weight: bold; cursor: pointer; font-size: 1rem; display: inline-flex; align-items: center; gap: 0.5em;">
+        <i class="fa-solid fa-camera"></i>
+        写真撮影時のお願い
+      </button>
+    </div>
+    
     <div class="card" id="step1Card">
       <div class="card-title" id="step1Title"><span class="step-label">Step1 ファイル追加・編集</span></div>
       <div class="card-content" id="step1Content">
@@ -811,8 +820,104 @@
           console.warn('アップロード中にページが非表示になりました。アップロードは継続されますが、完了までお待ちください。');
         }
       });
+      
+      // 写真撮影時の注意ポップアップ機能
+      const photoGuideBtn = document.getElementById('photoGuideBtn');
+      const photoGuideModal = document.getElementById('photoGuideModal');
+      const closePhotoGuide = document.getElementById('closePhotoGuide');
+      
+      // ボタンクリックでポップアップを開く
+      photoGuideBtn.addEventListener('click', () => {
+        photoGuideModal.style.display = 'flex';
+        document.body.style.overflow = 'hidden'; // 背景スクロールを無効化
+      });
+      
+      // 閉じるボタンでポップアップを閉じる
+      closePhotoGuide.addEventListener('click', () => {
+        photoGuideModal.style.display = 'none';
+        document.body.style.overflow = ''; // 背景スクロールを有効化
+      });
+      
+      // モーダル外クリックでポップアップを閉じる
+      photoGuideModal.addEventListener('click', (e) => {
+        if (e.target === photoGuideModal) {
+          photoGuideModal.style.display = 'none';
+          document.body.style.overflow = '';
+        }
+      });
+      
+      // ESCキーでポップアップを閉じる
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && photoGuideModal.style.display === 'flex') {
+          photoGuideModal.style.display = 'none';
+          document.body.style.overflow = '';
+        }
+      });
     });
   </script>
+  
+  <!-- 写真撮影時の注意ポップアップ -->
+  <div id="photoGuideModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 1000; display: flex; justify-content: center; align-items: center;">
+    <div style="background: white; border-radius: 12px; padding: 2rem; max-width: 90%; max-height: 90%; overflow-y: auto; position: relative; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);">
+      <!-- 閉じるボタン -->
+      <button id="closePhotoGuide" style="position: absolute; top: 1rem; right: 1rem; background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #666; padding: 0.5rem; border-radius: 50%; transition: background-color 0.2s;">
+        <i class="fa-solid fa-times"></i>
+      </button>
+      
+      <!-- ポップアップの内容 -->
+      <div style="max-width: 800px;">
+        <h2 style="color: #0071e3; margin-bottom: 1.5rem; text-align: center; font-size: 1.5rem;">撮影時のお願い</h2>
+        
+        <div style="line-height: 1.8; font-size: 1rem;">
+                       <div style="margin-bottom: 2rem;">
+               <h3 style="color: #333; margin-bottom: 1rem; font-size: 1.2rem;">①可能な場合は、問題・解答・解説を分けて別々にアップしてください。</h3>
+               <p style="color: #555; margin-left: 1rem;">ただし、解説のなかに解答が印刷されている場合や、問題用紙に答えが書き込まれている場合などはそれを提供していただいて構いません。</p>
+               <p style="color: #555; margin-left: 1rem;">その際、内容選択では「セット」を選んでください。</p>
+             </div>
+          
+                       <div style="margin-bottom: 2rem;">
+               <h3 style="color: #333; margin-bottom: 1rem; font-size: 1.2rem;">②お手数ですが、すでに同じ内容が投稿されていないか検索をお願いします。</h3>
+               <p style="color: #555; margin-left: 1rem;">問題データベース画面から検索をお願いします。</p>
+             </div>
+          
+                       <div style="margin-bottom: 2rem;">
+               <h3 style="color: #333; margin-bottom: 1rem; font-size: 1.2rem;">③冊子形式の問題を投稿するときは、なるべく片ページずつ撮影してください。</h3>
+               <div style="display: flex; align-items: flex-start; gap: 1rem; margin: 1rem 0; flex-wrap: wrap;">
+                 <div style="flex: 1; min-width: 200px;">
+                   <p style="color: #555; margin-left: 1rem;">圧縮処理の都合で文字が潰れてしまうためです。ただし、ページ数が多い場合（15ページ以上）の場合は見開きを推奨します。（ファイル数が多くなるとアップロード時間がとても長くなってしまうため）</p>
+                   <div style="background: #f8f9fa; padding: 1rem; border-radius: 8px; margin-top: 1rem; border-left: 4px solid #0071e3;">
+                     <p style="margin: 0; color: #333; font-weight: 500;">【追記】</p>
+                     <p style="margin: 0.5rem 0 0 0; color: #555;">全体でB4サイズはギリギリ読めました。<br>文字が小さくない場合は、片ページB5までなら見開きでもOK。</p>
+                   </div>
+                 </div>
+                 <div style="flex: 0 0 150px; text-align: center;">
+                   <img src="../assets/page.png" alt="ページ撮影" style="max-width: 100%; height: auto; border-radius: 8px;">
+                 </div>
+               </div>
+             </div>
+          
+                       <div style="margin-bottom: 2rem;">
+               <h3 style="color: #333; margin-bottom: 1rem; font-size: 1.2rem;">④用紙いっぱいを撮影するようにしてください</h3>
+               <div style="display: flex; align-items: center; gap: 1rem; margin: 1rem 0; flex-wrap: wrap;">
+                 <div style="flex: 1; min-width: 200px;">
+                   <p style="color: #555; margin-left: 1rem;">B4以上の用紙では特にご留意ください。<br>圧縮処理をするので文字が読めなくなってしまいます。</p>
+                 </div>
+                 <div style="flex: 0 0 150px; text-align: center;">
+                   <img src="../assets/margin.png" alt="用紙全体撮影" style="max-width: 100%; height: auto; border-radius: 8px;">
+                 </div>
+               </div>
+             </div>
+          
+                       <div style="margin-bottom: 2rem;">
+               <h3 style="color: #333; margin-bottom: 1rem; font-size: 1.2rem;">⑤氏名などの個人情報は処理してください。</h3>
+               <p style="color: #555; margin-left: 1rem;">撮影時に注意 または 画像を編集して見えないようにすることを推奨します。<br>なお、ファイル名とファイルに含まれるタグ情報（日時など）は一切アップロードされない仕様なのでご安心ください。</p>
+               <p style="color: #555; margin-left: 1rem;">削除申請はフォームまたはメールで受け付けておりますが、投稿後にすぐ削除することはできませんのでご注意ください。</p>
+             </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
   <script src="../assets/js/api.js"></script>
 </body>
 </html>
