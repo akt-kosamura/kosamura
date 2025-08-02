@@ -196,10 +196,10 @@ main {
 .controls-left input[type="checkbox"]:checked::after {
   content: '';
   position: absolute;
-  left: 4px;
-  top: 1px;
-  width: 7px;
-  height: 11px;
+  left: 3px;
+  top: 0px;
+  width: 6px;
+  height: 10px;
   border: solid white;
   border-width: 0 2px 2px 0;
   transform: rotate(45deg);
@@ -278,7 +278,7 @@ main {
 }
 
 .table-card td.comment-cell { 
-  width: 300px;
+  width: 300px; 
   min-width: 300px;
   max-width: 300px;
   white-space: normal;
@@ -658,20 +658,21 @@ th.hidden-col, td.hidden-col { display: none; }
 /* フィルターエリアが狭い時のボタン改行 */
 @media (max-width: 1400px) {
   .filter-row {
-    flex-direction: column;
+    flex-direction: row;
+    flex-wrap: wrap;
     gap: 1rem;
   }
   
   .filter-fields {
-    width: 100%;
-    justify-content: center;
+    width: auto;
+    justify-content: flex-start;
   }
   
   .filter-buttons {
     flex-wrap: wrap;
     justify-content: center;
-    width: 100%;
-    margin-top: 0.5rem;
+    width: auto;
+    margin-top: 0;
   }
   
   #btnClearFilters, #btnRefresh {
