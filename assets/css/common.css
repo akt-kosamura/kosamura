@@ -128,7 +128,7 @@ nav a.active {
 /* ===== フリーモードステータス ===== */
 .free-mode-status {
   min-width: 120px;
-  text-align: right;
+  text-align: center;
   font-size: 15px;
   font-weight: bold;
   padding: 4px 14px;
@@ -137,7 +137,7 @@ nav a.active {
   margin-right: 3px;
   display: flex;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: center;
   height: 34px;
   box-sizing: border-box;
 }
