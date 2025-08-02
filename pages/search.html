@@ -306,68 +306,82 @@ function showAdPopup(fileUrl) {
     }, 2000);
   }
 
-  // 「見る」リンクの処理
+  // 「見る」リンクの処理（パフォーマンス改善版）
+  function attachHandlersOptimized() {
+    // イベント委譲を使用して一括でイベントリスナーを設定
+    const tbody = document.getElementById('resultBody');
+    
+    // 既存のイベントリスナーを削除（重複防止）
+    tbody.removeEventListener('click', handleTableClick);
+    
+    // 新しいイベントリスナーを追加
+    tbody.addEventListener('click', handleTableClick);
+  }
+  
+  // テーブル全体のクリックイベントハンドラー
+  function handleTableClick(e) {
+    const target = e.target;
+    
+    // 「見る」リンクの処理
+    if (target.classList.contains('view-link')) {
+      e.preventDefault();
+      const fileUrl = target.dataset.url;
+      if (isInFreeMode()) {
+        // フリーモードなら直接開く
+        window.open(fileUrl, '_blank', 'noopener,noreferrer');
+      } else {
+        // 通常モードはポップアップ
+        showAdPopup(fileUrl);
+      }
+      return;
+    }
+    
+    // いいねボタンの処理
+    if (target.classList.contains('btn-like')) {
+      const id = target.dataset.id, prev = localStorage.getItem('vote_' + id), tr = target.closest('tr');
+      const badBtn = tr.querySelector('.btn-bad');
+      let count = parseInt(target.textContent.replace(/\D/g,''),10);
+      
+      if (prev==='good') {
+        target.classList.remove('active'); localStorage.removeItem('vote_' + id); kosamuraAPI.unlike(Number(id));
+        target.textContent = `${--count}`;
+      } else {
+        if (prev==='bad') {
+          let bc = parseInt(badBtn.textContent.replace(/\D/g,''),10);
+          badBtn.classList.remove('active'); localStorage.removeItem('vote_' + id); kosamuraAPI.unbad(Number(id));
+          badBtn.textContent = `${--bc}`;
+        }
+        target.classList.add('active'); localStorage.setItem('vote_' + id, 'good'); kosamuraAPI.like(Number(id));
+        target.textContent = `${++count}`;
+      }
+      return;
+    }
+    
+    // バッドボタンの処理
+    if (target.classList.contains('btn-bad')) {
+      const id = target.dataset.id, prev = localStorage.getItem('vote_' + id), tr = target.closest('tr');
+      const likeBtn = tr.querySelector('.btn-like');
+      let count = parseInt(target.textContent.replace(/\D/g,''),10);
+      
+      if (prev==='bad') {
+        target.classList.remove('active'); localStorage.removeItem('vote_' + id); kosamuraAPI.unbad(Number(id));
+        target.textContent = `${--count}`;
+      } else {
+        if (prev==='good') {
+          let lc = parseInt(likeBtn.textContent.replace(/\D/g,''),10);
+          likeBtn.classList.remove('active'); localStorage.removeItem('vote_' + id); kosamuraAPI.unlike(Number(id));
+          likeBtn.textContent = `${--lc}`;
+        }
+        target.classList.add('active'); localStorage.setItem('vote_' + id, 'bad'); kosamuraAPI.bad(Number(id));
+        target.textContent = `${++count}`;
+      }
+      return;
+    }
+  }
+  
+  // 後方互換性のため残す
   function attachHandlers() {
-    document.querySelectorAll('.view-link').forEach(link => {
-      link.onclick = e => {
-        e.preventDefault();
-        const fileUrl = link.dataset.url;
-        if (isInFreeMode()) {
-          // フリーモードなら直接開く
-          window.open(fileUrl, '_blank', 'noopener,noreferrer');
-        } else {
-          // 通常モードはポップアップ
-          showAdPopup(fileUrl);
-        }
-      };
-    });
-
-    document.querySelectorAll('.btn-like').forEach(btn => {
-      btn.onclick = () => {
-        const id = btn.dataset.id, prev = localStorage.getItem('vote_' + id), tr = btn.closest('tr');
-        const badBtn = tr.querySelector('.btn-bad');
-        let count = parseInt(btn.textContent.replace(/\D/g,''),10);
-        console.log('Like button clicked:', { id, prev, count, buttonText: btn.textContent, buttonElement: btn, buttonClass: btn.className });
-                 if (prev==='good') {
-           btn.classList.remove('active'); localStorage.removeItem('vote_' + id); kosamuraAPI.unlike(Number(id));
-           btn.textContent = `${--count}`;
-           console.log('Unlike:', { newCount: count, newText: btn.textContent, buttonElement: btn, buttonClass: btn.className });
-         } else {
-                     if (prev==='bad') {
-             let bc = parseInt(badBtn.textContent.replace(/\D/g,''),10);
-             badBtn.classList.remove('active'); localStorage.removeItem('vote_' + id); kosamuraAPI.unbad(Number(id));
-             badBtn.textContent = `${--bc}`;
-             console.log('Unbad:', { newCount: bc, newText: badBtn.textContent, buttonElement: badBtn, buttonClass: badBtn.className });
-           }
-           btn.classList.add('active'); localStorage.setItem('vote_' + id, 'good'); kosamuraAPI.like(Number(id));
-           btn.textContent = `${++count}`;
-          console.log('Like:', { newCount: count, newText: btn.textContent, buttonElement: btn, buttonClass: btn.className });
-        }
-      };
-    });
-    document.querySelectorAll('.btn-bad').forEach(btn => {
-      btn.onclick = () => {
-        const id = btn.dataset.id, prev = localStorage.getItem('vote_' + id), tr = btn.closest('tr');
-        const likeBtn = tr.querySelector('.btn-like');
-        let count = parseInt(btn.textContent.replace(/\D/g,''),10);
-        console.log('Bad button clicked:', { id, prev, count, buttonText: btn.textContent });
-                 if (prev==='bad') {
-           btn.classList.remove('active'); localStorage.removeItem('vote_' + id); kosamuraAPI.unbad(Number(id));
-           btn.textContent = `${--count}`;
-           console.log('Unbad:', { newCount: count, newText: btn.textContent });
-         } else {
-                     if (prev==='good') {
-             let lc = parseInt(likeBtn.textContent.replace(/\D/g,''),10);
-             likeBtn.classList.remove('active'); localStorage.removeItem('vote_' + id); kosamuraAPI.unlike(Number(id));
-             likeBtn.textContent = `${--lc}`;
-             console.log('Unlike:', { newCount: lc, newText: likeBtn.textContent });
-           }
-           btn.classList.add('active'); localStorage.setItem('vote_' + id, 'bad'); kosamuraAPI.bad(Number(id));
-           btn.textContent = `${++count}`;
-          console.log('Bad:', { newCount: count, newText: btn.textContent });
-        }
-      };
-    });
+    attachHandlersOptimized();
   }
 
   // 相対時間表示関数
@@ -440,7 +454,7 @@ function showAdPopup(fileUrl) {
     }
   }
 
-  // 結果描画
+  // 結果描画（パフォーマンス改善版）
   function buildRows(data) {
     const tbody = document.getElementById('resultBody');
     tbody.innerHTML = '';
@@ -448,12 +462,16 @@ function showAdPopup(fileUrl) {
       tbody.innerHTML = '<tr><td colspan="11" style="text-align:center;color:#666">データがありません</td></tr>';
       return;
     }
+    
+    // DocumentFragmentを使用してDOM操作を最適化
+    const fragment = document.createDocumentFragment();
+    
     data.forEach(item => {
       const vt = localStorage.getItem('vote_' + item.id);
       const tr = document.createElement('tr');
-             ['grade','year','type','subject','stream'].forEach(k => {
-         tr.dataset[k] = String(item[k] || '');
-       });
+      ['grade','year','type','subject','stream'].forEach(k => {
+        tr.dataset[k] = String(item[k] || '');
+      });
       tr.dataset.date = String(item.date || '');
       const safe = String(item.comment || '').replace(/</g,'&lt;').replace(/>/g,'&gt;');
       const rel = formatRelativeTime(item.date);
@@ -468,17 +486,26 @@ function showAdPopup(fileUrl) {
         <td class="comment-cell" data-comment="${safe}"><div class="comment-text">${safe}</div></td>
         <td class="link-cell"><a href="#" class="view-link" data-url="${String(item.url || '')}">見る</a></td>
         <td class="col-date date-cell">${rel}</td>
-                 <td class="col-eval eval-cell">
-           <button class="btn-like${vt==='good'?' active':''}" data-id="${item.id}">${item.likes || 0}</button>
-           <button class="btn-bad${vt==='bad'?' active':''}" data-id="${item.id}">${item.bad || 0}</button>
-         </td>`;
-      tbody.appendChild(tr);
-         });
-     attachHandlers();
-     applyFilters();
-     applySort();
-     applyColumns();
-   }
+        <td class="col-eval eval-cell">
+          <button class="btn-like${vt==='good'?' active':''}" data-id="${item.id}">${item.likes || 0}</button>
+          <button class="btn-bad${vt==='bad'?' active':''}" data-id="${item.id}">${item.bad || 0}</button>
+        </td>`;
+      fragment.appendChild(tr);
+    });
+    
+    // 一括でDOMに追加
+    tbody.appendChild(fragment);
+    
+    // イベントリスナーを一括設定（委譲を使用）
+    attachHandlersOptimized();
+    
+    // フィルタ、ソート、カラム表示を適用
+    requestAnimationFrame(() => {
+      applyFilters();
+      applySort();
+      applyColumns();
+    });
+  }
 
   // フィルタ適用
   function applyFilters() {
@@ -534,57 +561,78 @@ function showAdPopup(fileUrl) {
     rows.forEach(r => tb.appendChild(r));
   }
 
-  // カラム表示制御
+  // カラム表示制御（パフォーマンス改善版）
   function applyColumns() {
-    document.querySelectorAll('.col-date').forEach(c => c.classList.toggle('hidden-col', !document.getElementById('toggleDate').checked));
-    document.querySelectorAll('.format-cell').forEach(c => c.classList.toggle('hidden-col', !document.getElementById('toggleFormatCol').checked));
-    document.querySelectorAll('th.col-format').forEach(th => th.classList.toggle('hidden-col', !document.getElementById('toggleFormatCol').checked));
-    document.querySelectorAll('.col-eval').forEach(c => c.classList.toggle('hidden-col', !document.getElementById('toggleEval').checked));
-
-    const mode = document.getElementById('commentMode').value;
-    document.querySelectorAll('th.col-comment, td.comment-cell').forEach(el => el.classList.toggle('hidden-col', mode==='none'));
-    document.querySelectorAll('.comment-cell .comment-text').forEach(box => {
-      const td = box.parentElement;
-      td.querySelectorAll('a.extra-link').forEach(a => a.remove());
-      box.style.overflow = 'hidden';
-      box.style.display = '-webkit-box';
-      box.style.webkitBoxOrient = 'vertical';
-      if (mode === 'compact') {
-        box.style.webkitLineClamp = '1';
-        box.style.maxHeight = '1.4em';
-      } else if (mode === 'lines3') {
-        box.style.webkitLineClamp = '3';
-        box.style.maxHeight = 'calc(3 * 1.4em)';
-      } else if (mode === 'none') {
-        return;
-      } else {
-        box.style.webkitLineClamp = 'none';
-        box.style.maxHeight = 'none';
-        box.style.overflow = 'visible';
-        box.style.display = 'block';
-      }
-      const raw = td.dataset.comment || '';
-      const lines = raw.split('\n').length;
-      const chars = raw.length;
-      const shouldTruncate = (mode==='lines3' && lines>3) || (mode==='compact' && (lines>1||chars>100));
-      if (shouldTruncate && raw.trim()) {
-        const more = document.createElement('a');
-        more.href = '#'; more.textContent = '...もっと読む'; more.className = 'extra-link';
-        more.onclick = e => {
-          e.preventDefault();
+    // 基本的なカラム表示制御
+    const toggleDate = document.getElementById('toggleDate').checked;
+    const toggleFormatCol = document.getElementById('toggleFormatCol').checked;
+    const toggleEval = document.getElementById('toggleEval').checked;
+    const commentMode = document.getElementById('commentMode').value;
+    
+    // 一括でクラスを適用
+    document.querySelectorAll('.col-date').forEach(c => c.classList.toggle('hidden-col', !toggleDate));
+    document.querySelectorAll('.format-cell').forEach(c => c.classList.toggle('hidden-col', !toggleFormatCol));
+    document.querySelectorAll('th.col-format').forEach(th => th.classList.toggle('hidden-col', !toggleFormatCol));
+    document.querySelectorAll('.col-eval').forEach(c => c.classList.toggle('hidden-col', !toggleEval));
+    document.querySelectorAll('th.col-comment, td.comment-cell').forEach(el => el.classList.toggle('hidden-col', commentMode==='none'));
+    
+    // コメント表示制御（必要な場合のみ実行）
+    if (commentMode !== 'none') {
+      document.querySelectorAll('.comment-cell .comment-text').forEach(box => {
+        const td = box.parentElement;
+        // 既存のリンクを削除
+        td.querySelectorAll('a.extra-link').forEach(a => a.remove());
+        
+        // スタイルを設定
+        box.style.overflow = 'hidden';
+        box.style.display = '-webkit-box';
+        box.style.webkitBoxOrient = 'vertical';
+        
+        if (commentMode === 'compact') {
+          box.style.webkitLineClamp = '1';
+          box.style.maxHeight = '1.4em';
+        } else if (commentMode === 'lines3') {
+          box.style.webkitLineClamp = '3';
+          box.style.maxHeight = 'calc(3 * 1.4em)';
+        } else {
           box.style.webkitLineClamp = 'none';
           box.style.maxHeight = 'none';
           box.style.overflow = 'visible';
           box.style.display = 'block';
-          more.remove();
-          const less = document.createElement('a');
-          less.href = '#'; less.textContent = '折りたたむ'; less.className = 'extra-link';
-          less.onclick = ev => { ev.preventDefault(); applyColumns(); };
-          td.appendChild(less);
-        };
-        td.appendChild(more);
-      }
-    });
+        }
+        
+        // 必要に応じて「もっと読む」リンクを追加
+        const raw = td.dataset.comment || '';
+        const lines = raw.split('\n').length;
+        const chars = raw.length;
+        const shouldTruncate = (commentMode==='lines3' && lines>3) || (commentMode==='compact' && (lines>1||chars>100));
+        
+        if (shouldTruncate && raw.trim()) {
+          const more = document.createElement('a');
+          more.href = '#'; 
+          more.textContent = '...もっと読む'; 
+          more.className = 'extra-link';
+          more.onclick = e => {
+            e.preventDefault();
+            box.style.webkitLineClamp = 'none';
+            box.style.maxHeight = 'none';
+            box.style.overflow = 'visible';
+            box.style.display = 'block';
+            more.remove();
+            const less = document.createElement('a');
+            less.href = '#'; 
+            less.textContent = '折りたたむ'; 
+            less.className = 'extra-link';
+            less.onclick = ev => { 
+              ev.preventDefault(); 
+              applyColumns(); 
+            };
+            td.appendChild(less);
+          };
+          td.appendChild(more);
+        }
+      });
+    }
   }
 
   document.addEventListener('DOMContentLoaded', () => {

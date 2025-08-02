@@ -296,66 +296,69 @@ main {
 
 /* 学年列 - 最大テキスト: 高2 */
 .table-card td.grade-cell {
-  width: 50px;
-  min-width: 50px;
-  max-width: 100px;
+  width: 45px;
+  min-width: 45px;
+  max-width: 60px;
 }
 
 /* 年度列 - 最大テキスト: 2022（R4） */
 .table-card td.year-cell {
-  width: 60px;
-  min-width: 35px;
-  max-width: 100px;
+  width: 70px;
+  min-width: 60px;
+  max-width: 80px;
 }
 
 /* 種類列 - 最大テキスト: 前期期末 */
 .table-card td.type-cell {
-  width: 65px;
-  min-width: 65px;
-  max-width: 100px;
+  width: 35px;
+  min-width: 35px;
+  max-width: 50px;
 }
 
 /* 科目列 - 長めの幅 */
 .table-card td.subject-cell {
-  width: 120px;
-  min-width: 160px;
-  max-width: 220px;
+  width: 60px;
+  min-width: 80px;
+  max-width: 100px;
 }
 
 /* 文理区分列 - 最大テキスト: 理数科のみ */
 .table-card td.stream-cell {
-  width: 80px;
-  min-width: 100px;
-  max-width: 100px;
+  width: 45px;
+  min-width: 50px;
+  max-width: 60px;
 }
 
 /* 内容列 - 適度な幅 */
 .table-card td.content-cell {
-  width: 60px;
-  min-width: 60px;
-  max-width: 100px;
+  width: 50px;
+  min-width: 50px;
+  max-width: 60px;
 }
 
 .table-card td.comment-cell { 
-  width: 220px; 
-  min-width: 200px;
-  max-width: 300px;
+  width: 120px; 
+  min-width: 100px;
+  max-width: 150px;
   white-space: normal;
 }
 
 .table-card td.format-cell { 
-  width: 100px;
-  min-width: 100px;
+  width: 80px;
+  min-width: 80px;
+  max-width: 100px;
 }
 
 .table-card td.date-cell {
-  width: 90px;
-  min-width: 60px;
+  width: 70px;
+  min-width: 50px;
+  max-width: 80px;
 }
 
 .table-card td.eval-cell {
-  width: 120px;
-  min-width: 120px;
+  width: 100px;
+  min-width: 100px;
+  max-width: 120px;
 }
 
 th.hidden-col, td.hidden-col { display: none; }
@@ -463,8 +466,9 @@ th.hidden-col, td.hidden-col { display: none; }
 
 /* リンクボタンスタイル */
 .link-cell {
-  width: 80px;
-  min-width: 80px;
+  width: 60px;
+  min-width: 60px;
+  max-width: 60px;
   text-align: center;
 }
 
@@ -476,7 +480,7 @@ th.hidden-col, td.hidden-col { display: none; }
   border-radius: 6px;
   border: 1px solid #e0e0e0;
   background: #f8f9fa;
-  color: #666;
+  color: #333;
   text-decoration: none;
   cursor: pointer;
   transition: all var(--transition);
@@ -742,9 +746,9 @@ th.hidden-col, td.hidden-col { display: none; }
 @media (max-width: 1200px) {
   /* 年度列を縮小 */
   .table-card td.year-cell {
-    width: 35px;
-    min-width: 25px;
-    max-width: 50px;
+    width: 50px;
+    min-width: 40px;
+    max-width: 70px;
   }
   
   /* 文理区分列を縮小 */
@@ -779,9 +783,9 @@ th.hidden-col, td.hidden-col { display: none; }
 @media (max-width: 1000px) {
   /* さらに小さい画面での調整 */
   .table-card td.year-cell {
-    width: 25px;
-    min-width: 20px;
-    max-width: 40px;
+    width: 35px;
+    min-width: 30px;
+    max-width: 50px;
   }
   
   .table-card td.stream-cell {
@@ -819,9 +823,9 @@ th.hidden-col, td.hidden-col { display: none; }
 @media (max-width: 800px) {
   /* さらに小さい画面での調整 */
   .table-card td.year-cell {
-    width: 20px;
-    min-width: 15px;
-    max-width: 30px;
+    width: 30px;
+    min-width: 25px;
+    max-width: 40px;
   }
   
   .table-card td.stream-cell {
