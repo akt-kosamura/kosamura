@@ -18,7 +18,6 @@
       font-size: 16px;
       overflow-x: hidden;
       position: relative;
-
     }
 
     /* 背景装飾 */
@@ -236,9 +235,9 @@
 
     /* Main Content */
     .main {
-      margin-top: 70px;
-      padding: 0 0px 40px;
-      min-height: calc(100vh - 120px);
+      margin-top: 0 !important;
+      padding: 0 0px 40px !important;
+      min-height: calc(100vh - 120px) !important;
     }
 
     /* Hero Section */
@@ -316,7 +315,7 @@
     }
 
     .card-content {
-      padding: 0px;
+      padding: 20px !important;
     }
 
     .card-title {
@@ -645,14 +644,14 @@
 
     /* Intro Section */
     .intro-section {
-      min-height: calc(100vh - 60px - 40px);
-      height: calc(100vh - 60px - 40px);
+      min-height: calc(100vh - 120px);
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: center;
       position: relative;
       margin-bottom: 0;
+      padding: 20px 0;
     }
 
     .main-card {
@@ -716,7 +715,31 @@
     }
 
     /* Responsive adjustments */
-    @media (max-width: 375px) {
+    @media (max-width: 768px) {
+      .intro-section {
+        min-height: calc(100vh - 100px);
+        padding: 15px 0;
+      }
+      
+      .hero-title {
+        font-size: 28px;
+      }
+      
+      .hero-subtitle {
+        font-size: 16px;
+      }
+      
+      .card-content {
+        padding: 16px !important;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .intro-section {
+        min-height: calc(100vh - 80px);
+        padding: 10px 0;
+      }
+      
       .hero-title {
         font-size: 24px;
       }
@@ -726,15 +749,50 @@
       }
       
       .hero-subtitle {
-        font-size: 12px;
+        font-size: 14px;
       }
       
       .card-title {
         font-size: 14px;
       }
       
+      .card-content {
+        padding: 12px !important;
+      }
+      
       .triangle {
         font-size: 28px;
+      }
+    }
+
+    @media (max-width: 375px) {
+      .intro-section {
+        min-height: calc(100vh - 70px);
+        padding: 8px 0;
+      }
+      
+      .hero-title {
+        font-size: 20px;
+      }
+      
+      .site-title {
+        font-size: 16px;
+      }
+      
+      .hero-subtitle {
+        font-size: 12px;
+      }
+      
+      .card-title {
+        font-size: 13px;
+      }
+      
+      .card-content {
+        padding: 10px !important;
+      }
+      
+      .triangle {
+        font-size: 24px;
       }
     }
 

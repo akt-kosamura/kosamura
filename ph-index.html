@@ -200,13 +200,33 @@
           ></iframe>
         </div>
         <style>
-          @media (max-width: 600px) {
+          @media (max-width: 768px) {
             .video-container iframe {
-              width: 100vw !important;
+              width: 100% !important;
               height: calc(100vw * 9 / 16) !important;
-              max-width: 100vw !important;
-              max-height: none !important;
-              border-radius: 0 !important;
+              max-width: 100% !important;
+              max-height: 300px !important;
+              border-radius: 12px !important;
+            }
+          }
+          
+          @media (max-width: 480px) {
+            .video-container iframe {
+              width: 100% !important;
+              height: calc(100vw * 9 / 16) !important;
+              max-width: 100% !important;
+              max-height: 250px !important;
+              border-radius: 8px !important;
+            }
+          }
+          
+          @media (max-width: 375px) {
+            .video-container iframe {
+              width: 100% !important;
+              height: calc(100vw * 9 / 16) !important;
+              max-width: 100% !important;
+              max-height: 200px !important;
+              border-radius: 6px !important;
             }
           }
         </style>
@@ -654,11 +674,15 @@
     function adjustMainMargin() {
       const header = document.querySelector('.header');
       const main = document.querySelector('.main');
-      if (header && main) {
+      const introSection = document.querySelector('.intro-section');
+      if (header && main && introSection) {
         const headerHeight = header.offsetHeight;
-        const marginTop = headerHeight + 20; // ヘッダー高さ + 余白
+        const marginTop = headerHeight + 10; // ヘッダー高さ + 余白
         main.style.marginTop = `${marginTop}px`;
-        main.style.minHeight = `calc(100vh - ${marginTop}px)`;
+        
+        // intro-sectionの高さを動的に調整
+        const availableHeight = window.innerHeight - headerHeight - 20;
+        introSection.style.minHeight = `${availableHeight}px`;
       }
     }
     
