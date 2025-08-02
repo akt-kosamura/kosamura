@@ -295,10 +295,12 @@ main {
 }
 
 /* 学年列 - 最大テキスト: 高2 */
+.table-card th:first-child,
 .table-card td.grade-cell {
   width: 45px;
   min-width: 45px;
   max-width: 60px;
+  text-align: center;
 }
 
 /* 年度列 - 最大テキスト: 2022（R4） */

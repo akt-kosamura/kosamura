@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+
+<!-- 秋高秋高考査村 -->
+<!-- Ver.1.0.0 -->
+<!-- 2025/07/31 -->
+
+<!-- Admin Password = 0611 -->
+
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>問題データベース - 秋高考査村</title>
+  <link rel="stylesheet" href="assets/css/common.css" />
+  <link rel="stylesheet" href="assets/css/pages/ph-search.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+</head>
+<body>
+  <!-- Header -->
+  <header class="header">
+    <div class="header-content">
+      <div class="header-title">
+        <div class="site-title">秋高考査村</div>
+        <div class="site-subtitle">無料・匿名で使える過去問共有サイト</div>
+      </div>
+      <button class="nav-toggle" id="navToggle">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+    <nav class="nav-menu" id="navMenu">
+      <div class="nav-free-mode">
+        <div id="freeModeStatus" class="free-mode-status"></div>
+      </div>
+      <ul class="nav-list">
+        <li class="nav-item">
+          <a href="ph-index.html" class="nav-link">
+            <i class="fa-solid fa-home"></i> ホーム
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="pages/upload.html" class="nav-link">
+            <i class="fa-solid fa-upload"></i> アップロード
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="ph-search.html" class="nav-link active">
+            <i class="fa-solid fa-database"></i> 問題データベース
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="pages/share.html" class="nav-link">
+            <i class="fa-solid fa-share-nodes"></i> 共有・拡散
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="https://c.kuku.lu/hmc853pz" class="nav-link" target="_blank">
+            <i class="fa-solid fa-comments"></i> 掲示板
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="https://forms.gle/ZWtQCvecH4eZtTEU7" class="nav-link" target="_blank">
+            <i class="fa-solid fa-envelope"></i> 報告・問い合わせ
+          </a>
+        </li>
+      </ul>
+    </nav>
+  </header>
+
+  <!-- Main Content -->
+  <main class="main">
+    <section class="hero">
+      <h1 class="hero-title">問題データベース</h1>
+      <p class="hero-subtitle">フィルターを使って検索できます</p>
+    </section>
+
+    <!-- Filter Section -->
+    <div class="card filter-card">
+      <div class="card-content">
+        <h2 class="card-title">検索フィルター</h2>
+        
+        <div class="filter-grid">
+          <div class="filter-group">
+            <label for="grade">学年</label>
+            <select id="grade" class="filter-select">
+              <option value="">指定しない</option>
+              <option>高1</option>
+              <option>高2</option>
+              <option>高3</option>
+            </select>
+          </div>
+
+          <div class="filter-group">
+            <label for="year">年度</label>
+            <select id="year" class="filter-select">
+              <option value="">指定しない</option>
+              <option>2020（R2）</option>
+              <option>2021（R3）</option>
+              <option>2022（R4）</option>
+              <option>2023（R5）</option>
+              <option>2024（R6）</option>
+              <option>2025（R7）</option>
+            </select>
+          </div>
+
+          <div class="filter-group">
+            <label for="type">種類</label>
+            <select id="type" class="filter-select">
+              <option value="">指定しない</option>
+              <option>前期中間</option>
+              <option>前期期末</option>
+              <option>後期中間</option>
+              <option>後期期末</option>
+              <option>考査以外</option>
+            </select>
+          </div>
+
+          <div class="filter-group">
+            <label for="subject">科目</label>
+            <select id="subject" class="filter-select">
+              <option value="">指定しない</option>
+              <option>現国・論国</option>
+              <option>言文・古探</option>
+              <option>数学Ⅰ・Ⅱ・Ⅲ</option>
+              <option>数学Ａ・Ｂ・Ｃ</option>
+              <option>英語コミュ</option>
+              <option>論理表現</option>
+              <option>化学・化学基礎</option>
+              <option>生物・生物基礎</option>
+              <option>物理・物理基礎</option>
+              <option>地学・地学基礎</option>
+              <option>地理</option>
+              <option>日本史</option>
+              <option>世界史</option>
+              <option>公共</option>
+              <option>情報</option>
+              <option>保健体育</option>
+              <option>家庭科</option>
+              <option>国語</option>
+              <option>数学</option>
+              <option>理科</option>
+              <option>英語</option>
+              <option>地歴</option>
+              <option>その他</option>
+            </select>
+          </div>
+
+          <div class="filter-group">
+            <label for="stream">文理区分</label>
+            <select id="stream" class="filter-select">
+              <option value="">指定しない</option>
+              <option>理数科のみ</option>
+              <option>普通科のみ</option>
+              <option>全科共通</option>
+            </select>
+          </div>
+
+          <div class="filter-group">
+            <label for="content">内容</label>
+            <select id="content" class="filter-select">
+              <option value="">指定しない</option>
+              <option>問題</option>
+              <option>解答</option>
+              <option>問題・解答</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="filter-buttons">
+          <button id="btnClearFilters" class="action-btn secondary">
+            <i class="fa-solid fa-eraser"></i>
+            解除
+          </button>
+          <button id="btnRefresh" class="action-btn primary">
+            <i class="fa-solid fa-rotate"></i>
+            更新
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Controls Section -->
+    <div class="card controls-card">
+      <div class="card-content">
+        <div class="controls-row">
+          <div class="controls-left">
+            <label class="checkbox-label">
+              <input type="checkbox" id="showComments" />
+              <span class="checkmark"></span>
+              評価表示
+            </label>
+          </div>
+          <div class="controls-right">
+            <label for="commentMode">コメント表示:</label>
+            <select id="commentMode" class="control-select">
+              <option value="none">非表示</option>
+              <option value="short">短縮表示</option>
+              <option value="full">全文表示</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Results Section -->
+    <div class="card results-card">
+      <div class="card-content">
+        <div class="results-header">
+          <h2 class="card-title">検索結果</h2>
+          <div class="results-count" id="resultsCount">0件</div>
+        </div>
+        
+        <div class="table-container">
+          <div class="loading-placeholder" id="loadingPlaceholder">
+            <div class="loading-spinner"></div>
+            <p>データを読み込み中...</p>
+          </div>
+          
+          <table class="results-table" id="resultsTable" style="display: none;">
+            <thead>
+              <tr>
+                <th>学年</th>
+                <th>年度</th>
+                <th>種類</th>
+                <th>科目</th>
+                <th>文理区分</th>
+                <th>内容</th>
+                <th>コメント</th>
+                <th>フォーマット</th>
+                <th>投稿時間</th>
+                <th>評価</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="resultBody">
+              <!-- 結果がここに表示されます -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- 管理者画面ボタンとモーダル -->
+  <div class="admin-login-container">
+    <a href="#" id="adminLoginBtn" class="admin-login-btn">
+      <i class="fa-solid fa-user-shield"></i>管理画面へ
+    </a>
+  </div>
+  
+  <div id="adminLoginModal" class="admin-modal">
+    <div class="admin-modal-content">
+      <div class="admin-modal-title">暗証番号</div>
+      <input id="adminPinInput" type="password" inputmode="numeric" maxlength="4" pattern="[0-9]*" class="admin-pin-input" autocomplete="one-time-code" />
+      <div id="adminPinError" class="admin-pin-error"></div>
+      <div class="pin-grid">
+        <button class="pin-btn">1</button><button class="pin-btn">2</button><button class="pin-btn">3</button>
+        <button class="pin-btn">4</button><button class="pin-btn">5</button><button class="pin-btn">6</button>
+        <button class="pin-btn">7</button><button class="pin-btn">8</button><button class="pin-btn">9</button>
+        <div></div><button class="pin-btn">0</button><button class="pin-btn" id="pinDelBtn">⌫</button>
+      </div>
+      <button id="adminPinSubmit" class="admin-pin-submit">OK</button>
+      <button id="adminPinCancel" class="admin-pin-cancel">キャンセル</button>
+    </div>
+  </div>
+
+  <div class="copyright-note">Copyright© 2020 考査村 All Rights Reserved.</div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/js/all.min.js"></script>
+  <script src="assets/js/api.js"></script>
+  <script>
+    // GASアプリでtitleが反映されない場合の対策
+    document.title = '問題データベース - 秋高考査村';
+
+    // Navigation Toggle
+    const navToggle = document.getElementById('navToggle');
+    const navMenu = document.getElementById('navMenu');
+    let isMenuOpen = false;
+
+    navToggle.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      
+      isMenuOpen = !isMenuOpen;
+      navToggle.classList.toggle('active');
+      navMenu.classList.toggle('active');
+      
+      if (navigator.vibrate) {
+        navigator.vibrate(50);
+      }
+      
+      const header = document.querySelector('.header');
+      if (isMenuOpen) {
+        document.body.style.overflow = 'hidden';
+        if (header) header.style.position = 'fixed';
+      } else {
+        document.body.style.overflow = '';
+        if (header) header.style.position = '';
+      }
+    });
+
+    // Close nav when clicking outside
+    document.addEventListener('click', (e) => {
+      if (isMenuOpen && !navToggle.contains(e.target) && !navMenu.contains(e.target)) {
+        navToggle.classList.remove('active');
+        navMenu.classList.remove('active');
+        isMenuOpen = false;
+        document.body.style.overflow = '';
+        const header = document.querySelector('.header');
+        if (header) header.style.position = '';
+      }
+    });
+
+    navMenu.addEventListener('click', (e) => {
+      e.stopPropagation();
+    });
+
+    navMenu.addEventListener('click', (e) => {
+      if (e.target.tagName === 'A' || e.target.closest('a')) {
+        setTimeout(() => {
+          navToggle.classList.remove('active');
+          navMenu.classList.remove('active');
+          isMenuOpen = false;
+          document.body.style.overflow = '';
+          const header = document.querySelector('.header');
+          if (header) header.style.position = '';
+        }, 100);
+      }
+    });
+
+    // フリーモード管理
+    function isInFreeMode() {
+      const freeModeEnd = localStorage.getItem('freeModeEnd');
+      if (!freeModeEnd) return false;
+      return new Date().getTime() < parseInt(freeModeEnd);
+    }
+
+    function updateFreeModeStatus() {
+      const status = document.getElementById('freeModeStatus');
+      if (!status) return;
+      if (isInFreeMode()) {
+        const freeModeEnd = parseInt(localStorage.getItem('freeModeEnd'));
+        const remaining = freeModeEnd - new Date().getTime();
+        if (remaining <= 0) {
+          localStorage.removeItem('freeModeEnd');
+          status.textContent = '問題アップロードで広告フリー';
+          status.className = 'free-mode-status ad';
+          return;
+        }
+        const hours = Math.floor(remaining / (60 * 60 * 1000));
+        const minutes = Math.floor((remaining % (60 * 60 * 1000)) / (60 * 1000));
+        const seconds = Math.floor((remaining % (60 * 1000)) / 1000);
+        status.textContent = `フリーモード ${hours}時間${minutes}分${seconds}秒`;
+        status.className = 'free-mode-status free';
+      } else {
+        status.textContent = '問題アップロードで広告フリー';
+        status.className = 'free-mode-status ad';
+      }
+    }
+
+    updateFreeModeStatus();
+    setInterval(updateFreeModeStatus, 1000);
+
+    // ヘッダーの高さを動的に計算
+    function adjustMainMargin() {
+      const header = document.querySelector('.header');
+      const main = document.querySelector('.main');
+      if (header && main) {
+        const headerHeight = header.offsetHeight;
+        const marginTop = headerHeight + 20;
+        main.style.marginTop = `${marginTop}px`;
+        main.style.minHeight = `calc(100vh - ${marginTop}px)`;
+      }
+    }
+    
+    // 初期化時に実行
+    document.addEventListener('DOMContentLoaded', function() {
+      // 少し遅延させてヘッダーの高さを正確に取得
+      setTimeout(adjustMainMargin, 100);
+    });
+    
+    window.addEventListener('load', adjustMainMargin);
+    window.addEventListener('resize', adjustMainMargin);
+
+    // 管理者画面ログイン
+    const adminLoginBtn = document.getElementById('adminLoginBtn');
+    const adminLoginModal = document.getElementById('adminLoginModal');
+    const adminPinInput = document.getElementById('adminPinInput');
+    const adminPinError = document.getElementById('adminPinError');
+    const adminPinSubmit = document.getElementById('adminPinSubmit');
+    const adminPinCancel = document.getElementById('adminPinCancel');
+    const adminPinBtns = document.querySelectorAll('.pin-btn');
+     
+    let pinValue = '';
+    
+    function openAdminModal() {
+      adminLoginModal.style.display = 'flex';
+      adminPinInput.value = '';
+      pinValue = '';
+      adminPinError.textContent = '';
+    }
+    
+    function closeAdminModal() {
+      adminLoginModal.style.display = 'none';
+    }
+    
+    adminLoginBtn.onclick = function(e) {
+      e.preventDefault();
+      openAdminModal();
+    };
+    
+    adminPinCancel.onclick = function() {
+      closeAdminModal();
+    };
+    
+    adminPinSubmit.onclick = tryAdminLogin;
+    
+    adminPinInput.oninput = function(e) {
+      pinValue = adminPinInput.value.replace(/\D/g, '').slice(0,4);
+      adminPinInput.value = pinValue;
+      adminPinError.textContent = '';
+    };
+    
+    adminPinInput.onkeydown = function(e) {
+      if (e.key === 'Enter') tryAdminLogin();
+      if (e.key === 'Backspace' && pinValue.length > 0) {
+        pinValue = pinValue.slice(0, -1);
+        adminPinInput.value = pinValue;
+        e.preventDefault();
+      }
+    };
+    
+    adminPinBtns.forEach(btn => {
+      btn.onclick = function() {
+        if (btn.id === 'pinDelBtn') {
+          pinValue = pinValue.slice(0, -1);
+        } else if (pinValue.length < 4) {
+          pinValue += btn.textContent;
+        }
+        adminPinInput.value = pinValue;
+        adminPinError.textContent = '';
+      };
+    });
+    
+    function tryAdminLogin() {
+      if (pinValue === '0611') {
+        closeAdminModal();
+        window.open('admin/admin.html', '_blank', 'noopener');
+      } else {
+        adminPinError.textContent = '番号が違います';
+        adminPinInput.value = '';
+        pinValue = '';
+      }
+    }
+    
+    adminLoginModal.onclick = function(e) {
+      if (e.target === adminLoginModal) closeAdminModal();
+    };
+
+    // データ読み込みと表示の処理
+    let allData = [];
+    let filteredData = [];
+
+    // 初期化
+    document.addEventListener('DOMContentLoaded', function() {
+      // カードを表示状態にする
+      const cards = document.querySelectorAll('.card');
+      cards.forEach(card => {
+        card.classList.add('card-inview');
+      });
+      
+      fetchData();
+      setupEventListeners();
+    });
+
+    // データ取得
+    async function fetchData() {
+      try {
+        showLoading(true);
+        const response = await fetch(`${window.location.origin}/exec?function=getPosts`);
+        const data = await response.json();
+        allData = data;
+        filteredData = [...data];
+        buildRows();
+        showLoading(false);
+        updateResultsCount();
+      } catch (error) {
+        console.error('データの取得に失敗しました:', error);
+        showLoading(false);
+        // エラー時はダミーデータを表示
+        allData = [
+          {
+            id: '1',
+            grade: '高2',
+            year: '2024（R6）',
+            type: '前期期末',
+            subject: '数学',
+            stream: '全科共通',
+            content: '問題',
+            comment: 'サンプルデータです',
+            format: 'PDF',
+            date: '2024-12-01',
+            likes: 5,
+            bads: 1,
+            url: '#'
+          }
+        ];
+        filteredData = [...allData];
+        buildRows();
+        updateResultsCount();
+      }
+    }
+
+    // イベントリスナーの設定
+    function setupEventListeners() {
+      // フィルター変更
+      document.getElementById('grade').addEventListener('change', applyFilters);
+      document.getElementById('year').addEventListener('change', applyFilters);
+      document.getElementById('type').addEventListener('change', applyFilters);
+      document.getElementById('subject').addEventListener('change', applyFilters);
+      document.getElementById('stream').addEventListener('change', applyFilters);
+      document.getElementById('content').addEventListener('change', applyFilters);
+
+      // ボタン
+      document.getElementById('btnClearFilters').addEventListener('click', clearFilters);
+      document.getElementById('btnRefresh').addEventListener('click', fetchData);
+
+      // コントロール
+      document.getElementById('showComments').addEventListener('change', applyColumns);
+      document.getElementById('commentMode').addEventListener('change', applyColumns);
+    }
+
+    // フィルター適用
+    function applyFilters() {
+      const grade = document.getElementById('grade').value;
+      const year = document.getElementById('year').value;
+      const type = document.getElementById('type').value;
+      const subject = document.getElementById('subject').value;
+      const stream = document.getElementById('stream').value;
+      const content = document.getElementById('content').value;
+
+      filteredData = allData.filter(item => {
+        return (!grade || item.grade === grade) &&
+               (!year || item.year === year) &&
+               (!type || item.type === type) &&
+               (!subject || item.subject === subject) &&
+               (!stream || item.stream === stream) &&
+               (!content || item.content === content);
+      });
+
+      buildRows();
+      updateResultsCount();
+    }
+
+    // フィルタークリア
+    function clearFilters() {
+      document.getElementById('grade').value = '';
+      document.getElementById('year').value = '';
+      document.getElementById('type').value = '';
+      document.getElementById('subject').value = '';
+      document.getElementById('stream').value = '';
+      document.getElementById('content').value = '';
+      
+      filteredData = [...allData];
+      buildRows();
+      updateResultsCount();
+    }
+
+    // 行の構築
+    function buildRows() {
+      const tbody = document.getElementById('resultBody');
+      tbody.innerHTML = '';
+
+      if (filteredData.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="11" class="no-results">該当するデータが見つかりません</td></tr>';
+        return;
+      }
+
+      const fragment = document.createDocumentFragment();
+      
+      filteredData.forEach(item => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${item.grade || '-'}</td>
+          <td>${item.year || '-'}</td>
+          <td>${item.type || '-'}</td>
+          <td>${item.subject || '-'}</td>
+          <td>${item.stream || '-'}</td>
+          <td>${item.content || '-'}</td>
+          <td class="comment-cell">${item.comment || '-'}</td>
+          <td>${item.format || '-'}</td>
+          <td>${formatDate(item.date) || '-'}</td>
+          <td class="eval-cell">
+            <button class="btn-like" data-id="${item.id}">
+              <i class="fa-solid fa-heart"></i>
+              <span class="like-count">${item.likes || 0}</span>
+            </button>
+            <button class="btn-bad" data-id="${item.id}">
+              <i class="fa-solid fa-thumbs-down"></i>
+              <span class="bad-count">${item.bads || 0}</span>
+            </button>
+          </td>
+          <td class="link-cell">
+            <a href="#" class="view-link" data-id="${item.id}">見る</a>
+          </td>
+        `;
+        fragment.appendChild(tr);
+      });
+
+      tbody.appendChild(fragment);
+      attachHandlers();
+      applyColumns();
+    }
+
+    // イベントハンドラーの設定
+    function attachHandlers() {
+      const tbody = document.getElementById('resultBody');
+      
+      tbody.addEventListener('click', function(e) {
+        const target = e.target;
+        
+        if (target.classList.contains('view-link') || target.closest('.view-link')) {
+          e.preventDefault();
+          const link = target.classList.contains('view-link') ? target : target.closest('.view-link');
+          const id = link.getAttribute('data-id');
+          viewPost(id);
+        }
+        
+        if (target.classList.contains('btn-like') || target.closest('.btn-like')) {
+          const btn = target.classList.contains('btn-like') ? target : target.closest('.btn-like');
+          const id = btn.getAttribute('data-id');
+          likePost(id);
+        }
+        
+        if (target.classList.contains('btn-bad') || target.closest('.btn-bad')) {
+          const btn = target.classList.contains('btn-bad') ? target : target.closest('.btn-bad');
+          const id = btn.getAttribute('data-id');
+          badPost(id);
+        }
+      });
+    }
+
+    // 投稿表示
+    function viewPost(id) {
+      const post = allData.find(item => item.id === id);
+      if (!post) return;
+
+      // ポップアップ表示（簡易版）
+      const popup = document.createElement('div');
+      popup.className = 'popup-overlay';
+      popup.innerHTML = `
+        <div class="popup-content">
+          <button class="popup-close">&times;</button>
+          <h3>${post.subject || '投稿詳細'}</h3>
+          <p><strong>学年:</strong> ${post.grade || '-'}</p>
+          <p><strong>年度:</strong> ${post.year || '-'}</p>
+          <p><strong>種類:</strong> ${post.type || '-'}</p>
+          <p><strong>コメント:</strong> ${post.comment || '-'}</p>
+          <p><strong>投稿日:</strong> ${formatDate(post.date) || '-'}</p>
+          <div class="popup-actions">
+            <a href="${post.url}" target="_blank" class="action-btn primary">ファイルを開く</a>
+          </div>
+        </div>
+      `;
+
+      document.body.appendChild(popup);
+
+      popup.querySelector('.popup-close').onclick = () => {
+        document.body.removeChild(popup);
+      };
+
+      popup.onclick = (e) => {
+        if (e.target === popup) {
+          document.body.removeChild(popup);
+        }
+      };
+    }
+
+    // いいね
+    async function likePost(id) {
+      try {
+        const response = await fetch(`${window.location.origin}/exec?function=likePost&id=${id}`);
+        const result = await response.json();
+        if (result.success) {
+          fetchData(); // データを再取得
+        }
+      } catch (error) {
+        console.error('いいねの処理に失敗しました:', error);
+      }
+    }
+
+    // 悪い評価
+    async function badPost(id) {
+      try {
+        const response = await fetch(`${window.location.origin}/exec?function=badPost&id=${id}`);
+        const result = await response.json();
+        if (result.success) {
+          fetchData(); // データを再取得
+        }
+      } catch (error) {
+        console.error('評価の処理に失敗しました:', error);
+      }
+    }
+
+    // 列の表示制御
+    function applyColumns() {
+      const showComments = document.getElementById('showComments').checked;
+      const commentMode = document.getElementById('commentMode').value;
+      
+      const commentCells = document.querySelectorAll('.comment-cell');
+      commentCells.forEach(cell => {
+        if (!showComments || commentMode === 'none') {
+          cell.style.display = 'none';
+        } else {
+          cell.style.display = 'table-cell';
+          if (commentMode === 'short') {
+            const text = cell.textContent;
+            if (text.length > 20) {
+              cell.textContent = text.substring(0, 20) + '...';
+            }
+          }
+        }
+      });
+    }
+
+    // 日付フォーマット
+    function formatDate(dateString) {
+      if (!dateString) return '';
+      const date = new Date(dateString);
+      return date.toLocaleDateString('ja-JP');
+    }
+
+    // ローディング表示
+    function showLoading(show) {
+      const loading = document.getElementById('loadingPlaceholder');
+      const table = document.getElementById('resultsTable');
+      
+      if (show) {
+        loading.style.display = 'block';
+        table.style.display = 'none';
+      } else {
+        loading.style.display = 'none';
+        table.style.display = 'table';
+      }
+    }
+
+    // エラー表示
+    function showError(message) {
+      const tbody = document.getElementById('resultBody');
+      tbody.innerHTML = `<tr><td colspan="11" class="error-message">${message}</td></tr>`;
+    }
+
+    // 結果件数更新
+    function updateResultsCount() {
+      const countElement = document.getElementById('resultsCount');
+      countElement.textContent = `${filteredData.length}件`;
+    }
+  </script>
+</body>
+</html> 
