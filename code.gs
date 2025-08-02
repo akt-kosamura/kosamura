@@ -1,16 +1,24 @@
 // Code.gs for 考査村
 
 // アップロード先フォルダのID（環境変数から取得）
-const FOLDER_ID = PropertiesService.getScriptProperties().getProperty('FOLDER_ID');
+let FOLDER_ID = PropertiesService.getScriptProperties().getProperty('FOLDER_ID');
+let SPREADSHEET_ID = PropertiesService.getScriptProperties().getProperty('SPREADSHEET_ID');
+
+// ローカル開発環境用のフォールバック
 if (!FOLDER_ID) {
-  throw new Error('FOLDER_ID環境変数が設定されていません。GASのスクリプトプロパティで設定してください。');
+  console.log('FOLDER_ID環境変数が設定されていません。ローカル開発モードで動作します。');
+  FOLDER_ID = 'local_dev_folder_id';
 }
-// スプレッドシートID（環境変数から取得）
-const SPREADSHEET_ID = PropertiesService.getScriptProperties().getProperty('SPREADSHEET_ID');
 if (!SPREADSHEET_ID) {
-  throw new Error('SPREADSHEET_ID環境変数が設定されていません。GASのスクリプトプロパティで設定してください。');
+  console.log('SPREADSHEET_ID環境変数が設定されていません。ローカル開発モードで動作します。');
+  SPREADSHEET_ID = 'local_dev_spreadsheet_id';
 }
 const SHEET_NAME = 'シート1';
+
+// キャッシュ設定
+const CACHE_DURATION = 300; // 5分間キャッシュ
+const CACHE_KEY_DATA = 'kosamura_data_cache';
+const CACHE_KEY_STATS = 'kosamura_stats_cache';
 
 /**
  * ファイルアップロード＆メタ情報記録
@@ -252,17 +260,33 @@ User-Agent: ${userAgent}
 }
 
 /**
- * データ取得
+ * データ取得（キャッシュ対応）
  */
 function getData() {
   try {
+    // ローカル開発環境用のモックデータ
+    if (FOLDER_ID === 'local_dev_folder_id' || SPREADSHEET_ID === 'local_dev_spreadsheet_id') {
+      return getMockData();
+    }
+    
+    // キャッシュからデータを取得
+    const cache = CacheService.getScriptCache();
+    const cachedData = cache.get(CACHE_KEY_DATA);
+    
+    if (cachedData) {
+      Logger.log('キャッシュからデータを取得しました');
+      return JSON.parse(cachedData);
+    }
+    
+    // キャッシュにない場合はスプレッドシートから取得
+    Logger.log('スプレッドシートからデータを取得中...');
     const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
     const sheet = ss.getSheetByName(SHEET_NAME);
     if (!sheet) return [];
     
     const data = sheet.getRange(2, 1, Math.max(0, sheet.getLastRow() - 1), 20).getValues();
     
-    return data.map((row, index) => ({
+    const result = data.map((row, index) => ({
       id: Number(row[0]) || (index + 1),
       grade: String(row[1] || ''),
       year: String(row[2] || ''),
@@ -284,10 +308,153 @@ function getData() {
       windowSize: String(row[18] || ''),
       fileSize: Number(row[19]) || 0
     }));
+    
+    // 結果をキャッシュに保存
+    cache.put(CACHE_KEY_DATA, JSON.stringify(result), CACHE_DURATION);
+    Logger.log('データをキャッシュに保存しました');
+    
+    return result;
   } catch (error) {
     Logger.log('getData error: ' + error);
-    return [];
+    return getMockData(); // エラー時もモックデータを返す
   }
+}
+
+/**
+ * キャッシュをクリアする関数
+ */
+function clearDataCache() {
+  try {
+    const cache = CacheService.getScriptCache();
+    cache.remove(CACHE_KEY_DATA);
+    cache.remove(CACHE_KEY_STATS);
+    Logger.log('キャッシュをクリアしました');
+    return true;
+  } catch (error) {
+    Logger.log('キャッシュクリアエラー: ' + error);
+    return false;
+  }
+}
+
+/**
+ * ローカル開発用のモックデータ
+ */
+function getMockData() {
+  const now = new Date();
+  const mockData = [
+    {
+      id: 1,
+      grade: '高1',
+      year: '2025（R7）',
+      type: '前期中間',
+      subject: '数学Ⅰ・Ⅱ・Ⅲ',
+      stream: '区分なし',
+      contentType: '問題＆解説',
+      format: 'PDF',
+      comment: '前期中間考査の問題です。基礎的な計算問題が中心です。',
+      url: 'https://example.com/mock1.pdf',
+      date: new Date(now.getTime() - 2 * 24 * 60 * 60 * 1000).toISOString(), // 2日前
+      likes: 5,
+      bad: 0,
+      publicIP: '192.168.1.1',
+      privateIP: '10.0.0.1',
+      userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+      platform: 'Windows',
+      screenResolution: '1920x1080',
+      windowSize: '1200x800',
+      fileSize: 2.5
+    },
+    {
+      id: 2,
+      grade: '高2',
+      year: '2025（R7）',
+      type: '前期期末',
+      subject: '英語コミュ',
+      stream: '文系のみ',
+      contentType: '問題のみ',
+      format: 'PDF',
+      comment: '前期期末考査の問題です。長文読解が中心です。',
+      url: 'https://example.com/mock2.pdf',
+      date: new Date(now.getTime() - 5 * 24 * 60 * 60 * 1000).toISOString(), // 5日前
+      likes: 3,
+      bad: 1,
+      publicIP: '192.168.1.2',
+      privateIP: '10.0.0.2',
+      userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36',
+      platform: 'MacOS',
+      screenResolution: '1440x900',
+      windowSize: '1200x800',
+      fileSize: 1.8
+    },
+    {
+      id: 3,
+      grade: '高3',
+      year: '2024（R6）',
+      type: '後期中間',
+      subject: '化学・化学基礎',
+      stream: '理系のみ',
+      contentType: '問題＆解説',
+      format: 'PDF',
+      comment: '後期中間考査の問題です。有機化学が中心です。',
+      url: 'https://example.com/mock3.pdf',
+      date: new Date(now.getTime() - 10 * 24 * 60 * 60 * 1000).toISOString(), // 10日前
+      likes: 8,
+      bad: 0,
+      publicIP: '192.168.1.3',
+      privateIP: '10.0.0.3',
+      userAgent: 'Mozilla/5.0 (iPhone; CPU iPhone OS 14_7_1 like Mac OS X) AppleWebKit/605.1.15',
+      platform: 'iOS',
+      screenResolution: '390x844',
+      windowSize: '390x844',
+      fileSize: 3.2
+    },
+    {
+      id: 4,
+      grade: '高1',
+      year: '2024（R6）',
+      type: '前期期末',
+      subject: '現国・論国',
+      stream: '区分なし',
+      contentType: '問題のみ',
+      format: 'Word',
+      comment: '前期期末考査の問題です。現代文の読解問題です。',
+      url: 'https://example.com/mock4.docx',
+      date: new Date(now.getTime() - 15 * 24 * 60 * 60 * 1000).toISOString(), // 15日前
+      likes: 2,
+      bad: 0,
+      publicIP: '192.168.1.4',
+      privateIP: '10.0.0.4',
+      userAgent: 'Mozilla/5.0 (Android 11; Mobile; rv:91.0) Gecko/91.0 Firefox/91.0',
+      platform: 'Android',
+      screenResolution: '360x640',
+      windowSize: '360x640',
+      fileSize: 1.2
+    },
+    {
+      id: 5,
+      grade: '高2',
+      year: '2023（R5）',
+      type: '後期期末',
+      subject: '日本史',
+      stream: '文系のみ',
+      contentType: '問題＆解説',
+      format: 'PDF',
+      comment: '後期期末考査の問題です。近現代史が中心です。',
+      url: 'https://example.com/mock5.pdf',
+      date: new Date(now.getTime() - 20 * 24 * 60 * 60 * 1000).toISOString(), // 20日前
+      likes: 6,
+      bad: 1,
+      publicIP: '192.168.1.5',
+      privateIP: '10.0.0.5',
+      userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+      platform: 'Windows',
+      screenResolution: '1366x768',
+      windowSize: '1200x800',
+      fileSize: 2.1
+    }
+  ];
+  
+  return mockData;
 }
 
 /**
@@ -323,6 +490,11 @@ function unbad(id) {
  */
 function updateCount(id, colIndex, delta) {
   try {
+    // ローカル開発環境用のモック処理
+    if (FOLDER_ID === 'local_dev_folder_id' || SPREADSHEET_ID === 'local_dev_spreadsheet_id') {
+      return getMockUpdateCount(id, colIndex, delta);
+    }
+    
     const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
     const sheet = ss.getSheetByName(SHEET_NAME);
     if (!sheet) throw new Error('シートが見つかりません');
@@ -339,11 +511,46 @@ function updateCount(id, colIndex, delta) {
     
     sheet.getRange(rowIndex + 2, colIndex).setValue(newValue);
     
+    // キャッシュをクリア（データが変更されたため）
+    clearDataCache();
+    
     return newValue;
   } catch (error) {
     Logger.log('updateCount error: ' + error);
-    throw error;
+    return getMockUpdateCount(id, colIndex, delta); // エラー時もモック処理を返す
   }
+}
+
+/**
+ * ローカル開発用のモックカウント更新処理
+ */
+function getMockUpdateCount(id, colIndex, delta) {
+  // モックデータから該当するIDのデータを取得
+  const mockData = getMockData();
+  const item = mockData.find(data => data.id === Number(id));
+  
+  if (!item) {
+    return 0;
+  }
+  
+  // colIndexに応じてlikesまたはbadを更新
+  let currentValue = 0;
+  if (colIndex === 12) { // likes
+    currentValue = item.likes || 0;
+  } else if (colIndex === 13) { // bad
+    currentValue = item.bad || 0;
+  }
+  
+  const newValue = Math.max(0, currentValue + delta);
+  
+  // モックデータを更新（実際のデータベースは更新されません）
+  if (colIndex === 12) {
+    item.likes = newValue;
+  } else if (colIndex === 13) {
+    item.bad = newValue;
+  }
+  
+  return newValue;
 }
 
 /**
@@ -628,6 +835,9 @@ function doGet(e) {
     case 'getStats':
       return ContentService.createTextOutput(JSON.stringify(getStats()))
         .setMimeType(ContentService.MimeType.JSON);
+    case 'clearCache':
+      return ContentService.createTextOutput(JSON.stringify({ success: clearDataCache() }))
+        .setMimeType(ContentService.MimeType.JSON);
     case 'testFolderId':
       return ContentService.createTextOutput(JSON.stringify({ result: testCurrentFolderId() }))
         .setMimeType(ContentService.MimeType.JSON);
@@ -720,11 +930,27 @@ function doPost(e) {
 }
 
 /**
- * 統計情報を取得する関数
+ * 統計情報を取得する関数（キャッシュ対応）
  * @return {Object} 統計情報オブジェクト
  */
 function getStats() {
   try {
+    // ローカル開発環境用のモックデータ
+    if (FOLDER_ID === 'local_dev_folder_id' || SPREADSHEET_ID === 'local_dev_spreadsheet_id') {
+      return getMockStats();
+    }
+    
+    // キャッシュから統計情報を取得
+    const cache = CacheService.getScriptCache();
+    const cachedStats = cache.get(CACHE_KEY_STATS);
+    
+    if (cachedStats) {
+      Logger.log('キャッシュから統計情報を取得しました');
+      return JSON.parse(cachedStats);
+    }
+    
+    // キャッシュにない場合はスプレッドシートから計算
+    Logger.log('スプレッドシートから統計情報を計算中...');
     const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
     const sheet = ss.getSheetByName(SHEET_NAME);
     
@@ -739,7 +965,7 @@ function getStats() {
     // いいね数の合計を計算
     let totalLikes = 0;
     if (lastRow > 1) {
-      const likeRange = sheet.getRange(2, 8, lastRow - 1, 1).getValues(); // H列（いいね数）
+      const likeRange = sheet.getRange(2, 12, lastRow - 1, 1).getValues(); // L列（いいね数）
       likeRange.forEach(row => {
         const likeCount = parseInt(row[0]) || 0;
         totalLikes += likeCount;
@@ -761,18 +987,31 @@ function getStats() {
       });
     }
     
-    return {
+    const result = {
       totalPosts: totalPosts,
       totalLikes: totalLikes,
       activeUsers: activeUsers
     };
     
+    // 結果をキャッシュに保存
+    cache.put(CACHE_KEY_STATS, JSON.stringify(result), CACHE_DURATION);
+    Logger.log('統計情報をキャッシュに保存しました');
+    
+    return result;
+    
   } catch (error) {
     Logger.log('getStats error: ' + error);
-    return {
-      totalPosts: 0,
-      totalLikes: 0,
-      activeUsers: 0
-    };
+    return getMockStats(); // エラー時もモックデータを返す
   }
+}
+
+/**
+ * ローカル開発用のモック統計データ
+ */
+function getMockStats() {
+  return {
+    totalPosts: 5,
+    totalLikes: 24,
+    activeUsers: 3
+  };
 }

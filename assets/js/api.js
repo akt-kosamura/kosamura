@@ -13,13 +13,25 @@ class KosamuraAPI {
   // データ取得（GAS運用時と同じ）
   async getData() {
     try {
-      const response = await fetch(`${this.baseURL}?function=getData`);
+      // タイムアウト設定（25秒）
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 25000);
+      
+      const response = await fetch(`${this.baseURL}?function=getData`, {
+        signal: controller.signal
+      });
+      
+      clearTimeout(timeoutId);
+      
       if (!response.ok) throw new Error('データ取得に失敗しました');
       const result = await response.json();
       // GASの戻り値形式に合わせる（直接データ配列を返す）
       return result.result || result || [];
     } catch (error) {
       console.error('getData error:', error);
+      if (error.name === 'AbortError') {
+        throw new Error('タイムアウト: データの取得に時間がかかりすぎています');
+      }
       return [];
     }
   }

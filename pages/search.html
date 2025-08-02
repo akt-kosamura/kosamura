@@ -392,16 +392,48 @@ function showAdPopup(fileUrl) {
     }
   }
 
-  // データ取得
+  // データ取得（パフォーマンス改善版）
   async function fetchData() {
     const tbody = document.getElementById('resultBody');
     tbody.innerHTML = '<tr id="loadingRow"><td colspan="11" style="text-align:center;color:#666"><div class="loading-placeholder"><div class="loading-spinner"></div><p>読み込み中…（表は横スクロール対応）</p></div></td></tr>';
+    
+    // タイムアウト設定（30秒）
+    const timeoutPromise = new Promise((_, reject) => {
+      setTimeout(() => reject(new Error('タイムアウト: データの取得に時間がかかりすぎています')), 30000);
+    });
+    
     try {
-      const data = await kosamuraAPI.getData();
+      const dataPromise = kosamuraAPI.getData();
+      const data = await Promise.race([dataPromise, timeoutPromise]);
       buildRows(data);
     } catch (error) {
       console.error('データ取得エラー:', error);
-      tbody.innerHTML = '<tr><td colspan="11" style="text-align:center;color:red;">データの取得に失敗しました: ' + error.message + '</td></tr>';
+      if (error.message.includes('タイムアウト')) {
+        tbody.innerHTML = '<tr><td colspan="11" style="text-align:center;color:orange;"><div style="margin: 20px 0;"><p>データの取得に時間がかかっています</p><button onclick="retryFetch()" style="padding: 8px 16px; background: #3b82f6; color: white; border: none; border-radius: 6px; cursor: pointer;">再試行</button></div></td></tr>';
+      } else {
+        tbody.innerHTML = '<tr><td colspan="11" style="text-align:center;color:red;">データの取得に失敗しました: ' + error.message + '</td></tr>';
+      }
+    }
+  }
+
+  // 再試行機能
+  function retryFetch() {
+    fetchData();
+  }
+
+  // キャッシュクリア機能
+  async function clearCacheAndFetch() {
+    try {
+      // キャッシュクリアAPIを呼び出し
+      await fetch(`${window.location.origin}/exec?function=clearCache`);
+      console.log('キャッシュをクリアしました');
+      
+      // データを再取得
+      fetchData();
+    } catch (error) {
+      console.error('キャッシュクリアエラー:', error);
+      // エラーが発生してもデータを再取得
+      fetchData();
     }
   }
 
@@ -565,7 +597,7 @@ function showAdPopup(fileUrl) {
       });
       applyFilters();
     };
-    document.getElementById('btnRefresh').onclick = fetchData;
+    document.getElementById('btnRefresh').onclick = clearCacheAndFetch;
     document.getElementById('toggleDate').onchange = applyColumns;
     document.getElementById('toggleFormatCol').onchange = applyColumns;
     document.getElementById('toggleEval').onchange = applyColumns;
