@@ -438,6 +438,7 @@ th.hidden-col, td.hidden-col { display: none; }
   .filter-row {
     gap: 0.5rem;
     overflow-x: auto;
+    flex-wrap: wrap;
   }
   
   .filter-group {
@@ -449,6 +450,17 @@ th.hidden-col, td.hidden-col { display: none; }
   
   .filter-group select {
     min-width: 100px;
+  }
+  
+  .filter-buttons {
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-top: 1rem;
+    width: 100%;
+  }
+  
+  #btnClearFilters, #btnRefresh {
+    width: 100%;
   }
   
   .controls-section {
@@ -499,12 +511,14 @@ th.hidden-col, td.hidden-col { display: none; }
 
 @media (max-width: 480px) {
   .filter-buttons {
-    flex-direction: row;
+    flex-direction: column;
     gap: 0.5rem;
+    margin-top: 1rem;
+    width: 100%;
   }
   
   #btnClearFilters, #btnRefresh {
-    width: auto;
+    width: 100%;
   }
   
   .controls-left {
