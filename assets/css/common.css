@@ -140,7 +140,6 @@ nav a.active {
   justify-content: flex-end;
   height: 34px;
   box-sizing: border-box;
-  transition: var(--transition);
 }
 
 .free-mode-status.free {
@@ -156,7 +155,7 @@ nav a.active {
 /* ===== メインコンテンツ共通スタイル ===== */
 main {
   max-width: 1200px;
-  margin: 0 auto;
+  margin: 96px auto 0;
   padding: 2rem 20px;
   min-height: calc(100vh - 80px);
 }

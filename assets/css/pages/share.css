@@ -89,29 +89,7 @@ h1 {
 .card-title .back-btn:hover {
   background:#e6f2ff;
 }
-.free-mode-status {
-  min-width: 120px;
-  text-align: right;
-  font-size: 0.92rem;
-  font-weight: bold;
-  padding: 0.25em 0.9em;
-  border-radius: 6px;
-  margin-left: 1.5em;
-  margin-right: 0.2em;
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  height: 2.1em;
-  box-sizing: border-box;
-}
-.free-mode-status.free {
-  background: #00d084;
-  color: #fff;
-}
-.free-mode-status.ad {
-  background: #e0e0e0;
-  color: #444;
-}
+
 
 /* 共有ページ専用スタイル */
 .share-description {

@@ -718,6 +718,7 @@
     }
     function updateFreeModeStatus() {
       const status = document.getElementById('freeModeStatus');
+      if (!status) return;
       if (isInFreeMode()) {
         const freeModeEnd = parseInt(localStorage.getItem('freeModeEnd'));
         const remaining = freeModeEnd - new Date().getTime();
@@ -737,10 +738,11 @@
         status.className = 'free-mode-status ad';
       }
     }
+    // フリーモード表示を即座に更新
+    updateFreeModeStatus();
+    setInterval(updateFreeModeStatus, 1000);
+    
     document.addEventListener('DOMContentLoaded', () => {
-      updateFreeModeStatus();
-      setInterval(updateFreeModeStatus, 1000);
-      
       // 統計情報を読み込み
       loadStats();
     });

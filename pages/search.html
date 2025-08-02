@@ -27,13 +27,12 @@
       </nav>
     </div>
   </header>
-
-  <div class="page-container">
+  <main>
     <h1>問題データベース</h1>
     <div class="subtitle">フィルターを使って検索できます</div>
 
-
-    <div class="combined-section">
+    <div class="page-container">
+      <div class="combined-section">
       <div class="filter-section">
         <div class="filter-row">
           <div class="filter-group">
@@ -204,6 +203,7 @@
 
   function updateFreeModeStatus() {
     const status = document.getElementById('freeModeStatus');
+    if (!status) return;
     if (isInFreeMode()) {
       const freeModeEnd = parseInt(localStorage.getItem('freeModeEnd'));
       const remaining = freeModeEnd - new Date().getTime();

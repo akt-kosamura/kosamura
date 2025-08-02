@@ -99,9 +99,12 @@
         status.className = 'free-mode-status ad'
       }
     }
+    // フリーモード表示を即座に更新
+    updateFreeModeStatus()
+    setInterval(updateFreeModeStatus, 1000)
+    
     document.addEventListener('DOMContentLoaded', () => {
-      updateFreeModeStatus()
-      setInterval(updateFreeModeStatus, 1000)
+      // 他の初期化処理
     })
   </script>
 

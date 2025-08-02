@@ -8,36 +8,45 @@
 
 body {
   background: var(--bg-page);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  color: #1d1d20;
+  padding-top: 64px;
+  padding-left: 32px;
+  padding-right: 32px;
 }
 
-
-
 .page-container {
-  max-width: 1400px;
+  max-width: 100%;
+  margin: 0 auto 32px;
+  padding-left: 0;
+  padding-right: 0;
+  box-sizing: border-box;
+}
+
+/* h1と.subtitleのスタイルをupload.htmlと統一 */
+h1 {
+  text-align: center;
+  font-size: 2rem;
+  margin-bottom: 1rem;
+  background: linear-gradient(90deg, var(--accent), #5ac8fa);
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+.subtitle {
+  text-align: center; 
+  font-size: 19px;
+  margin-bottom: 32px; 
+  color: #6e6e73;
+}
+
+/* search.html用のmainスタイルを上書き */
+main {
+  max-width: 1550px;
   margin: 96px auto 32px;
   padding-left: 32px;
   padding-right: 32px;
   box-sizing: border-box;
-}
-
-/* h1と.subtitleのスタイルをcommon.cssと統一 */
-h1 {
-  font-size: 2.5rem;
-  font-weight: bold;
-  color: var(--gray-800);
-  margin-bottom: 1rem;
-  text-align: center;
-  background: linear-gradient(90deg, var(--accent), #5ac8fa);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-.subtitle {
-  font-size: 1.2rem;
-  color: var(--gray-600);
-  text-align: center;
-  margin-bottom: 2rem;
 }
 
 .combined-section {
