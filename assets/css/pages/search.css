@@ -107,6 +107,7 @@ main {
 .filter-buttons {
   display: flex;
   gap: 0.5rem;
+  flex-shrink: 0;
 }
 
 #btnClearFilters, #btnRefresh {
