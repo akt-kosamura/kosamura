@@ -1,0 +1,66 @@
+# 依存関係
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# 環境変数
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Google Cloud認証情報
+credentials.json
+*.json
+
+# ログファイル
+logs
+*.log
+
+# ランタイムデータ
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# カバレッジディレクトリ
+coverage/
+.nyc_output
+
+# 依存関係ロックファイル
+package-lock.json
+yarn.lock
+
+# エディタ設定
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS生成ファイル
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# 一時ファイル
+tmp/
+temp/
+
+# アップロードファイル（本番環境ではGoogle Driveを使用）
+uploads/ [33mefd3a9e[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m share
+[33m062b498[m index
+[33m1743bba[m share.htmlをGitHub Pages用に修正 - サイトURLを正しいGitHub Pages URLに更新
+[33mcdb106b[m api
+[33m34d86ab[m api
+[33m7427145[m gas
+[33mc148bf5[m Update ph-index.html
+[33m38cf23c[m api
+[33m5932e05[m up
+[33ma3a2f79[m ph
