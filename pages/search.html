@@ -245,8 +245,8 @@ function showAdPopup(fileUrl) {
     <div class="popup-content">
       <button class="popup-close">&times;</button>
       <h2>広告を視聴してファイルを開く</h2>
-      <div class="countdown-text" id="countdownText">180</div>
-      <p id="statusText">カウントダウン中…</p>
+      <div class="countdown-text" id="countdownText">100</div>
+      <p id="statusText">カウントダウンが終わるとファイルを開けます</p>
       <div class="ad-video">
         <video controls autoplay style="width: 100%; border-radius: 1rem; background: #000;">
           <source src="../assets/考査村ビデオ.mp4" type="video/mp4">
@@ -256,7 +256,7 @@ function showAdPopup(fileUrl) {
     </div>`;
   document.body.appendChild(overlay);
 
-  let countdown = 10;
+  let countdown = 99;
   const countdownEl = overlay.querySelector('#countdownText');
   const statusEl    = overlay.querySelector('#statusText');
   const timer = setInterval(() => {
