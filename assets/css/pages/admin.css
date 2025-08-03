@@ -1,0 +1,1196 @@
+/* admin.html用 古いデザインのCSS - Windows 95/98時代のレトロスタイル */
+
+/* 基本スタイル */
+body {
+  margin: 0;
+  padding: 20px;
+  background-color: #C0C0C0; /* Windows 95の標準背景色 */
+  font-family: "MS Sans Serif", "Microsoft Sans Serif", Arial, sans-serif;
+  font-size: 11px;
+  color: #000000;
+  line-height: 1.2;
+}
+
+/* リンクスタイル */
+a {
+  font-family: "MS Sans Serif", "Microsoft Sans Serif", Arial, sans-serif;
+  font-size: 11px;
+  color: #000080; /* Windows 95の標準リンク色 */
+  text-decoration: none;
+}
+
+a:hover {
+  color: #800080; /* ホバー時の色 */
+}
+
+a:active {
+  color: #FF0000; /* アクティブ時の色 */
+}
+
+/* テーブルスタイル */
+table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 10px 0;
+  background-color: #FFFFFF;
+  border: 2px outset #C0C0C0; /* 3D効果のあるボーダー */
+}
+
+.table {
+  border: 2px outset #C0C0C0;
+  border-collapse: collapse;
+  background-color: #FFFFFF;
+}
+
+.table1 {
+  border: 2px outset #C0C0C0;
+  border-collapse: collapse;
+  background-color: #FFFFFF;
+}
+
+.table3 {
+  font-family: "MS Sans Serif", "Microsoft Sans Serif", Arial, sans-serif;
+  font-size: 11px;
+  padding: 2px 4px;
+  border: 1px solid #808080;
+  background-color: #FFFFFF;
+  font-weight: normal;
+  border-collapse: collapse;
+}
+
+.table4 {
+  font-family: "MS Sans Serif", "Microsoft Sans Serif", Arial, sans-serif;
+  font-size: 11px;
+  padding: 2px 4px;
+  border: 1px solid #808080;
+  background-color: #FFFFFF;
+  font-weight: normal;
+  border-collapse: collapse;
+}
+
+/* セルスタイル */
+td, th {
+  font-family: "MS Sans Serif", "Microsoft Sans Serif", Arial, sans-serif;
+  font-size: 11px;
+  padding: 3px 6px;
+  border: 1px solid #808080;
+  vertical-align: middle;
+  background-color: #FFFFFF;
+}
+
+th {
+  background-color: #C0C0C0;
+  font-weight: bold;
+  border: 2px outset #C0C0C0;
+}
+
+tr {
+  font-family: "MS Sans Serif", "Microsoft Sans Serif", Arial, sans-serif;
+  font-size: 11px;
+}
+
+tr:nth-child(even) {
+  background-color: #F0F0F0;
+}
+
+/* テキストスタイル */
+.bodytext {
+  font-family: "MS Sans Serif", "Microsoft Sans Serif", Arial, sans-serif;
+  font-size: 11px;
+  color: #000000;
+  line-height: 1.2;
+}
+
+.bodytext2 {
+  font-family: "MS Sans Serif", "Microsoft Sans Serif", Arial, sans-serif;
+  font-size: 11px;
+  color: #000000;
+  line-height: 1.2;
+  font-weight: bold;
+}
+
+.bodytextLeft {
+  font-family: "MS Sans Serif", "Microsoft Sans Serif", Arial, sans-serif;
+  font-size: 11px;
+  color: #000000;
+  text-align: left;
+  line-height: 1.2;
+}
+
+.bodytextnoline {
+  font-family: "MS Sans Serif", "Microsoft Sans Serif", Arial, sans-serif;
+  font-size: 11px;
+  color: #000000;
+  line-height: 1.2;
+  text-decoration: none;
+}
+
+.bodytextblue {
+  font-family: "MS Sans Serif", "Microsoft Sans Serif", Arial, sans-serif;
+  font-size: 11px;
+  color: #000080;
+  line-height: 1.2;
+  font-weight: bold;
+}
+
+.bodytextred {
+  font-family: "MS Sans Serif", "Microsoft Sans Serif", Arial, sans-serif;
+  font-size: 11px;
+  color: #FF0000;
+  line-height: 1.2;
+  font-weight: bold;
+}
+
+.bodytextbold {
+  font-family: "MS Sans Serif", "Microsoft Sans Serif", Arial, sans-serif;
+  font-size: 11px;
+  color: #000000;
+  line-height: 1.2;
+  font-weight: bold;
+}
+
+.bodynumbers {
+  font-family: "MS Sans Serif", "Microsoft Sans Serif", Arial, sans-serif;
+  font-size: 11px;
+  color: #000000;
+  line-height: 1.2;
+  text-align: right;
+}
+
+.bodynumbersnew {
+  font-family: "MS Sans Serif", "Microsoft Sans Serif", Arial, sans-serif;
+  font-size: 11px;
+  color: #000000;
+  line-height: 1.2;
+  text-align: right;
+  font-weight: bold;
+}
+
+.bodynumbersbold {
+  font-family: "MS Sans Serif", "Microsoft Sans Serif", Arial, sans-serif;
+  font-size: 11px;
+  color: #000000;
+  line-height: 1.2;
+  text-align: right;
+  font-weight: bold;
+}
+
+.bodytopheading {
+  font-family: "MS Sans Serif", "Microsoft Sans Serif", Arial, sans-serif;
+  font-size: 12px;
+  color: #000000;
+  line-height: 1.2;
+  font-weight: bold;
+  text-align: center;
+}
+
+.bodytopheading1 {
+  font-family: "MS Sans Serif", "Microsoft Sans Serif", Arial, sans-serif;
+  font-size: 12px;
+  color: #000000;
+  line-height: 1.2;
+  font-weight: bold;
+}
+
+.bodytopheading2 {
+  font-family: "MS Sans Serif", "Microsoft Sans Serif", Arial, sans-serif;
+  font-size: 12px;
+  color: #000000;
+  line-height: 1.2;
+  font-weight: bold;
+}
+
+.pageheading {
+  font-family: "MS Sans Serif", "Microsoft Sans Serif", Arial, sans-serif;
+  font-size: 14px;
+  color: #000000;
+  line-height: 1.2;
+  font-weight: bold;
+  text-align: center;
+  margin: 10px 0;
+}
+
+.pageheadingHyperlink {
+  font-family: "MS Sans Serif", "Microsoft Sans Serif", Arial, sans-serif;
+  font-size: 14px;
+  color: #000080;
+  line-height: 1.2;
+  font-weight: bold;
+  text-align: center;
+}
+
+.vlink {
+  font-family: "MS Sans Serif", "Microsoft Sans Serif", Arial, sans-serif;
+  font-size: 11px;
+  color: #000080;
+  line-height: 1.2;
+  text-decoration: none;
+}
+
+.vlinkactive {
+  font-family: "MS Sans Serif", "Microsoft Sans Serif", Arial, sans-serif;
+  font-size: 11px;
+  color: #000080;
+  line-height: 1.2;
+  text-decoration: underline;
+}
+
+.vlinkbold {
+  font-family: "MS Sans Serif", "Microsoft Sans Serif", Arial, sans-serif;
+  font-size: 11px;
+  color: #000080;
+  line-height: 1.2;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+.vlinkboldactive {
+  font-family: "MS Sans Serif", "Microsoft Sans Serif", Arial, sans-serif;
+  font-size: 11px;
+  color: #000080;
+  line-height: 1.2;
+  font-weight: bold;
+  text-decoration: underline;
+}
+
+.hlink {
+  font-family: "MS Sans Serif", "Microsoft Sans Serif", Arial, sans-serif;
+  font-size: 11px;
+  color: #000080;
+  line-height: 1.2;
+  text-decoration: none;
+}
+
+.hlinkactive {
+  font-family: "MS Sans Serif", "Microsoft Sans Serif", Arial, sans-serif;
+  font-size: 11px;
+  color: #000080;
+  line-height: 1.2;
+  text-decoration: underline;
+}
+
+/* 入力フィールドスタイル */
+input[type="text"], input[type="password"], select, textarea {
+  font-family: "MS Sans Serif", "Microsoft Sans Serif", Arial, sans-serif;
+  font-size: 11px;
+  padding: 2px 4px;
+  border: 2px inset #C0C0C0;
+  background-color: #FFFFFF;
+  color: #000000;
+}
+
+.dropdown {
+  font-family: "MS Sans Serif", "Microsoft Sans Serif", Arial, sans-serif;
+  font-size: 11px;
+  padding: 2px 4px;
+  border: 2px inset #C0C0C0;
+  background-color: #FFFFFF;
+  color: #000000;
+}
+
+/* グリッド番号 */
+.gridnum {
+  font-family: "MS Sans Serif", "Microsoft Sans Serif", Arial, sans-serif;
+  font-size: 11px;
+  color: #000000;
+  line-height: 1.2;
+  text-align: right;
+  font-weight: bold;
+  background-color: #F0F0F0;
+  padding: 2px 4px;
+  border: 1px solid #808080;
+}
+
+/* ページャースタイル */
+.pagerstyle {
+  font-family: "MS Sans Serif", "Microsoft Sans Serif", Arial, sans-serif;
+  font-size: 11px;
+  color: #000000;
+  line-height: 1.2;
+  text-align: center;
+  margin: 10px 0;
+  padding: 5px;
+  background-color: #F0F0F0;
+  border: 1px solid #808080;
+}
+
+/* テーブルボーダー */
+.tableborder {
+  border: 2px outset #C0C0C0;
+}
+
+.datagridtableborder {
+  border: 2px outset #C0C0C0;
+  background-color: #FFFFFF;
+}
+
+/* テーブルブレーク */
+.tablebreak {
+  height: 10px;
+  background-color: #C0C0C0;
+  border: 1px solid #808080;
+}
+
+.tabledoublebreak {
+  height: 20px;
+  background-color: #C0C0C0;
+  border: 1px solid #808080;
+}
+
+/* テーブルヘッディング */
+.tableheading {
+  font-family: "MS Sans Serif", "Microsoft Sans Serif", Arial, sans-serif;
+  font-size: 12px;
+  color: #000000;
+  line-height: 1.2;
+  font-weight: bold;
+  background-color: #C0C0C0;
+  padding: 5px;
+  border: 2px outset #C0C0C0;
+}
+
+/* ハイライト */
+.HighLight {
+  background-color: #FFFF00;
+  font-weight: bold;
+}
+
+/* テーブルタブ */
+.tabletab {
+  font-family: "MS Sans Serif", "Microsoft Sans Serif", Arial, sans-serif;
+  font-size: 11px;
+  color: #000000;
+  line-height: 1.2;
+  background-color: #C0C0C0;
+  border: 2px outset #C0C0C0;
+  padding: 4px 8px;
+  margin: 2px;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.tabletabnew {
+  font-family: "MS Sans Serif", "Microsoft Sans Serif", Arial, sans-serif;
+  font-size: 11px;
+  color: #000000;
+  line-height: 1.2;
+  background-color: #C0C0C0;
+  border: 2px outset #C0C0C0;
+  padding: 4px 8px;
+  margin: 2px;
+  cursor: pointer;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.tabletabsel {
+  font-family: "MS Sans Serif", "Microsoft Sans Serif", Arial, sans-serif;
+  font-size: 11px;
+  color: #000000;
+  line-height: 1.2;
+  background-color: #FFFFFF;
+  border: 2px inset #C0C0C0;
+  padding: 4px 8px;
+  margin: 2px;
+  cursor: pointer;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+/* 管理画面専用スタイル */
+.admin-header {
+  background-color: #C0C0C0;
+  border: 2px outset #C0C0C0;
+  padding: 10px;
+  margin-bottom: 20px;
+}
+
+.admin-title {
+  font-family: "MS Sans Serif", "Microsoft Sans Serif", Arial, sans-serif;
+  font-size: 16px;
+  font-weight: bold;
+  color: #000000;
+  text-align: center;
+}
+
+.admin-nav {
+  margin: 10px 0;
+  text-align: center;
+}
+
+.admin-nav a {
+  display: inline-block;
+  margin: 0 5px;
+  padding: 4px 8px;
+  border: 2px outset #C0C0C0;
+  background-color: #C0C0C0;
+  color: #000000;
+  text-decoration: none;
+  font-size: 11px;
+}
+
+.admin-nav a.active {
+  border: 2px inset #C0C0C0;
+  background-color: #A0A0A0;
+}
+
+.admin-content {
+  background-color: #FFFFFF;
+  border: 2px outset #C0C0C0;
+  padding: 15px;
+}
+
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.admin-table th {
+  background-color: #C0C0C0;
+  border: 2px outset #C0C0C0;
+  padding: 5px;
+  font-weight: bold;
+}
+
+.admin-table td {
+  border: 1px solid #808080;
+  padding: 3px 6px;
+  background-color: #FFFFFF;
+}
+
+.admin-form {
+  background-color: #F0F0F0;
+  border: 2px inset #C0C0C0;
+  padding: 15px;
+  margin: 10px 0;
+}
+
+.admin-form label {
+  display: inline-block;
+  width: 120px;
+  font-weight: bold;
+  margin-bottom: 5px;
+  font-size: 11px;
+}
+
+.admin-form input[type="text"],
+.admin-form input[type="password"],
+.admin-form select,
+.admin-form textarea {
+  width: 200px;
+  margin-bottom: 10px;
+}
+
+.admin-buttons {
+  margin-top: 15px;
+  text-align: center;
+}
+
+.admin-buttons button {
+  margin: 0 5px;
+}
+
+/* モーダルスタイル */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal-content {
+  background-color: #C0C0C0;
+  border: 2px outset #C0C0C0;
+  margin: 5% auto;
+  padding: 0;
+  width: 80%;
+  max-width: 600px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.modal-header {
+  background-color: #000080;
+  color: #FFFFFF;
+  padding: 10px;
+  font-weight: bold;
+  font-size: 12px;
+}
+
+.modal-title {
+  margin: 0;
+  font-size: 12px;
+}
+
+.close {
+  color: #FFFFFF;
+  float: right;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.close:hover {
+  color: #C0C0C0;
+}
+
+/* レスポンシブ対応 */
+@media (max-width: 768px) {
+  .admin-form label {
+    width: 100%;
+    display: block;
+    margin-bottom: 2px;
+  }
+  
+  .admin-form input[type="text"],
+  .admin-form input[type="password"],
+  .admin-form select,
+  .admin-form textarea {
+    width: 100%;
+  }
+  
+  .modal-content {
+    width: 95%;
+    margin: 10% auto;
+  }
+}
+
+/* フィルターボタン */
+.filter-btn {
+  margin-left: 4px;
+  border: 2px outset #C0C0C0;
+  background-color: #C0C0C0;
+  color: #000000;
+  padding: 3px 8px;
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.filter-btn:hover {
+  border: 2px inset #C0C0C0;
+}
+
+/* 削除ボタン */
+.del-btn {
+  color: #FFFFFF;
+  background: #C00000;
+  border: 2px outset #C00000;
+  border-radius: 0;
+  padding: 3px 8px;
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.del-btn:hover {
+  background: #A00000;
+  border: 2px inset #A00000;
+}
+
+/* 編集ボタン */
+.edit-btn {
+  color: #FFFFFF;
+  background: #000080;
+  border: 2px outset #000080;
+  border-radius: 0;
+  margin-right: 4px;
+  padding: 3px 8px;
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.edit-btn:hover {
+  background: #000060;
+  border: 2px inset #000060;
+}
+
+/* フィルター行 */
+.filter-row input, .filter-row select {
+  font-size: 11px;
+  padding: 2px 4px;
+  border: 2px inset #C0C0C0;
+  background-color: #FFFFFF;
+  color: #000000;
+}
+
+/* 編集モーダル用スタイル */
+.edit-modal {
+  display: none;
+  position: fixed;
+  z-index: 9999;
+  left: 0;
+  top: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0,0,0,0.5);
+  align-items: center;
+  justify-content: center;
+}
+
+.edit-modal-content {
+  background: #C0C0C0;
+  border: 2px outset #C0C0C0;
+  padding: 20px;
+  min-width: 500px;
+  max-width: 90vw;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.edit-form {
+  display: grid;
+  grid-template-columns: 120px 1fr;
+  gap: 8px 12px;
+  align-items: start;
+}
+
+.edit-form label {
+  font-weight: bold;
+  font-size: 11px;
+  color: #000000;
+  padding-top: 4px;
+}
+
+.edit-form input, .edit-form textarea, .edit-form select {
+  padding: 4px 6px;
+  border: 2px inset #C0C0C0;
+  border-radius: 0;
+  font-size: 11px;
+  width: 100%;
+  box-sizing: border-box;
+  background-color: #FFFFFF;
+  color: #000000;
+}
+
+.edit-form textarea {
+  resize: vertical;
+  min-height: 60px;
+  grid-column: 2;
+}
+
+.edit-form .readonly-field {
+  background: #F0F0F0;
+  color: #808080;
+  cursor: not-allowed;
+}
+
+.edit-buttons {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  margin-top: 20px;
+  grid-column: 1 / -1;
+}
+
+.edit-buttons button {
+  padding: 6px 12px;
+  border: 2px outset #C0C0C0;
+  border-radius: 0;
+  cursor: pointer;
+  font-size: 11px;
+  background-color: #C0C0C0;
+  color: #000000;
+}
+
+.save-btn {
+  background: #000080;
+  color: #FFFFFF;
+  border: 2px outset #000080;
+}
+
+.save-btn:hover {
+  background: #000060;
+  border: 2px inset #000060;
+}
+
+.cancel-btn {
+  background: #C0C0C0;
+  color: #000000;
+  border: 2px outset #C0C0C0;
+}
+
+.cancel-btn:hover {
+  background: #A0A0A0;
+  border: 2px inset #A0A0A0;
+}
+
+/* パスワード生成ページ用スタイル */
+.result {
+  border: 1px solid #808080;
+  padding: 15px;
+  margin-top: 15px;
+  background: #F0F0F0;
+  border: 2px inset #C0C0C0;
+}
+
+.hash-display {
+  font-family: "Courier New", monospace;
+  background: #FFFFFF;
+  padding: 10px;
+  border: 2px inset #C0C0C0;
+  word-break: break-all;
+  margin-top: 10px;
+  font-size: 11px;
+  color: #000000;
+}
+
+.debug-section {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid #808080;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+  color: #000000;
+  font-size: 11px;
+}
+
+.form-group input[type="password"], 
+.form-group input[type="text"] {
+  width: 100%;
+  padding: 4px 6px;
+  border: 2px inset #C0C0C0;
+  font-size: 11px;
+  box-sizing: border-box;
+  background-color: #FFFFFF;
+  color: #000000;
+}
+
+.form-group input[type="password"]:focus, 
+.form-group input[type="text"]:focus {
+  border-color: #000080;
+  outline: none;
+}
+
+/* ログイン画面用スタイル */
+.login-container {
+  max-width: 400px;
+  margin: 50px auto;
+  background-color: #FFFFFF;
+  border: 2px outset #C0C0C0;
+  padding: 20px;
+}
+
+.login-title {
+  font-family: "MS Sans Serif", "Microsoft Sans Serif", Arial, sans-serif;
+  font-size: 16px;
+  font-weight: bold;
+  color: #000000;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.login-form {
+  background-color: #F0F0F0;
+  border: 2px inset #C0C0C0;
+  padding: 15px;
+}
+
+.login-form label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+  color: #000000;
+  font-size: 11px;
+}
+
+.login-form input[type="password"] {
+  width: 100%;
+  padding: 4px 6px;
+  border: 2px inset #C0C0C0;
+  font-size: 11px;
+  box-sizing: border-box;
+  background-color: #FFFFFF;
+  color: #000000;
+  margin-bottom: 15px;
+}
+
+.login-form input[type="password"]:focus {
+  border-color: #000080;
+  outline: none;
+}
+
+.login-button {
+  width: 100%;
+  padding: 8px;
+  border: 2px outset #C0C0C0;
+  background-color: #C0C0C0;
+  color: #000000;
+  font-size: 11px;
+  cursor: pointer;
+  font-family: "MS Sans Serif", "Microsoft Sans Serif", Arial, sans-serif;
+}
+
+.login-button:hover {
+  border: 2px inset #C0C0C0;
+}
+
+.login-button:active {
+  border: 2px inset #C0C0C0;
+  background-color: #A0A0A0;
+}
+
+.login-instructions {
+  font-family: "MS Sans Serif", "Microsoft Sans Serif", Arial, sans-serif;
+  font-size: 11px;
+  color: #000000;
+  line-height: 1.2;
+  margin-top: 15px;
+  padding: 10px;
+  background-color: #F0F0F0;
+  border: 1px solid #808080;
+}
+
+/* 追加のレトロスタイル */
+.status-bar {
+  background-color: #C0C0C0;
+  border: 2px inset #C0C0C0;
+  padding: 4px 8px;
+  font-size: 11px;
+  color: #000000;
+  margin-top: 10px;
+}
+
+.toolbar {
+  background-color: #C0C0C0;
+  border: 2px outset #C0C0C0;
+  padding: 5px;
+  margin-bottom: 10px;
+}
+
+.toolbar button {
+  margin-right: 5px;
+  padding: 3px 6px;
+  border: 2px outset #C0C0C0;
+  background-color: #C0C0C0;
+  color: #000000;
+  font-size: 11px;
+  cursor: pointer;
+  font-family: "MS Sans Serif", "Microsoft Sans Serif", Arial, sans-serif;
+}
+
+.toolbar button:hover {
+  border: 2px inset #C0C0C0;
+}
+
+.toolbar button:active {
+  border: 2px inset #C0C0C0;
+  background-color: #A0A0A0;
+}
+
+.menu-bar {
+  background-color: #C0C0C0;
+  border: 2px outset #C0C0C0;
+  padding: 2px 5px;
+  margin-bottom: 10px;
+}
+
+.menu-item {
+  display: inline-block;
+  padding: 2px 8px;
+  margin-right: 5px;
+  border: 2px outset #C0C0C0;
+  background-color: #C0C0C0;
+  color: #000000;
+  font-size: 11px;
+  cursor: pointer;
+  font-family: "MS Sans Serif", "Microsoft Sans Serif", Arial, sans-serif;
+}
+
+.menu-item:hover {
+  border: 2px inset #C0C0C0;
+}
+
+.menu-item:active {
+  border: 2px inset #C0C0C0;
+  background-color: #A0A0A0;
+}
+
+.dialog-box {
+  background-color: #C0C0C0;
+  border: 2px outset #C0C0C0;
+  padding: 15px;
+  margin: 20px auto;
+  max-width: 500px;
+}
+
+.dialog-title {
+  font-family: "MS Sans Serif", "Microsoft Sans Serif", Arial, sans-serif;
+  font-size: 12px;
+  font-weight: bold;
+  color: #000000;
+  margin-bottom: 15px;
+  padding-bottom: 5px;
+  border-bottom: 1px solid #808080;
+}
+
+.dialog-content {
+  font-family: "MS Sans Serif", "Microsoft Sans Serif", Arial, sans-serif;
+  font-size: 11px;
+  color: #000000;
+  line-height: 1.2;
+  margin-bottom: 15px;
+}
+
+.dialog-buttons {
+  text-align: right;
+}
+
+.dialog-buttons button {
+  margin-left: 5px;
+  padding: 4px 8px;
+  border: 2px outset #C0C0C0;
+  background-color: #C0C0C0;
+  color: #000000;
+  font-size: 11px;
+  cursor: pointer;
+  font-family: "MS Sans Serif", "Microsoft Sans Serif", Arial, sans-serif;
+}
+
+.dialog-buttons button:hover {
+  border: 2px inset #C0C0C0;
+}
+
+.dialog-buttons button:active {
+  border: 2px inset #C0C0C0;
+  background-color: #A0A0A0;
+}
+
+.progress-bar {
+  background-color: #FFFFFF;
+  border: 2px inset #C0C0C0;
+  height: 20px;
+  margin: 10px 0;
+  position: relative;
+}
+
+.progress-fill {
+  background-color: #000080;
+  height: 100%;
+  width: 0%;
+  transition: width 0.3s ease;
+}
+
+.progress-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-family: "MS Sans Serif", "Microsoft Sans Serif", Arial, sans-serif;
+  font-size: 11px;
+  color: #000000;
+}
+
+.checkbox-custom {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  width: 13px;
+  height: 13px;
+  border: 2px outset #C0C0C0;
+  background-color: #FFFFFF;
+  cursor: pointer;
+  position: relative;
+  vertical-align: middle;
+  margin-right: 5px;
+}
+
+.checkbox-custom:checked::after {
+  content: '';
+  position: absolute;
+  left: 2px;
+  top: 0px;
+  width: 5px;
+  height: 8px;
+  border: solid #000000;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+.radio-custom {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  width: 13px;
+  height: 13px;
+  border: 2px outset #C0C0C0;
+  background-color: #FFFFFF;
+  border-radius: 50%;
+  cursor: pointer;
+  position: relative;
+  vertical-align: middle;
+  margin-right: 5px;
+}
+
+.radio-custom:checked::after {
+  content: '';
+  position: absolute;
+  left: 3px;
+  top: 3px;
+  width: 5px;
+  height: 5px;
+  background-color: #000000;
+  border-radius: 50%;
+}
+
+.scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: #C0C0C0 #FFFFFF;
+}
+
+.scrollbar::-webkit-scrollbar {
+  width: 16px;
+}
+
+.scrollbar::-webkit-scrollbar-track {
+  background: #C0C0C0;
+  border: 1px solid #808080;
+}
+
+.scrollbar::-webkit-scrollbar-thumb {
+  background: #808080;
+  border: 1px solid #C0C0C0;
+}
+
+.scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #606060;
+}
+
+.tooltip {
+  position: relative;
+  display: inline-block;
+}
+
+.tooltip .tooltiptext {
+  visibility: hidden;
+  width: 200px;
+  background-color: #FFFFE1;
+  color: #000000;
+  text-align: center;
+  border: 1px solid #808080;
+  padding: 5px;
+  position: absolute;
+  z-index: 1;
+  bottom: 125%;
+  left: 50%;
+  margin-left: -100px;
+  font-family: "MS Sans Serif", "Microsoft Sans Serif", Arial, sans-serif;
+  font-size: 11px;
+}
+
+.tooltip:hover .tooltiptext {
+  visibility: visible;
+}
+
+.context-menu {
+  position: absolute;
+  background-color: #C0C0C0;
+  border: 2px outset #C0C0C0;
+  padding: 2px;
+  z-index: 1000;
+  font-family: "MS Sans Serif", "Microsoft Sans Serif", Arial, sans-serif;
+  font-size: 11px;
+}
+
+.context-menu-item {
+  padding: 4px 20px 4px 8px;
+  cursor: pointer;
+  color: #000000;
+}
+
+.context-menu-item:hover {
+  background-color: #000080;
+  color: #FFFFFF;
+}
+
+.context-menu-separator {
+  height: 1px;
+  background-color: #808080;
+  margin: 2px 0;
+}
+
+.tab-container {
+  border: 2px outset #C0C0C0;
+  background-color: #FFFFFF;
+}
+
+.tab-header {
+  background-color: #C0C0C0;
+  border-bottom: 2px outset #C0C0C0;
+  padding: 2px;
+}
+
+.tab-button {
+  padding: 4px 12px;
+  margin-right: 2px;
+  border: 2px outset #C0C0C0;
+  background-color: #C0C0C0;
+  color: #000000;
+  font-size: 11px;
+  cursor: pointer;
+  font-family: "MS Sans Serif", "Microsoft Sans Serif", Arial, sans-serif;
+}
+
+.tab-button.active {
+  border: 2px inset #C0C0C0;
+  background-color: #FFFFFF;
+}
+
+.tab-content {
+  padding: 15px;
+  background-color: #FFFFFF;
+}
+
+.alert-box {
+  background-color: #C0C0C0;
+  border: 2px outset #C0C0C0;
+  padding: 15px;
+  margin: 20px auto;
+  max-width: 400px;
+  text-align: center;
+}
+
+.alert-icon {
+  font-size: 32px;
+  margin-bottom: 10px;
+}
+
+.alert-message {
+  font-family: "MS Sans Serif", "Microsoft Sans Serif", Arial, sans-serif;
+  font-size: 11px;
+  color: #000000;
+  margin-bottom: 15px;
+}
+
+.alert-buttons {
+  text-align: center;
+}
+
+.alert-buttons button {
+  margin: 0 5px;
+  padding: 4px 12px;
+  border: 2px outset #C0C0C0;
+  background-color: #C0C0C0;
+  color: #000000;
+  font-size: 11px;
+  cursor: pointer;
+  font-family: "MS Sans Serif", "Microsoft Sans Serif", Arial, sans-serif;
+}
+
+.alert-buttons button:hover {
+  border: 2px inset #C0C0C0;
+}
+
+.alert-buttons button:active {
+  border: 2px inset #C0C0C0;
+  background-color: #A0A0A0;
+}

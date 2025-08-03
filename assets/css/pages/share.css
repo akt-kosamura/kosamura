@@ -1,0 +1,386 @@
+html { overflow-y: scroll; }
+:root {
+  --bg-page: linear-gradient(135deg, #f0f0f5 0%, #e8e8ee 100%);
+  --bg-card: #ffffff;
+  --accent: #0071e3;
+  --radius: 12px;
+  --transition: 0.3s ease;
+  font-size: 16px;
+}
+
+/* ナビバーアイコンのスタイル */
+nav ul li a i {
+  margin-right: 8px;
+  font-size: 1.1em;
+}
+
+/* アクティブなページのアイコン - 青色 */
+nav ul li a.active i {
+  color: #007AFF;
+}
+
+/* アクティブでないページのアイコン - グレーの線だけ */
+nav ul li a:not(.active) i {
+  color: #999;
+  opacity: 0.7;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: var(--bg-page);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  color: #1d1d20;
+  padding-top: 64px;
+  padding-left: 32px;
+  padding-right: 32px;
+}
+
+main {
+  max-width: 1400px;
+  margin: 96px auto 0;
+  padding-left: 32px;
+  padding-right: 32px;
+  box-sizing: border-box;
+}
+h1 {
+  text-align:center;
+  font-size:2rem;
+  margin-bottom:1rem;
+  background:linear-gradient(90deg,var(--accent),#5ac8fa);
+  -webkit-background-clip:text;
+  color:transparent;
+  /* white-space:nowrap; 削除で自動改行 */
+}
+.subtitle {
+  text-align:center;
+  font-size:1.2rem;
+  margin-bottom:2rem;
+  color:#6e6e73;
+  /* white-space:nowrap; 削除で自動改行 */
+}
+.card {
+  background:var(--bg-card);
+  border-radius:var(--radius);
+  box-shadow:0 .25rem 1rem rgba(0,0,0,.1);
+  max-width:800px;
+  width:100%;
+  margin:0 auto 0.5rem;
+  padding:2rem;
+  transition:box-shadow var(--transition);
+  box-sizing:border-box;
+  word-break:break-word;
+  overflow:hidden;
+}
+.card:hover {
+  box-shadow:0 .5rem 1.5rem rgba(0,0,0,.15);
+}
+.card-title {
+  background:#f7faff;
+  padding:1.1rem 2rem;
+  font-size:1.15rem;
+  font-weight:bold;
+  color:var(--accent);
+  border-bottom:1px solid #e0e0e0;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  user-select:none;
+}
+.card-title .step-label {
+  font-size:1.05rem;
+  font-weight:bold;
+  color:var(--accent);
+  margin-right:.7em;
+}
+.card-title .back-btn {
+  font-size:.98rem;
+  color:#0071e3;
+  background:none;
+  border:none;
+  cursor:pointer;
+  margin-left:auto;
+  padding:.2em .8em;
+  border-radius:6px;
+  transition:background .2s;
+}
+.card-title .back-btn:hover {
+  background:#e6f2ff;
+}
+
+
+/* 共有ページ専用スタイル */
+/* ナビゲーションリンクの中央揃え強化 */
+nav ul {
+  justify-content: center !important;
+  text-align: center !important;
+}
+
+nav {
+  text-align: center !important;
+}
+
+.share-description {
+  text-align: center;
+  font-size: 1.1rem;
+  color: #6e6e73;
+  margin-bottom: 2rem;
+  line-height: 1.6;
+}
+
+.url-container {
+  margin-bottom: 1.5rem;
+}
+
+.share-url-input {
+  width: 100%;
+  padding: 1rem;
+  border: 2px solid #e0e0e0;
+  border-radius: var(--radius);
+  font-size: 1rem;
+  font-family: inherit;
+  background: #f8f9fa;
+  color: #1d1d20;
+  transition: border-color var(--transition);
+  box-sizing: border-box;
+}
+
+.share-url-input:focus {
+  outline: none;
+  border-color: var(--accent);
+  background: #fff;
+}
+
+.copy-button-container {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.copy-btn {
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  padding: 0.8rem 2rem;
+  border-radius: var(--radius);
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background var(--transition), transform var(--transition);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.copy-btn:hover {
+  background: #005bb5;
+  transform: translateY(-1px);
+}
+
+.copy-btn:active {
+  transform: translateY(0);
+}
+
+.share-buttons {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+}
+
+.share-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.8rem 1.5rem;
+  border-radius: var(--radius);
+  font-size: 1rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all var(--transition);
+  cursor: pointer;
+  border: none;
+  min-width: 120px;
+  justify-content: center;
+}
+
+.share-btn:first-child {
+  background: #1da1f2;
+  color: #fff;
+}
+
+.share-btn:first-child:hover {
+  background: #0d8bd9;
+  transform: translateY(-1px);
+}
+
+.share-btn:last-child {
+  background: #6c757d;
+  color: #fff;
+}
+
+.share-btn:last-child:hover {
+  background: #5a6268;
+  transform: translateY(-1px);
+}
+
+.print-btn {
+  display: block;
+  width: 100%;
+  max-width: 300px;
+  margin: 0 auto 1.5rem;
+  background: #28a745;
+  color: #fff;
+  border: none;
+  padding: 1rem 2rem;
+  border-radius: var(--radius);
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background var(--transition), transform var(--transition);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.print-btn:hover {
+  background: #218838;
+  transform: translateY(-1px);
+}
+
+.print-btn:active {
+  transform: translateY(0);
+}
+
+.note {
+  text-align: center;
+  font-size: 0.9rem;
+  color: #6c757d;
+  font-style: italic;
+  margin-top: 1rem;
+}
+
+.copyright-note {
+  font-size: 20px !important;
+  color: #888 !important;
+  text-align: center !important;
+  margin-top: 16px !important;
+  margin-bottom: 8px !important;
+  padding: 0 !important;
+  border-top: none !important;
+}
+
+/* コピー用トースト */
+#copyToast {
+  display: none;
+  opacity: 0;
+  position: fixed;
+  left: 50%;
+  bottom: 2.5rem;
+  transform: translateX(-50%);
+  background: #333;
+  color: #fff;
+  padding: 0.6em 1.5em;
+  border-radius: 1.2em;
+  font-size: 0.98em;
+  z-index: 2000;
+  transition: opacity 0.4s;
+  pointer-events: none;
+  min-width: 7em;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.18);
+}
+
+/* レスポンシブデザイン */
+@media (max-width: 1200px) {
+  main {
+    max-width: 100vw;
+    padding-left: 8px;
+    padding-right: 8px;
+  }
+  .card {
+    max-width: 600px;
+    min-width: 280px;
+  }
+}
+
+@media (max-width: 768px) {
+  body {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+  
+  main {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+  
+  .card {
+    padding: 1.5rem;
+  }
+  
+  .share-buttons {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .share-btn {
+    width: 100%;
+    max-width: 250px;
+  }
+  
+  .print-btn {
+    max-width: 250px;
+  }
+  
+  h1 {
+    font-size: 1.8rem;
+  }
+  
+  .subtitle {
+    font-size: 1.1rem;
+  }
+  
+  .share-description {
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  body {
+    padding-left: 8px;
+    padding-right: 8px;
+  }
+  
+  main {
+    padding-left: 8px;
+    padding-right: 8px;
+  }
+  
+  .card {
+    padding: 1rem;
+  }
+  
+  h1 {
+    font-size: 1.6rem;
+  }
+  
+  .subtitle {
+    font-size: 1rem;
+  }
+  
+  .share-description {
+    font-size: 0.95rem;
+  }
+  
+  .share-url-input {
+    font-size: 0.9rem;
+    padding: 0.8rem;
+    text-align: center;
+  }
+  
+  .copy-btn, .share-btn, .print-btn {
+    font-size: 0.9rem;
+    padding: 0.7rem 1.5rem;
+  }
+}

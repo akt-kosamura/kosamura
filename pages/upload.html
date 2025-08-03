@@ -1,0 +1,934 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <title>アップロード - 秋高考査村</title>
+  <meta name="viewport" content="width=1200" />
+  <link rel="stylesheet" href="../assets/css/common.css" />
+  <link rel="stylesheet" href="../assets/css/pages/upload.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+</head>
+<body>
+  <header>
+    <div class="header-inner">
+      <div class="header-title">
+        <div class="site-title">秋高考査村</div>
+        <div class="site-subtitle">無料・匿名で使える過去問共有サイト</div>
+      </div>
+      <div id="freeModeStatus" class="free-mode-status"></div>
+      <nav>
+        <ul>
+          <li><a href="../index.html"><i class="fa-solid fa-home"></i> ホーム</a></li>
+          <li><a href="upload.html" class="active"><i class="fa-solid fa-upload"></i> アップロード</a></li>
+          <li><a href="search.html"><i class="fa-solid fa-database"></i> 問題データベース</a></li>
+          <li><a href="share.html"><i class="fa-solid fa-share-nodes"></i> 共有・拡散</a></li>
+          <li><a href="https://c.kuku.lu/hmc853pz" target="_blank"><i class="fa-solid fa-comments"></i> 掲示板</a></li>
+          <li><a href="https://forms.gle/ZWtQCvecH4eZtTEU7" target="_blank"><i class="fa-solid fa-envelope"></i> 報告・問い合わせ</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+  <main>
+    <h1>PDFまたは写真をアップロード</h1>
+    <div class="subtitle">複数のファイルは順番を編集できます。</div>
+    
+    <!-- 写真撮影時の注意ボタン -->
+    <div style="text-align: center; margin-bottom: 1rem;">
+      <button type="button" id="photoGuideBtn" style="padding: 0.8em 1.5em; border-radius: 8px; border: 1px solid #0071e3; background: #fff; color: #0071e3; font-weight: bold; cursor: pointer; font-size: 1rem; display: inline-flex; align-items: center; gap: 0.5em;">
+        <i class="fa-solid fa-camera"></i>
+        写真投稿時のお願い
+      </button>
+    </div>
+    
+    <div class="card" id="step1Card">
+      <div class="card-title" id="step1Title"><span class="step-label">Step1 ファイル追加・編集</span></div>
+      <div class="card-content" id="step1Content">
+        <form id="fileForm">
+          <!-- 注意書きは「情報入力へ」ボタンの下に移動 -->
+          <div class="file-input-wrapper" id="fileDropArea">
+            <input type="file" id="fileInput" accept=".pdf,image/*" multiple style="display:none;">
+            <div id="customFileBtn" class="custom-file-btn">
+              <span class="file-svg" aria-hidden="true">
+                <svg viewBox="0 0 48 48" width="56" height="56" fill="#f7faff" stroke="#0071e3" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display:block;margin:0 auto;">
+                  <rect x="10" y="6" width="28" height="36" rx="4"/>
+                  <polyline points="18,16 30,16" />
+                  <polyline points="18,24 30,24" />
+                  <polyline points="18,32 26,32" />
+                </svg>
+              </span>
+              <span id="fileBtnLabel" class="file-btn-label">ここにファイルをドラッグ＆ドロップ<br>またはクリックで選択・撮影</span>
+            </div>
+            <small>対応形式：PDF / 画像</small>
+          </div>
+          <div id="fileListInfo" style="margin-bottom: 0.7em; font-size: 0.97em; color: #555; line-height: 1.7; text-align:center;">
+            <div>画像はサムネイルクリックで拡大プレビュー・左端をドラッグで順番変更可能</div>
+            <div>現在のファイル名やタグ情報は一切アップロードされないのでご安心ください。</div>
+          </div>
+          <ul id="fileList" style="min-height: 4.5em; transition: min-height 0.3s;"></ul>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.2em; gap: 1em; flex-wrap: wrap;">
+            <button type="button" id="reverseOrderBtn" style="padding: 0.5em 1.2em; border-radius: 8px; border: 1px solid #0071e3; background: #fff; color: #0071e3; font-weight: bold; cursor: pointer;">順序を逆にする</button>
+            <label style="display: flex; align-items: center; gap: 0.5em; font-size: 1em; position: relative;">
+              <input type="checkbox" id="colorUploadCheckbox" style="width: 1.1em; height: 1.1em;"> 画像をカラーでアップロード(非推奨)
+              <span id="colorHelp" style="cursor:pointer; color:#0071e3; font-weight:bold; font-size:1.1em; user-select:none;">？</span>
+              <span id="colorHelpPopup" style="display:none; position:absolute; right:2.2em; top:50%; transform:translateY(-50%); background:#eee; color:#444; border:1px solid #bbb; border-radius:6px; padding:0.4em 0.7em; font-size:0.90em; box-shadow:0 2px 8px rgba(0,0,0,0.10); z-index:100; min-width:120px; text-align:left; white-space:normal;">カラーでのアップロードはファイルサイズが大きくなるため時間がかかります</span>
+            </label>
+          </div>
+          <button type="button" id="toStep2Btn" class="upload-btn">情報入力へ</button>
+        </form>
+        <div style="background:#fff7d1; color:#bfa100; font-size:0.98em; border-radius:10px; padding:1.5em 1em; margin-top:1.5em; margin-bottom:0.05em; box-shadow:0 2px 8px rgba(191,161,0,0.06); line-height:1.7;">
+          <ul style="list-style:none; margin:0; padding:0;">
+            <li style="text-indent:-1.2em; padding-left:1.2em; margin-bottom:0.3em;">・お手数をおかけしますが、あらかじめ同じ内容が既にアップされていないか検索をお願いします。（自動検索機能は開発中です）</li>
+            <li style="text-indent:-1.2em; padding-left:1.2em; margin-bottom:0.3em;">・できるだけ、問題・解説・解答に分けてアップしてください。次のステップで内容選択の項目があります。</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="card" id="step2Card" style="margin-top:2.5rem;">
+      <div class="card-title" id="step2Title">
+        <span class="step-label">Step2 情報入力</span>
+        <button type="button" class="back-btn" id="backToStep1Btn">ファイル編集に戻る</button>
+      </div>
+      <div class="card-content closed" id="step2Content">
+        <form id="metaForm">
+          <table class="form-table">
+            <tr>
+              <td>学年<span style="color:red">*</span></td>
+              <td class="radios">
+                <label><input type="radio" name="grade" value="高1" required>高1</label>
+                <label><input type="radio" name="grade" value="高2">高2</label>
+                <label><input type="radio" name="grade" value="高3">高3</label>
+              </td>
+            </tr>
+            <tr>
+              <td>年度<span style="color:red">*</span></td>
+              <td>
+                <select id="year" required>
+                  <option value="">出題年度を選択</option>
+                  <option>2020（R2）</option><option>2021（R3）</option><option>2022（R4）</option><option>2023（R5）</option><option>2024（R6）</option><option>2025（R7）</option><option>不明</option>
+                </select>
+              </td>
+            </tr>
+            <tr>
+              <td>種類<span style="color:red">*</span></td>
+              <td>
+                <select id="type" required>
+                  <option value="">問題種類を選択</option>
+                  <option>前期中間</option><option>前期期末</option><option>後期中間</option><option>後期期末</option><option>考査以外</option>
+                </select>
+                <div class="desc">「考査以外」を選択したときは、コメントに内容を入力してください。</div>
+              </td>
+            </tr>
+            <tr>
+              <td>科目<span style="color:red">*</span></td>
+              <td>
+                <select id="subject" required>
+                  <option value="">科目（教科）を選択</option>
+                  <option>現国・論国</option><option>言文・古探</option><option>数学Ⅰ・Ⅱ・Ⅲ</option><option>数学Ａ・Ｂ・Ｃ</option><option>英語コミュ</option><option>論理表現</option><option>化学・化学基礎</option><option>生物・生物基礎</option><option>物理・物理基礎</option><option>地学・地学基礎</option><option>地理</option><option>日本史</option><option>世界史</option><option>公共</option><option>情報</option><option>保健体育</option><option>家庭科</option><option>国語</option><option>数学</option><option>理科</option><option>英語</option><option>地歴</option><option>その他</option>
+                </select>
+              </td>
+            </tr>
+            <tr>
+              <td>文理区分<span style="color:red">*</span></td>
+              <td class="radios">
+                <label><input type="radio" name="stream" value="区分なし" checked required>区分なし</label>
+                <label><input type="radio" name="stream" value="理系のみ">理系のみ</label>
+                <label><input type="radio" name="stream" value="文系のみ">文系のみ</label>
+                <label><input type="radio" name="stream" value="理数科のみ">理数科のみ</label>
+              </td>
+            </tr>
+            <tr>
+              <td>内容<span style="color:red">*</span></td>
+              <td class="radios">
+                <label><input type="radio" name="contentType" value="セット" required>セット</label>
+                <label><input type="radio" name="contentType" value="問題">問題</label>
+                <label><input type="radio" name="contentType" value="解答">解答</label>
+                <label><input type="radio" name="contentType" value="解説">解説</label>
+              </td>
+            </tr>
+            <tr>
+              <td>コメント</td>
+              <td>
+                <textarea id="comment" placeholder="コメントを入力" style="font-size:0.95rem;"></textarea>
+                <div class="desc">例　前年とほとんど同じでした。<br>　　作問は佐賀薫先生です。</div>
+              </td>
+            </tr>
+          </table>
+          <button type="submit" class="upload-btn" id="uploadButton" style="margin-top:1.2em;">アップロード</button>
+          <div id="uploadInfo" style="margin-top:1em; margin-bottom:0.7em; color:#0071e3; font-size:0.98em; line-height:1.6; text-align:center;">
+            アップロードには時間がかかる場合もあります。改善中です。<br>
+            アップロード後にフリーモードの時間が24時間追加されます。
+          </div>
+          <div id="message" class="success-msg" style="display:none;"></div>
+          <div id="afterUploadBtns" style="display:none; text-align:center; margin-top:1.5em; margin-bottom:1em;">
+            <a id="fileViewLink" class="file-link" href="#" target="_blank" style="display:inline-block; margin-right:1.5em;">ファイルを確認</a>
+            <button type="button" class="continue-btn" id="continueBtn" style="display:inline-block;">続けてアップロード</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </main>
+  <div id="previewModal" class="preview-modal">
+    <div class="preview-content">
+      <button class="preview-close" onclick="closePreview()">&times;</button>
+      <img id="previewImage" src="" alt="プレビュー">
+    </div>
+  </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+  <script src="../assets/js/api.js"></script>
+  <script>
+    'use strict';
+    const fileAddBtn   = document.getElementById('fileAddBtn'); // This will be removed
+    const fileInput    = document.getElementById('fileInput');
+    const fileList     = document.getElementById('fileList');
+    const downloadLink = document.getElementById('downloadLink'); // This will be removed
+    const message      = document.getElementById('message');
+    const fileNameInput= document.getElementById('fileNameInput'); // This will be removed
+    let files = [], sorter, mergedPdfBlob = null;
+    const pdfIconSVG = `<svg viewBox="0 0 24 24" fill="#D32F2F" xmlns="http://www.w3.org/2000/svg"><path d="M4 2h16c1.1 0 2 .9 2 2v16c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2z"/><text x="12" y="16" text-anchor="middle" font-size="8" fill="#FFF" font-family="Arial">PDF</text></svg>`;
+
+    // ファイル追加ボックスのクリック・ドラッグ&ドロップ
+    const customFileBtn = document.getElementById('customFileBtn');
+    const fileBtnLabel = document.getElementById('fileBtnLabel');
+    const fileDropArea = document.getElementById('fileDropArea');
+    // クリックでファイル選択
+    customFileBtn.addEventListener('click', () => fileInput.click());
+    customFileBtn.addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === ' ') fileInput.click();
+    });
+    customFileBtn.tabIndex = 0;
+    // ファイル選択時
+    fileInput.addEventListener('change', e => {
+      for (const f of e.target.files) {
+        if (!files.some(x => x.name === f.name && x.lastModified === f.lastModified)) {
+          files.push(f);
+        }
+      }
+      updateFileBtnLabel();
+      renderFileList();
+    });
+    // ドラッグ＆ドロップ対応
+    fileDropArea.addEventListener('dragover', e => {
+      e.preventDefault();
+      fileDropArea.classList.add('dragover');
+    });
+    fileDropArea.addEventListener('dragleave', e => {
+      e.preventDefault();
+      fileDropArea.classList.remove('dragover');
+    });
+    fileDropArea.addEventListener('drop', e => {
+      e.preventDefault();
+      fileDropArea.classList.remove('dragover');
+      for (const f of e.dataTransfer.files) {
+        if (!files.some(x => x.name === f.name && x.lastModified === f.lastModified)) {
+          files.push(f);
+        }
+      }
+      updateFileBtnLabel();
+      renderFileList();
+    });
+    function updateFileBtnLabel() {
+      if (files.length === 0) {
+        customFileBtn.classList.remove('solid');
+        fileBtnLabel.textContent = 'ここにファイルをドラッグ＆ドロップ\nまたはクリックで選択';
+      } else {
+        customFileBtn.classList.add('solid');
+        fileBtnLabel.textContent = 'ファイルをさらに追加する';
+      }
+    }
+    // ファイルリスト表示・並び替え・削除・プレビュー
+    function renderFileList() {
+      fileList.innerHTML = '';
+      files.forEach((f, i) => {
+        const li = document.createElement('li'); li.className = 'file-item'; li.dataset.index = i;
+        const handle = document.createElement('span'); handle.className = 'handle'; handle.textContent = '≡'; li.append(handle);
+        const num = document.createElement('div'); num.className = 'file-number'; num.textContent = i + 1; li.append(num);
+        const iconWrap = document.createElement('div'); iconWrap.className = 'file-icon';
+        if (f.type && f.type.includes('pdf')) iconWrap.innerHTML = '<svg viewBox="0 0 24 24" fill="#D32F2F" xmlns="http://www.w3.org/2000/svg"><path d="M4 2h16c1.1 0 2 .9 2 2v16c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2z"/><text x="12" y="16" text-anchor="middle" font-size="8" fill="#FFF" font-family="Arial">PDF</text></svg>';
+        else {
+          const img = document.createElement('img');
+          // プレビュー用に実際のアップロード処理と同じ画質で画像を生成
+          createPreviewImage(f).then(previewSrc => {
+            img.src = previewSrc;
+            img.onclick = () => showPreview(previewSrc, f.name);
+          }).catch(() => {
+            // エラー時は元のファイルを使用
+            img.src = URL.createObjectURL(f);
+            img.onclick = () => showPreview(img.src, f.name);
+          });
+          iconWrap.append(img);
+        }
+        li.append(iconWrap);
+        const nameDiv = document.createElement('div'); nameDiv.className = 'file-name'; nameDiv.textContent = f.name; li.append(nameDiv);
+        const rm = document.createElement('button'); rm.className = 'remove-btn'; rm.textContent = '×';
+        rm.onclick = () => { files.splice(i, 1); updateFileBtnLabel(); renderFileList(); };
+        li.append(rm);
+        fileList.append(li);
+      });
+      if (files.length === 0) {
+        fileList.style.minHeight = '4.5em';
+      } else {
+        fileList.style.minHeight = '0';
+      }
+      if (sorter) sorter.destroy();
+      sorter = Sortable.create(fileList, {
+        animation: 150,
+        handle: '.handle',
+        touchStartThreshold: 0,
+        fallbackOnBody: true,
+        forceFallback: false,
+        onEnd: function(evt) {
+          if (evt.oldIndex !== evt.newIndex) {
+            const item = files.splice(evt.oldIndex, 1)[0];
+            files.splice(evt.newIndex, 0, item);
+            renderFileList();
+          }
+        }
+      });
+    }
+    
+    // プレビュー用画像生成（実際のアップロード処理と同じ画質）
+    async function createPreviewImage(file) {
+      return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.onload = () => {
+          try {
+            const MAX_IMG_SIZE = 1200; // 実際のアップロード処理と同じサイズ
+            let scale = Math.min(MAX_IMG_SIZE / img.width, MAX_IMG_SIZE / img.height, 1);
+            const canvas = document.createElement('canvas');
+            canvas.width = Math.round(img.width * scale);
+            canvas.height = Math.round(img.height * scale);
+            const ctx = canvas.getContext('2d');
+            
+            // カラーモードの確認（実際の処理と同じ）
+            const colorUploadCheckbox = document.getElementById('colorUploadCheckbox');
+            if (colorUploadCheckbox && colorUploadCheckbox.checked) {
+              // カラー（JPEG 80%）
+              ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+              const previewSrc = canvas.toDataURL('image/jpeg', 0.8);
+              resolve(previewSrc);
+            } else {
+              // グレースケール（JPEG 80%）
+              ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+              const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+              const data = imageData.data;
+              // 最適化：より効率的なループ処理
+              for (let i = 0; i < data.length; i += 4) {
+                const avg = (data[i] * 0.299 + data[i+1] * 0.587 + data[i+2] * 0.114) | 0;
+                data[i] = data[i+1] = data[i+2] = avg;
+              }
+              ctx.putImageData(imageData, 0, 0);
+              const previewSrc = canvas.toDataURL('image/jpeg', 0.8);
+              resolve(previewSrc);
+            }
+          } catch (error) {
+            reject(error);
+          }
+        };
+        img.onerror = reject;
+        img.src = URL.createObjectURL(file);
+      });
+    }
+    
+    // プレビュー
+    function showPreview(src, name) {
+      const modal = document.getElementById('previewModal');
+      const img = document.getElementById('previewImage');
+      img.src = src;
+      img.alt = name;
+      modal.classList.add('show');
+    }
+    function closePreview() {
+      const modal = document.getElementById('previewModal');
+      modal.classList.remove('show');
+    }
+    document.getElementById('previewModal').addEventListener('click', function(e) {
+      if (e.target === this) closePreview();
+    });
+
+    // アコーディオン機能
+    document.addEventListener('DOMContentLoaded', () => {
+      const step1Title = document.getElementById('step1Title');
+      const step1Content = document.getElementById('step1Content');
+      const step2Title = document.getElementById('step2Title');
+      const step2Content = document.getElementById('step2Content');
+      const toStep2Btn = document.getElementById('toStep2Btn');
+      const backToStep1Btn = document.getElementById('backToStep1Btn');
+      const fileForm = document.getElementById('fileForm');
+      const metaForm = document.getElementById('metaForm');
+      const continueBtn = document.getElementById('continueBtn');
+      const fileViewLink = document.getElementById('fileViewLink');
+
+      // カード遷移アニメーション
+      function openCard(card) {
+        card.querySelector('.card-content').classList.remove('closed');
+        card.classList.remove('card-closed');
+        const title = card.querySelector('.card-title');
+        if (title) title.style.borderBottom = 'none';
+      }
+      function closeCard(card) {
+        card.querySelector('.card-content').classList.add('closed');
+        card.classList.add('card-closed');
+        const title = card.querySelector('.card-title');
+        if (title) title.style.borderBottom = 'none';
+      }
+
+      // Step1タイトルクリックでStep2時のみStep1に戻る
+      step1Title.addEventListener('click', () => {
+        if (!step1Content.classList.contains('closed')) return;
+        // Step2が開いている場合のみ
+        closeCard(step2Card);
+        openCard(step1Card);
+        backToStep1Btn.style.display = 'none';
+      });
+      // Step2タイトルクリックでStep2を開く
+      step2Title.addEventListener('click', () => {
+        if (step2Content.classList.contains('closed')) {
+          closeCard(step1Card);
+          openCard(step2Card);
+          backToStep1Btn.style.display = '';
+          step2Card.scrollIntoView({behavior:'smooth', block:'start'});
+          const header = document.querySelector('header');
+          const headerHeight = header ? header.offsetHeight : 80;
+          window.scrollBy({top: -headerHeight, left: 0, behavior: 'smooth'});
+        }
+      });
+      // Step1→Step2
+      toStep2Btn.addEventListener('click', () => {
+        // ファイルがなくても必ずStep2を開く
+        closeCard(step1Card);
+        openCard(step2Card);
+        backToStep1Btn.style.display = '';
+        step2Card.scrollIntoView({behavior:'smooth', block:'start'});
+        const header = document.querySelector('header');
+        const headerHeight = header ? header.offsetHeight : 80;
+        window.scrollBy({top: -headerHeight, left: 0, behavior: 'smooth'});
+      });
+      // Step2→Step1
+      backToStep1Btn.addEventListener('click', () => {
+        closeCard(step2Card);
+        openCard(step1Card);
+        backToStep1Btn.style.display = 'none';
+        step1Card.scrollIntoView({behavior:'smooth', block:'start'});
+        const header = document.querySelector('header');
+        const headerHeight = header ? header.offsetHeight : 80;
+        window.scrollBy({top: -headerHeight, left: 0, behavior: 'smooth'});
+      });
+      // 初期状態
+      openCard(step1Card);
+      closeCard(step2Card);
+      backToStep1Btn.style.display = 'none';
+
+      // Step1ファイル編集画面のファイルリスト下部に「順序を逆にする」ボタンと「画像をカラーでアップロード」チェックボックスを追加
+      const reverseOrderBtn = document.getElementById('reverseOrderBtn');
+      const colorUploadCheckbox = document.getElementById('colorUploadCheckbox');
+      // 逆順ボタンの動作
+      reverseOrderBtn.addEventListener('click', () => {
+        files.reverse();
+        renderFileList();
+      });
+
+      // 吹き出し説明の表示
+      const colorHelp = document.getElementById('colorHelp');
+      const colorHelpPopup = document.getElementById('colorHelpPopup');
+      // 既にcolorUploadCheckboxの宣言がある場合は再宣言しない
+      // const colorUploadCheckbox = document.getElementById('colorUploadCheckbox');
+      colorHelp.addEventListener('mousedown', e => { e.preventDefault(); }); // チェックボックスの値が変わらないように
+      colorHelp.addEventListener('click', e => {
+        e.preventDefault();
+        colorHelpPopup.style.display = colorHelpPopup.style.display === 'block' ? 'none' : 'block';
+      });
+      document.addEventListener('click', e => {
+        if (!colorHelp.contains(e.target) && !colorHelpPopup.contains(e.target)) {
+          colorHelpPopup.style.display = 'none';
+        }
+      });
+
+      // Step2 情報入力フォーム送信時にPDF結合→アップロード
+      metaForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const btn = this.querySelector('.upload-btn');
+                  btn.disabled = true;
+          btn.classList.add('loading');
+          btn.textContent = 'タグデータ記録中...';
+          
+          // アップロード中フラグを設定
+          window.isUploading = true;
+        message.style.display = 'none';
+        if (!files.length) {
+          btn.disabled = false;
+          btn.classList.remove('loading');
+          btn.textContent = 'アップロード';
+          message.style.display = 'block';
+          message.textContent = 'ファイルを追加してください。';
+          message.style.background = '#ffeaea';
+          message.style.color = '#c00';
+          message.style.border = '1px solid #e57373';
+          return;
+        }
+        try {
+          // PDF結合
+          const { PDFDocument } = PDFLib;
+          const pdfDoc = await PDFDocument.create();
+          pdfDoc.setCreator('秋高考査村');
+          
+          btn.textContent = '結合処理中...';
+          
+          for (let i = 0; i < files.length; i++) {
+            const f = files[i];
+            btn.textContent = `結合処理中...（${i + 1}/${files.length}ページ完了）`;
+            if (f.type === 'application/pdf') {
+              const buf = await f.arrayBuffer(), donor = await PDFDocument.load(buf);
+              (await pdfDoc.copyPages(donor, donor.getPageIndices())).forEach(p => pdfDoc.addPage(p));
+            } else {
+              const buf = await f.arrayBuffer();
+              let imgData, imgType;
+              // 画像をcanvasで圧縮
+              const img = new Image();
+              img.src = URL.createObjectURL(f);
+              await new Promise(res => { img.onload = res; });
+              const MAX_IMG_SIZE = 1200; // 文字の可読性を保つため元のサイズに戻す
+              let scale = Math.min(MAX_IMG_SIZE / img.width, MAX_IMG_SIZE / img.height, 1);
+              const canvas = document.createElement('canvas');
+              canvas.width = Math.round(img.width * scale);
+              canvas.height = Math.round(img.height * scale);
+              const ctx = canvas.getContext('2d');
+              if (colorUploadCheckbox.checked) {
+                // カラー（JPEG固定・80%）
+                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                imgData = canvas.toDataURL('image/jpeg', 0.8); // JPEG 80% カラー
+                imgType = 'image/jpeg';
+              } else {
+                // グレースケール（JPEG固定・70%）
+                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                const data = imageData.data;
+                // 最適化：より効率的なループ処理
+                for (let i = 0; i < data.length; i += 4) {
+                  const avg = (data[i] * 0.299 + data[i+1] * 0.587 + data[i+2] * 0.114) | 0;
+                  data[i] = data[i+1] = data[i+2] = avg;
+                }
+                ctx.putImageData(imageData, 0, 0);
+                imgData = canvas.toDataURL('image/jpeg', 0.8); // JPEG 80% グレースケール
+                imgType = 'image/jpeg';
+              }
+              const imgBytes = await (await fetch(imgData)).arrayBuffer();
+              let pdfImg;
+              pdfImg = await pdfDoc.embedJpg(imgBytes);
+              // A4サイズ
+              const [w, h] = [595.28, 841.89];
+              const page = pdfDoc.addPage([w, h]);
+              // 画像全体がA4内に収まるように縮小（余白OK、切り取りNG）
+              const { width, height } = pdfImg.scale(1);
+              const s = Math.min(w / width, h / height, 1);
+              const drawWidth = width * s;
+              const drawHeight = height * s;
+              const x = (w - drawWidth) / 2;
+              const y = (h - drawHeight) / 2;
+              page.drawImage(pdfImg, { x, y, width: drawWidth, height: drawHeight });
+            }
+          }
+          const pdfBytes = await pdfDoc.save();
+          const autoFileName = [
+            this.querySelector('input[name="grade"]:checked')?.value || '',
+            document.getElementById('year').value,
+            document.getElementById('type').value,
+            document.getElementById('subject').value,
+            this.querySelector('input[name="stream"]:checked')?.value || '',
+            this.querySelector('input[name="contentType"]:checked')?.value || ''
+          ].map(s => s.replace(/\s+/g, '')).filter(Boolean).join('_') + '.pdf';
+          const mergedPdfBlob = new Blob([pdfBytes], { type: 'application/pdf' });
+          
+          // ファイルサイズ制限チェック（10MB）
+          if (mergedPdfBlob.size > 10 * 1024 * 1024) {
+            throw new Error('ファイルサイズが大きすぎます（10MB以下にしてください）');
+          }
+          
+          btn.textContent = 'ファイル変換中...';
+          
+          // PDFをBase64化
+          const b64 = await new Promise((res, rej) => {
+            const reader = new FileReader();
+            reader.onload = () => res(reader.result.split(',')[1]);
+            reader.onerror = rej;
+            reader.readAsDataURL(mergedPdfBlob);
+          });
+          // フォーム値取得
+          const grade = this.querySelector('input[name="grade"]:checked')?.value || '';
+          const year = document.getElementById('year').value;
+          const type = document.getElementById('type').value;
+          const subject = document.getElementById('subject').value;
+          const stream = this.querySelector('input[name="stream"]:checked')?.value || '';
+          const contentType = this.querySelector('input[name="contentType"]:checked')?.value || '';
+          const comment = document.getElementById('comment').value;
+          const fileFormat = 'PDF';
+          const filename = autoFileName;
+          
+          // デバッグ用：フォーム値をコンソールに出力（本番環境では削除可能）
+          // console.log('フォーム値:', {
+          //   grade, year, type, subject, stream, contentType, comment, fileFormat, filename
+          // });
+          
+                      // ファイルサイズを計算（MB単位）
+            let fileSizeMB = 0;
+            try {
+              fileSizeMB = Math.round((mergedPdfBlob.size / (1024 * 1024)) * 100) / 100;
+            } catch (sizeError) {
+              console.log('ファイルサイズ計算エラー:', sizeError);
+              fileSizeMB = 0;
+            }
+            
+            // デバイス情報を収集
+            const deviceInfo = {
+              userAgent: navigator.userAgent || 'Unknown',
+              platform: navigator.platform || 'Unknown',
+              screenWidth: screen.width || 0,
+              screenHeight: screen.height || 0,
+              windowWidth: window.innerWidth || 0,
+              windowHeight: window.innerHeight || 0
+            };
+          
+          // IPアドレス取得を無効化
+          deviceInfo.publicIP = '無効';
+          deviceInfo.privateIP = '無効';
+          
+          // deviceInfoが確実にオブジェクトであることを確認
+          if (!deviceInfo || typeof deviceInfo !== 'object') {
+            deviceInfo = {
+              userAgent: 'Unknown',
+              platform: 'Unknown',
+              screenWidth: 0,
+              screenHeight: 0,
+              windowWidth: 0,
+              windowHeight: 0,
+              publicIP: '無効',
+              privateIP: '無効'
+            };
+          }
+          
+          btn.textContent = '頑張ってアップロードしています...';
+          
+          // kosamuraAPIを使用してアップロード
+          try {
+            const url = await kosamuraAPI.uploadFileAndRecord(
+              grade, year, type, subject, stream, contentType, fileFormat, comment, filename, b64, deviceInfo, fileSizeMB || 0
+            );
+            
+            // アップロード完了
+            window.isUploading = false;
+            btn.classList.remove('loading');
+            btn.textContent = 'アップロード完了';
+            
+            // アップロードボタンと説明文を非表示
+            const uploadButton = document.getElementById('uploadButton');
+            const uploadInfo = document.getElementById('uploadInfo');
+            if (uploadButton) uploadButton.style.display = 'none';
+            if (uploadInfo) uploadInfo.style.display = 'none';
+            
+            message.style.display = 'block';
+            message.textContent = 'アップロード成功　考査村が進歩しました。ご協力ありがとうございます。';
+            message.style.background = '#e0ffe0';
+            message.style.color = '#166616';
+            message.style.border = '1px solid #a0dca0';
+            // フリーモード加算
+            let now = Date.now();
+            let freeModeEnd = parseInt(localStorage.getItem('freeModeEnd') || '0');
+            let newEnd = Math.max(now, freeModeEnd) + 24*60*60*1000;
+            localStorage.setItem('freeModeEnd', newEnd.toString());
+            updateFreeModeStatus();
+            // ボタン表示
+            const afterBtns = document.getElementById('afterUploadBtns');
+            const fileViewLink = document.getElementById('fileViewLink');
+            afterBtns.style.display = 'block';
+            fileViewLink.style.display = 'inline-block';
+            fileViewLink.href = url || '#';
+            fileViewLink.download = filename;
+          } catch (error) {
+            throw new Error('アップロード失敗: ' + error.message);
+          }
+        } catch (e) {
+          window.isUploading = false;
+          btn.disabled = false;
+          btn.classList.remove('loading');
+          btn.textContent = 'アップロード';
+          message.style.display = 'block';
+          message.textContent = 'PDF結合またはアップロード中にエラーが発生しました。エラー詳細: ' + e.message;
+          message.style.background = '#ffeaea';
+          message.style.color = '#c00';
+          message.style.border = '1px solid #e57373';
+          console.error('アップロードエラー詳細:', e);
+        }
+      });
+      // 続けてアップロードボタンでリセット
+      continueBtn.addEventListener('click', () => {
+        metaForm.reset();
+        files = [];
+        renderFileList();
+        updateFileBtnLabel();
+        closeCard(step2Card);
+        openCard(step1Card);
+        backToStep1Btn.style.display = 'none';
+        message.style.display = 'none';
+        document.getElementById('afterUploadBtns').style.display = 'none';
+        fileViewLink.style.display = 'none';
+        
+        // アップロードボタンと説明文を再表示
+        const uploadButton = document.getElementById('uploadButton');
+        const uploadInfo = document.getElementById('uploadInfo');
+        if (uploadButton) {
+          uploadButton.style.display = 'block';
+          uploadButton.disabled = false;
+          uploadButton.classList.remove('loading');
+          uploadButton.textContent = 'アップロード';
+        }
+        if (uploadInfo) uploadInfo.style.display = 'block';
+      });
+    });
+  </script>
+  <script>
+    // プライベートIPアドレス取得関数
+    function getPrivateIPAddress() {
+      return new Promise((resolve, reject) => {
+        try {
+          const RTCPeerConnection = window.RTCPeerConnection || 
+                                   window.webkitRTCPeerConnection || 
+                                   window.mozRTCPeerConnection;
+          
+          if (!RTCPeerConnection) {
+            reject(new Error('WebRTC not supported'));
+            return;
+          }
+          
+          const pc = new RTCPeerConnection({
+            iceServers: []
+          });
+          
+          pc.createDataChannel('');
+          pc.createOffer()
+            .then(offer => pc.setLocalDescription(offer))
+            .catch(err => reject(err));
+          
+          pc.onicecandidate = function(event) {
+            if (!event || !event.candidate) {
+              pc.close();
+              reject(new Error('No ICE candidates'));
+              return;
+            }
+            
+            const candidate = event.candidate.candidate;
+            const ipMatch = candidate.match(/([0-9]{1,3}(\.[0-9]{1,3}){3})/);
+            
+            if (ipMatch) {
+              const ip = ipMatch[1];
+              // プライベートIPアドレスの範囲をチェック
+              if (ip.startsWith('192.168.') || 
+                  ip.startsWith('10.') || 
+                  ip.startsWith('172.') ||
+                  ip === '127.0.0.1') {
+                pc.close();
+                resolve(ip);
+                return;
+              }
+            }
+          };
+          
+          // タイムアウト設定
+          setTimeout(() => {
+            pc.close();
+            reject(new Error('Timeout getting private IP'));
+          }, 5000);
+          
+        } catch (error) {
+          reject(error);
+        }
+      });
+    }
+    
+    // フリーモードカウントダウン
+    function isInFreeMode() {
+      const freeModeEnd = localStorage.getItem('freeModeEnd');
+      if (!freeModeEnd) return false;
+      return new Date().getTime() < parseInt(freeModeEnd);
+
+    }
+    function updateFreeModeStatus() {
+      const status = document.getElementById('freeModeStatus');
+      if (!status) return;
+      if (isInFreeMode()) {
+        const freeModeEnd = parseInt(localStorage.getItem('freeModeEnd'));
+        const remaining = freeModeEnd - new Date().getTime();
+        if (remaining <= 0) {
+          localStorage.removeItem('freeModeEnd');
+          status.textContent = '問題アップロードで広告フリー';
+          status.className = 'free-mode-status ad';
+          return;
+        }
+        const hours = Math.floor(remaining / (60 * 60 * 1000));
+        const minutes = Math.floor((remaining % (60 * 60 * 1000)) / (60 * 1000));
+        const seconds = Math.floor((remaining % (60 * 1000)) / 1000);
+        status.textContent = `フリーモード ${hours}時間${minutes}分${seconds}秒`;
+        status.className = 'free-mode-status free';
+      } else {
+        status.textContent = '問題アップロードで広告フリー';
+        status.className = 'free-mode-status ad';
+      }
+    }
+    // フリーモード表示を即座に更新
+    updateFreeModeStatus();
+    setInterval(updateFreeModeStatus, 1000);
+    
+    document.addEventListener('DOMContentLoaded', () => {
+      
+      // カラーモード変更時にプレビューを更新
+      const colorUploadCheckbox = document.getElementById('colorUploadCheckbox');
+      if (colorUploadCheckbox) {
+        colorUploadCheckbox.addEventListener('change', () => {
+          // ファイルリストのプレビューを再生成
+          renderFileList();
+        });
+      }
+      
+      // アップロード中のページ離脱警告
+      window.addEventListener('beforeunload', (e) => {
+        if (window.isUploading) {
+          e.preventDefault();
+          e.returnValue = 'アップロード中です。ページを離れるとアップロードが中断されます。本当に離れますか？';
+          return 'アップロード中です。ページを離れるとアップロードが中断されます。本当に離れますか？';
+        }
+      });
+      
+      // ブラウザの戻るボタン対策
+      window.addEventListener('popstate', (e) => {
+        if (window.isUploading) {
+          e.preventDefault();
+          if (confirm('アップロード中です。ページを離れるとアップロードが中断されます。本当に離れますか？')) {
+            window.isUploading = false;
+            window.history.back();
+          } else {
+            window.history.pushState(null, '', window.location.href);
+          }
+        }
+      });
+      
+      // ページ読み込み時に履歴を追加
+      window.history.pushState(null, '', window.location.href);
+      
+      // ページ非表示時の警告（タブ切り替えなど）
+      document.addEventListener('visibilitychange', () => {
+        if (window.isUploading && document.visibilityState === 'hidden') {
+          console.warn('アップロード中にページが非表示になりました。アップロードは継続されますが、完了までお待ちください。');
+        }
+      });
+      
+             // 写真撮影時の注意ポップアップ機能
+       const photoGuideBtn = document.getElementById('photoGuideBtn');
+       const photoGuideModal = document.getElementById('photoGuideModal');
+       const closePhotoGuide = document.getElementById('closePhotoGuide');
+       const closePhotoGuideBottom = document.getElementById('closePhotoGuideBottom');
+      
+      // ボタンクリックでポップアップを開く
+      photoGuideBtn.addEventListener('click', () => {
+        photoGuideModal.style.display = 'flex';
+        document.body.style.overflow = 'hidden'; // 背景スクロールを無効化
+      });
+      
+             // 閉じるボタンでポップアップを閉じる
+       closePhotoGuide.addEventListener('click', () => {
+         photoGuideModal.style.display = 'none';
+         document.body.style.overflow = ''; // 背景スクロールを有効化
+       });
+       
+       // 下部の閉じるボタンでポップアップを閉じる
+       closePhotoGuideBottom.addEventListener('click', () => {
+         photoGuideModal.style.display = 'none';
+         document.body.style.overflow = ''; // 背景スクロールを有効化
+       });
+      
+      // モーダル外クリックでポップアップを閉じる
+      photoGuideModal.addEventListener('click', (e) => {
+        if (e.target === photoGuideModal) {
+          photoGuideModal.style.display = 'none';
+          document.body.style.overflow = '';
+        }
+      });
+      
+      // ESCキーでポップアップを閉じる
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && photoGuideModal.style.display === 'flex') {
+          photoGuideModal.style.display = 'none';
+          document.body.style.overflow = '';
+        }
+      });
+    });
+  </script>
+  
+  <!-- 写真撮影時の注意ポップアップ -->
+  <div id="photoGuideModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 1000; display: flex; justify-content: center; align-items: center;">
+    <div style="background: white; border-radius: 12px; padding: 2.5rem; max-width: 95%; max-height: 95%; overflow-y: auto; position: relative; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);">
+      <!-- 閉じるボタン -->
+      <button id="closePhotoGuide" style="position: absolute; top: 1rem; right: 1rem; background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #666; padding: 0.5rem; border-radius: 50%; transition: background-color 0.2s;">
+        <i class="fa-solid fa-times"></i>
+      </button>
+      
+      <!-- ポップアップの内容 -->
+      <div style="max-width: 750px;">
+        <h2 style="color: #000000; margin-bottom: 0.3rem; text-align: center; font-size: 1.5rem;">写真を投稿する際のお願い</h2>
+        <h3 style="color: #000000; margin-bottom: 1.5rem; font-size: 0.9rem; text-align: center;">※PDFのみ投稿の方は無視してください</h3>
+        
+        <div style="line-height: 1.8; font-size: 1rem;">
+                       <div style="margin-bottom: 2rem;">
+               <h3 style="color: #0071e3; margin-bottom: 1rem; font-size: 1.2rem;">①できるだけ、問題・解答・解説を分けて別々にアップしてください。</h3>
+             </div>
+          
+                                   <div style="margin-bottom: 2rem;">
+              <h3 style="color: #0071e3; margin-bottom: 1rem; font-size: 1.2rem;">②すでに同じ内容が投稿されていないか検索をお願いします。</h3>
+              <p style="color: #555;">問題データベース画面から検索をお願いします。</p>
+            </div>
+          
+                       <div style="margin-bottom: 2rem;">
+               <h3 style="color: #0071e3; margin-bottom: 1rem; font-size: 1.2rem;">③冊子形式の問題を投稿するときは、なるべく片ページずつ撮影してください。</h3>
+               <div style="display: flex; align-items: flex-start; gap: 1rem; margin: 1rem 0; flex-wrap: wrap;">
+                                 <div style="flex: 1; min-width: 200px;">
+                  <p style="color: #555; font-size: 1.1rem;">※ページ数が多い場合は見開きでOKです。</p>
+                   <div style="background: #f8f9fa; padding: 1rem; border-radius: 8px; margin-top: 1rem; border-left: 4px solid #0071e3;">
+
+                     <p style="margin: 0.5rem 0 0 0; color: #555; font-size: 1.1rem;">全体でB4サイズはなんとか読めました。<br>文字が小さくない場合は、片ページB5までなら見開きでもOK。</p>
+                   </div>
+                 </div>
+                                <div style="flex: 0 0 180px; text-align: center;">
+                 <img src="../assets/page.png" alt="ページ撮影" style="max-width: 100%; height: auto; border-radius: 8px; transform: scale(1.2);">
+               </div>
+               </div>
+             </div>
+          
+                                   <div style="margin-bottom: 2rem;">
+              <h3 style="color: #0071e3; margin-bottom: 1rem; font-size: 1.2rem;">④用紙いっぱいを撮影するようにしてください</h3>
+              <div style="display: flex; align-items: center; gap: 1rem; margin: 1rem 0; flex-wrap: wrap;">
+                <div style="flex: 1; min-width: 200px;">
+                  <p style="color: #555; font-size: 1.1rem;">B4以上の用紙では特にご留意ください。<br>圧縮処理をするので文字が読めなくなってしまいます。</p>
+                </div>
+                <div style="flex: 0 0 180px; text-align: center;">
+                  <img src="../assets/margin.png" alt="用紙全体撮影" style="max-width: 100%; height: auto; border-radius: 8px; transform: scale(1.2);">
+                </div>
+              </div>
+            </div>
+          
+                                   <div style="margin-bottom: 2rem;">
+              <h3 style="color: #0071e3; margin-bottom: 1rem; font-size: 1.2rem;">⑤氏名などの個人情報は処理してください。</h3>
+              <p style="color: #555;">※ファイル名とファイルに含まれる情報は一切アップロードされないのでご安心ください。</p>
+            </div>
+           
+           <!-- 閉じるボタン -->
+           <div style="text-align: center; margin-top: 2rem;">
+             <button id="closePhotoGuideBottom" style="padding: 0.8em 2em; border-radius: 8px; border: none; background: #0071e3; color: white; font-weight: bold; cursor: pointer; font-size: 1rem; transition: background-color 0.2s;">
+               閉じる
+             </button>
+           </div>
+         </div>
+       </div>
+     </div>
+   </div>
+  
+  <script src="../assets/js/api.js"></script>
+</body>
+</html>

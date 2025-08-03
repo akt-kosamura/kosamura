@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=1200" />
+  <title>問題データベース - 秋高考査村</title>
+  <link rel="stylesheet" href="../assets/css/common.css" />
+  <link rel="stylesheet" href="../assets/css/pages/search.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+</head>
+<body>
+  <header>
+    <div class="header-inner">
+      <div class="header-title">
+        <div class="site-title">秋高考査村</div>
+        <div class="site-subtitle">無料・匿名で使える過去問共有サイト</div>
+      </div>
+      <div id="freeModeStatus" class="free-mode-status"></div>
+      <nav>
+        <ul>
+          <li><a href="../index.html"><i class="fa-solid fa-home"></i> ホーム</a></li>
+          <li><a href="upload.html"><i class="fa-solid fa-upload"></i> アップロード</a></li>
+          <li><a href="search.html" class="active"><i class="fa-solid fa-database"></i> 問題データベース</a></li>
+          <li><a href="share.html"><i class="fa-solid fa-share-nodes"></i> 共有・拡散</a></li>
+          <li><a href="https://c.kuku.lu/hmc853pz" target="_blank"><i class="fa-solid fa-comments"></i> 掲示板</a></li>
+          <li><a href="https://forms.gle/ZWtQCvecH4eZtTEU7" target="_blank"><i class="fa-solid fa-envelope"></i> 報告・問い合わせ</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+  <main>
+    <h1>問題データベース</h1>
+    <div class="subtitle">フィルターを使って検索できます</div>
+
+    <div class="page-container">
+      <div class="combined-section">
+      <div class="filter-section">
+        <div class="filter-row">
+          <div class="filter-fields">
+            <div class="filter-group">
+              <label for="grade">学年</label>
+              <select id="grade">
+                <option value="">指定しない</option>
+                <option>高1</option><option>高2</option><option>高3</option>
+              </select>
+            </div>
+
+            <div class="filter-group">
+              <label for="year">年度</label>
+              <select id="year">
+                <option value="">指定しない</option>
+                    <option>2020（R2）</option>
+                    <option>2021（R3）</option>
+                    <option>2022（R4）</option>
+                    <option>2023（R5）</option>
+                    <option>2024（R6）</option>
+                    <option>2025（R7）</option>
+              </select>
+            </div>
+
+            <div class="filter-group">
+              <label for="type">種類</label>
+              <select id="type">
+                <option value="">指定しない</option>
+                <option>前期中間</option>
+                <option>前期期末</option>
+                <option>後期中間</option>
+                <option>後期期末</option>
+                <option>考査以外</option>
+              </select>
+            </div>
+
+            <div class="filter-group">
+              <label for="subject">科目</label>
+              <select id="subject">
+                <option value="">指定しない</option>
+                <option>現国・論国</option>
+                <option>言文・古探</option>
+                <option>数学Ⅰ・Ⅱ・Ⅲ</option>
+                <option>数学Ａ・Ｂ・Ｃ</option>
+                <option>英語コミュ</option>
+                <option>論理表現</option>
+                <option>化学・化学基礎</option>
+                <option>生物・生物基礎</option>
+                <option>物理・物理基礎</option>
+                <option>地学・地学基礎</option>
+                <option>地理</option>
+                <option>日本史</option>
+                <option>世界史</option>
+                <option>公共</option>
+                <option>情報</option>
+                <option>保健体育</option>
+                <option>家庭科</option>
+                <option>国語</option>
+                <option>数学</option>
+                <option>理科</option>
+                <option>英語</option>
+                <option>地歴</option>
+                <option>その他</option>
+              </select>
+            </div>
+
+            <div class="filter-group">
+              <label for="stream">文理区分</label>
+              <select id="stream">
+                <option value="">指定しない</option>
+                <option>区分なし</option>
+                <option>理系のみ</option>
+                <option>文系のみ</option>
+                <option>理数科のみ</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="filter-buttons">
+            <button id="btnClearFilters">解除</button>
+            <button id="btnRefresh">更新</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-divider"></div>
+
+      <div class="controls-section">
+        <div class="controls-left">
+          <label><input type="checkbox" id="toggleDate" checked> 投稿時間表示</label>
+          <label><input type="checkbox" id="toggleFormatCol"> ファイル形式表示</label>
+          <label><input type="checkbox" id="toggleEval" checked> 評価表示</label>
+          <label>
+            コメント表示：
+            <select id="commentMode">
+              <option value="compact">1行表示</option>
+              <option value="lines3">3行表示</option>
+              <option value="none">非表示</option>
+            </select>
+          </label>
+        </div>
+        <div class="controls-right">
+          <label>並び替え：</label>
+          <select id="sortMenu">
+            <option value="upload_desc">アップロード順▼</option>
+            <option value="upload_asc">アップロード順▲</option>
+            <option value="year_desc">年度順▼</option>
+            <option value="year_asc">年度順▲</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- 横スクロール誘導アニメーション（テーブルエリアオーバーレイ） -->
+    <div id="scroll-hint-overlay" style="position:absolute;left:0;right:0;top:0;bottom:0;z-index:2000;background:rgba(0,0,0,0.22);display:flex;align-items:center;justify-content:center;transition:opacity 0.5s;pointer-events:none;">
+      <div id="scroll-hint" style="background:rgba(30,30,30,0.75);border-radius:1.2rem;padding:1.1rem 1.5rem;box-shadow:0 2px 16px rgba(0,0,0,0.18);text-align:center;pointer-events:auto;">
+        <span style="display:inline-block;font-size:1.2em;color:#fff;user-select:none;font-weight:500;letter-spacing:0.05em;">
+          <span id="scroll-arrow" style="display:inline-block;transition:transform 0.5s;">⇆</span>
+          <span style="margin-left:0.5em;">表は横スクロールできます</span>
+        </span>
+      </div>
+    </div>
+    <div class="table-container">
+      <table class="table-card">
+        <thead>
+          <tr>
+            <th>学年</th>
+            <th>年度</th>
+            <th>種類</th>
+            <th>科目</th>
+            <th>文理区分</th>
+            <th>内容</th>
+            <th class="col-format">形式</th>
+            <th class="col-comment">コメント</th>
+            <th></th>
+            <th class="col-date"></th>
+            <th class="col-eval"></th>
+          </tr>
+        </thead>
+        <tbody id="resultBody">
+          <tr id="loadingRow">
+                         <td colspan="11" style="text-align:center;color:#666">
+               <div class="loading-placeholder">
+                 <div class="loading-spinner"></div>
+                 <p>読み込み中…（表は横スクロール対応）</p>
+               </div>
+             </td>
+          </tr>
+        </tbody>
+      </table>
+        </div>
+  </div>
+  <div class="copyright-note">Copyright© 2020 考査村 All Rights Reserved.</div><br>
+<style>
+.copyright-note {
+  font-size: 20px;
+  color: #888;
+  text-align: center;
+  margin-top: 18px;
+  margin-bottom: 18px;
+}
+</style>
+
+<script>
+  function isInFreeMode() {
+    const freeModeEnd = localStorage.getItem('freeModeEnd');
+    if (!freeModeEnd) return false;
+    return new Date().getTime() < parseInt(freeModeEnd);
+  }
+
+  function updateFreeModeStatus() {
+    const status = document.getElementById('freeModeStatus');
+    if (!status) return;
+    if (isInFreeMode()) {
+      const freeModeEnd = parseInt(localStorage.getItem('freeModeEnd'));
+      const remaining = freeModeEnd - new Date().getTime();
+      if (remaining <= 0) {
+        localStorage.removeItem('freeModeEnd');
+        status.textContent = '問題アップロードで広告フリー';
+        status.className = 'free-mode-status ad';
+        return;
+      }
+      const hours = Math.floor(remaining / (60 * 60 * 1000));
+      const minutes = Math.floor((remaining % (60 * 60 * 1000)) / (60 * 1000));
+      const seconds = Math.floor((remaining % (60 * 1000)) / 1000);
+      status.textContent = `フリーモード ${hours}時間${minutes}分${seconds}秒`;
+      status.className = 'free-mode-status free';
+    } else {
+      status.textContent = '問題アップロードで広告フリー';
+      status.className = 'free-mode-status ad';
+    }
+  }
+  // --- フィルター用グローバル変数を追加 ---
+  const filter = {
+    grade: '',
+    year: '',
+    type: '',
+    subject: '',
+    stream: '',
+    contentType: '',
+    format: ''
+  };
+
+  // 広告ポップアップ表示（通常モード）
+function showAdPopup(fileUrl) {
+  const overlay = document.createElement('div');
+  overlay.className = 'popup-overlay';
+  overlay.innerHTML = `
+    <div class="popup-content">
+      <button class="popup-close">&times;</button>
+      <h2>広告を視聴してファイルを開く</h2>
+      <div class="countdown-text" id="countdownText">180</div>
+      <p id="statusText">カウントダウン中…</p>
+      <div class="ad-video">
+        <video controls autoplay style="width: 100%; border-radius: 1rem; background: #000;">
+          <source src="../assets/考査村ビデオ.mp4" type="video/mp4">
+          お使いのブラウザは動画再生に対応していません。
+        </video>
+      </div>
+    </div>`;
+  document.body.appendChild(overlay);
+
+  let countdown = 10;
+  const countdownEl = overlay.querySelector('#countdownText');
+  const statusEl    = overlay.querySelector('#statusText');
+  const timer = setInterval(() => {
+    countdown--;
+    countdownEl.textContent = countdown;
+    if (countdown <= 0) {
+      clearInterval(timer);
+      statusEl.textContent = '';  // ステータスは消す
+
+      // ↓ダウンロードボタン風にデザインを変更↓
+      countdownEl.textContent = 'ファイル表示';
+      countdownEl.style.cursor = 'pointer';
+      // 背景薄い青
+      countdownEl.style.backgroundColor = '#e0f5ff';
+      // 枠は濃い青
+      countdownEl.style.border = '1px solid #0071e3';
+      // 文字色は濃い青
+      countdownEl.style.color = '#005bb5';
+      // 少し丸角
+      countdownEl.style.borderRadius = '6px';
+      countdownEl.style.padding = '0.4rem 0.8rem';
+
+      countdownEl.onclick = () => {
+        window.open(fileUrl, '_blank', 'noopener,noreferrer');
+        document.body.removeChild(overlay);
+      };
+    }
+  }, 1000);
+
+
+  overlay.querySelector('.popup-close').onclick = () => {
+    clearInterval(timer);
+    document.body.removeChild(overlay);
+  };
+  overlay.onclick = e => {
+    if (e.target === overlay) {
+      clearInterval(timer);
+      document.body.removeChild(overlay);
+    }
+  };
+}
+  // 動画読み込み完了時の処理
+  function videoLoaded() {
+    setTimeout(() => {
+      const statusElement = document.getElementById('statusText');
+      if (statusElement) {
+        statusElement.textContent = '動画再生中... カウントダウン後にファイルが開きます';
+      }
+    }, 2000);
+  }
+
+  // 「見る」リンクの処理（パフォーマンス改善版）
+  function attachHandlersOptimized() {
+    // イベント委譲を使用して一括でイベントリスナーを設定
+    const tbody = document.getElementById('resultBody');
+    
+    // 既存のイベントリスナーを削除（重複防止）
+    tbody.removeEventListener('click', handleTableClick);
+    
+    // 新しいイベントリスナーを追加
+    tbody.addEventListener('click', handleTableClick);
+  }
+  
+  // テーブル全体のクリックイベントハンドラー
+  function handleTableClick(e) {
+    const target = e.target;
+    
+    // 「見る」リンクの処理
+    if (target.classList.contains('view-link')) {
+      e.preventDefault();
+      const fileUrl = target.dataset.url;
+      if (isInFreeMode()) {
+        // フリーモードなら直接開く
+        window.open(fileUrl, '_blank', 'noopener,noreferrer');
+      } else {
+        // 通常モードはポップアップ
+        showAdPopup(fileUrl);
+      }
+      return;
+    }
+    
+    // いいねボタンの処理
+    if (target.classList.contains('btn-like')) {
+      const id = target.dataset.id, prev = localStorage.getItem('vote_' + id), tr = target.closest('tr');
+      const badBtn = tr.querySelector('.btn-bad');
+      let count = parseInt(target.textContent.replace(/\D/g,''),10);
+      
+      if (prev==='good') {
+        target.classList.remove('active'); localStorage.removeItem('vote_' + id); kosamuraAPI.unlike(Number(id));
+        target.textContent = `${--count}`;
+      } else {
+        if (prev==='bad') {
+          let bc = parseInt(badBtn.textContent.replace(/\D/g,''),10);
+          badBtn.classList.remove('active'); localStorage.removeItem('vote_' + id); kosamuraAPI.unbad(Number(id));
+          badBtn.textContent = `${--bc}`;
+        }
+        target.classList.add('active'); localStorage.setItem('vote_' + id, 'good'); kosamuraAPI.like(Number(id));
+        target.textContent = `${++count}`;
+      }
+      return;
+    }
+    
+    // バッドボタンの処理
+    if (target.classList.contains('btn-bad')) {
+      const id = target.dataset.id, prev = localStorage.getItem('vote_' + id), tr = target.closest('tr');
+      const likeBtn = tr.querySelector('.btn-like');
+      let count = parseInt(target.textContent.replace(/\D/g,''),10);
+      
+      if (prev==='bad') {
+        target.classList.remove('active'); localStorage.removeItem('vote_' + id); kosamuraAPI.unbad(Number(id));
+        target.textContent = `${--count}`;
+      } else {
+        if (prev==='good') {
+          let lc = parseInt(likeBtn.textContent.replace(/\D/g,''),10);
+          likeBtn.classList.remove('active'); localStorage.removeItem('vote_' + id); kosamuraAPI.unlike(Number(id));
+          likeBtn.textContent = `${--lc}`;
+        }
+        target.classList.add('active'); localStorage.setItem('vote_' + id, 'bad'); kosamuraAPI.bad(Number(id));
+        target.textContent = `${++count}`;
+      }
+      return;
+    }
+  }
+  
+  // 後方互換性のため残す
+  function attachHandlers() {
+    attachHandlersOptimized();
+  }
+
+  // 相対時間表示関数
+  function formatRelativeTime(dateStr) {
+    try {
+      const date = new Date(dateStr);
+      const now = new Date();
+      const diffMs = now.getTime() - date.getTime();
+      const diffSec = Math.floor(diffMs / 1000);
+      const diffMin = Math.floor(diffSec / 60);
+      const diffHour = Math.floor(diffMin / 60);
+      const diffDay = Math.floor(diffHour / 24);
+
+      if (diffDay >= 1) {
+        return `${diffDay}日前`;
+      } else if (diffHour >= 1) {
+        return `${diffHour}時間前`;
+      } else if (diffMin >= 1) {
+        return `${diffMin}分前`;
+      } else {
+        return `${diffSec}秒前`;
+      }
+    } catch (error) {
+      return dateStr;
+    }
+  }
+
+  // データ取得（パフォーマンス改善版）
+  async function fetchData() {
+    const tbody = document.getElementById('resultBody');
+    tbody.innerHTML = '<tr id="loadingRow"><td colspan="11" style="text-align:center;color:#666"><div class="loading-placeholder"><div class="loading-spinner"></div><p>読み込み中…（表は横スクロール対応）</p></div></td></tr>';
+    
+    // タイムアウト設定（30秒）
+    const timeoutPromise = new Promise((_, reject) => {
+      setTimeout(() => reject(new Error('タイムアウト: データの取得に時間がかかりすぎています')), 30000);
+    });
+    
+    try {
+      const dataPromise = kosamuraAPI.getData();
+      const data = await Promise.race([dataPromise, timeoutPromise]);
+      buildRows(data);
+    } catch (error) {
+      console.error('データ取得エラー:', error);
+      if (error.message.includes('タイムアウト')) {
+        tbody.innerHTML = '<tr><td colspan="11" style="text-align:center;color:orange;"><div style="margin: 20px 0;"><p>データの取得に時間がかかっています</p><button onclick="retryFetch()" style="padding: 8px 16px; background: #3b82f6; color: white; border: none; border-radius: 6px; cursor: pointer;">再試行</button></div></td></tr>';
+      } else {
+        tbody.innerHTML = '<tr><td colspan="11" style="text-align:center;color:red;">データの取得に失敗しました: ' + error.message + '</td></tr>';
+      }
+    }
+  }
+
+  // 再試行機能
+  function retryFetch() {
+    fetchData();
+  }
+
+  // キャッシュクリア機能
+  async function clearCacheAndFetch() {
+    try {
+      // キャッシュクリアAPIを呼び出し
+      await fetch(`${window.location.origin}/exec?function=clearCache`);
+      console.log('キャッシュをクリアしました');
+      
+      // データを再取得
+      fetchData();
+    } catch (error) {
+      console.error('キャッシュクリアエラー:', error);
+      // エラーが発生してもデータを再取得
+      fetchData();
+    }
+  }
+
+  // 結果描画（パフォーマンス改善版）
+  function buildRows(data) {
+    const tbody = document.getElementById('resultBody');
+    tbody.innerHTML = '';
+    if (!data || data.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="11" style="text-align:center;color:#666">データがありません</td></tr>';
+      return;
+    }
+    
+    // DocumentFragmentを使用してDOM操作を最適化
+    const fragment = document.createDocumentFragment();
+    
+    data.forEach(item => {
+      const vt = localStorage.getItem('vote_' + item.id);
+      const tr = document.createElement('tr');
+      ['grade','year','type','subject','stream'].forEach(k => {
+        tr.dataset[k] = String(item[k] || '');
+      });
+      tr.dataset.date = String(item.date || '');
+      const safe = String(item.comment || '').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+      const rel = formatRelativeTime(item.date);
+      tr.innerHTML = `
+        <td class="grade-cell">${String(item.grade || '')}</td>
+        <td class="year-cell">${String(item.year || '')}</td>
+        <td class="type-cell">${String(item.type || '')}</td>
+        <td class="subject-cell">${String(item.subject || '')}</td>
+        <td class="stream-cell">${String(item.stream || '')}</td>
+        <td class="content-cell">${String(item.contentType || '')}</td>
+        <td class="format-cell">${String(item.format || '')}</td>
+        <td class="comment-cell" data-comment="${safe}"><div class="comment-text">${safe}</div></td>
+        <td class="link-cell"><a href="#" class="view-link" data-url="${String(item.url || '')}">見る</a></td>
+        <td class="col-date date-cell">${rel}</td>
+        <td class="col-eval eval-cell">
+          <button class="btn-like${vt==='good'?' active':''}" data-id="${item.id}">${item.likes || 0}</button>
+          <button class="btn-bad${vt==='bad'?' active':''}" data-id="${item.id}">${item.bad || 0}</button>
+        </td>`;
+      fragment.appendChild(tr);
+    });
+    
+    // 一括でDOMに追加
+    tbody.appendChild(fragment);
+    
+    // イベントリスナーを一括設定（委譲を使用）
+    attachHandlersOptimized();
+    
+    // フィルタ、ソート、カラム表示を適用
+    requestAnimationFrame(() => {
+      applyFilters();
+      applySort();
+      applyColumns();
+    });
+  }
+
+  // フィルタ適用
+  function applyFilters() {
+    let visibleCount = 0;
+    document.querySelectorAll('#resultBody tr').forEach(tr => {
+      if (!tr.dataset) return;
+      const ok = ['grade','year','type','subject','stream']
+        .every(k => !filter[k] || tr.dataset[k] === filter[k]);
+      tr.style.display = ok ? '' : 'none';
+      if (ok) visibleCount++;
+    });
+    
+    // フィルターが適用されているかチェック
+    const hasActiveFilters = Object.values(filter).some(value => value !== '');
+    
+    // フィルターが適用されていて、表示される行がない場合
+    if (hasActiveFilters && visibleCount === 0) {
+      const tbody = document.getElementById('resultBody');
+      const noResultsRow = document.createElement('tr');
+      noResultsRow.innerHTML = '<td colspan="11" style="text-align:center;color:#666">一致するものはありませんでした。</td>';
+      noResultsRow.id = 'noResultsRow';
+      tbody.appendChild(noResultsRow);
+    } else {
+      // 結果がある場合は「一致するものはありませんでした。」の行を削除
+      const noResultsRow = document.getElementById('noResultsRow');
+      if (noResultsRow) {
+        noResultsRow.remove();
+      }
+    }
+  }
+
+  // ソート適用
+  function applySort() {
+    const mode = document.getElementById('sortMenu').value;
+    const tb = document.getElementById('resultBody');
+    const rows = Array.from(tb.children).filter(r => r.style.display!=='none' && r.dataset.date);
+
+    rows.sort((a,b) => {
+      if (mode === 'upload_desc') {
+        return new Date(b.dataset.date) - new Date(a.dataset.date);
+      }
+      if (mode === 'upload_asc') {
+        return new Date(a.dataset.date) - new Date(b.dataset.date);
+      }
+      if (mode === 'year_desc') {
+        return parseInt(b.children[1].textContent) - parseInt(a.children[1].textContent);
+      }
+      if (mode === 'year_asc') {
+        return parseInt(a.children[1].textContent) - parseInt(b.children[1].textContent);
+      }
+      return 0;
+    });
+    rows.forEach(r => tb.appendChild(r));
+  }
+
+  // カラム表示制御（パフォーマンス改善版）
+  function applyColumns() {
+    // 基本的なカラム表示制御
+    const toggleDate = document.getElementById('toggleDate').checked;
+    const toggleFormatCol = document.getElementById('toggleFormatCol').checked;
+    const toggleEval = document.getElementById('toggleEval').checked;
+    const commentMode = document.getElementById('commentMode').value;
+    
+    // 一括でクラスを適用
+    document.querySelectorAll('.col-date').forEach(c => c.classList.toggle('hidden-col', !toggleDate));
+    document.querySelectorAll('.format-cell').forEach(c => c.classList.toggle('hidden-col', !toggleFormatCol));
+    document.querySelectorAll('th.col-format').forEach(th => th.classList.toggle('hidden-col', !toggleFormatCol));
+    document.querySelectorAll('.col-eval').forEach(c => c.classList.toggle('hidden-col', !toggleEval));
+    document.querySelectorAll('th.col-comment, td.comment-cell').forEach(el => el.classList.toggle('hidden-col', commentMode==='none'));
+    
+    // コメント表示制御（必要な場合のみ実行）
+    if (commentMode !== 'none') {
+      document.querySelectorAll('.comment-cell .comment-text').forEach(box => {
+        const td = box.parentElement;
+        // 既存のリンクを削除
+        td.querySelectorAll('a.extra-link').forEach(a => a.remove());
+        
+        // スタイルを設定
+        box.style.overflow = 'hidden';
+        box.style.display = '-webkit-box';
+        box.style.webkitBoxOrient = 'vertical';
+        
+        if (commentMode === 'compact') {
+          box.style.webkitLineClamp = '1';
+          box.style.maxHeight = '1.4em';
+        } else if (commentMode === 'lines3') {
+          box.style.webkitLineClamp = '3';
+          box.style.maxHeight = 'calc(3 * 1.4em)';
+        } else {
+          box.style.webkitLineClamp = 'none';
+          box.style.maxHeight = 'none';
+          box.style.overflow = 'visible';
+          box.style.display = 'block';
+        }
+        
+        // 必要に応じて「もっと読む」リンクを追加
+        const raw = td.dataset.comment || '';
+        const lines = raw.split('\n').length;
+        const chars = raw.length;
+        const shouldTruncate = (commentMode==='lines3' && lines>3) || (commentMode==='compact' && (lines>1||chars>100));
+        
+        if (shouldTruncate && raw.trim()) {
+          const more = document.createElement('a');
+          more.href = '#'; 
+          more.textContent = '...もっと読む'; 
+          more.className = 'extra-link';
+          more.onclick = e => {
+            e.preventDefault();
+            box.style.webkitLineClamp = 'none';
+            box.style.maxHeight = 'none';
+            box.style.overflow = 'visible';
+            box.style.display = 'block';
+            more.remove();
+            const less = document.createElement('a');
+            less.href = '#'; 
+            less.textContent = '折りたたむ'; 
+            less.className = 'extra-link';
+            less.onclick = ev => { 
+              ev.preventDefault(); 
+              applyColumns(); 
+            };
+            td.appendChild(less);
+          };
+          td.appendChild(more);
+        }
+      });
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    updateFreeModeStatus();
+    setInterval(updateFreeModeStatus, 1000);
+    ['grade','year','type','subject','stream'].forEach(id => {
+      document.getElementById(id).onchange = e => { filter[id] = e.target.value; applyFilters(); };
+    });
+    document.getElementById('btnClearFilters').onclick = () => {
+      ['grade','year','type','subject','stream'].forEach(k => {
+        const el = document.getElementById(k);
+        el.value = ''; filter[k] = '';
+      });
+      applyFilters();
+    };
+    document.getElementById('btnRefresh').onclick = clearCacheAndFetch;
+    document.getElementById('toggleDate').onchange = applyColumns;
+    document.getElementById('toggleFormatCol').onchange = applyColumns;
+    document.getElementById('toggleEval').onchange = applyColumns;
+    document.getElementById('commentMode').onchange = applyColumns;
+    document.getElementById('sortMenu').onchange = applySort;
+         applyColumns();
+     fetchData();
+
+    // 横スクロール誘導アニメーションを数秒だけ表示（オーバーレイ）
+    const overlay = document.getElementById('scroll-hint-overlay');
+    const hint = document.getElementById('scroll-hint');
+    const arrow = document.getElementById('scroll-arrow');
+    let dir = 1, count = 0;
+    const anim = setInterval(() => {
+      arrow.style.transform = `translateX(${dir*32}px)`;
+      dir *= -1;
+      count++;
+      if(count > 5) { // 3往復で消す
+        clearInterval(anim);
+        overlay.style.opacity = 0;
+        setTimeout(()=>{ overlay.style.display = 'none'; }, 600);
+      }
+    }, 400);
+  });
+</script>
+<script src="../assets/js/api.js"></script>
+</body>
+</html>

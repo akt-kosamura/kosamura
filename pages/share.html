@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <title>共有・拡散 - 秋高考査村</title>
+  <meta name="viewport" content="width=1200" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <link rel="stylesheet" href="../assets/css/common.css">
+  <link rel="stylesheet" href="../assets/css/pages/index.css">
+</head>
+
+<body>
+  <header>
+    <div class="header-inner">
+      <div class="header-title">
+        <div class="site-title">秋高考査村</div>
+        <div class="site-subtitle">無料・匿名で使える過去問共有サイト</div>
+      </div>
+      <div id="freeModeStatus" class="free-mode-status"></div>
+      <nav>
+        <ul>
+          <li><a href="../index.html"><i class="fa-solid fa-home"></i> ホーム</a></li>
+          <li><a href="upload.html"><i class="fa-solid fa-upload"></i> アップロード</a></li>
+          <li><a href="search.html"><i class="fa-solid fa-database"></i> 問題データベース</a></li>
+          <li><a href="share.html" class="active"><i class="fa-solid fa-share-nodes"></i> 共有・拡散</a></li>
+          <li><a href="https://c.kuku.lu/hmc853pz" target="_blank"><i class="fa-solid fa-comments"></i> 掲示板</a></li>
+          <li><a href="https://forms.gle/ZWtQCvecH4eZtTEU7" target="_blank"><i class="fa-solid fa-envelope"></i> 報告・問い合わせ</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+  <main>
+    <h1 class="hero-title">共有・拡散</h1>
+    <div class="subtitle">このサイトを友達やクラスに広めてください</div>
+    <div class="dynamic-card">
+      <!-- 共有・拡散コンテンツここから（カードで囲わず中身のみ） -->
+      <div style="font-size:1.13rem; color:#333; margin-bottom:1.2em; line-height:1.7;">
+        秋高考査村を友達やクラス、学校に広めよう！
+      </div>
+      <div style="margin:1.2em 0 0.5em 0; display:flex; gap:0.5em; align-items:center; justify-content:center; flex-wrap:wrap;">
+        <input type="text" id="siteUrl" class="share-url-input" value="https://akt-kosamura.github.io/kosamura/" readonly style="width:25em; max-width:90vw; font-size:1.05em; padding:0.5em 0.7em; border:1px solid #d1d1d6; border-radius:8px; background:#f9f9fb; color:#333; text-align:center;">
+      </div>
+      <div style="display:flex; justify-content:center; margin-bottom:0.5em;">
+        <button class="copy-btn" id="copyBtn" onclick="copyButton('siteUrl')" style="background:var(--accent); color:#fff; border:none; border-radius:8px; padding:0.5em 1.2em; font-size:1em; cursor:pointer; transition:background 0.2s; margin-left:0.2em; display:flex; align-items:center; gap:0.5em;"><i class="fa-regular fa-copy"></i> コピー</button>
+      </div>
+      <div style="height:2.2em; width:100%; display:flex; align-items:center; justify-content:center; margin-bottom:1.2em;">
+        <div id="copyToast" style="display:none; opacity:0; background:#fff; color:#111; padding:0.35em 1em; border-radius:1em; font-size:0.93em; min-width:6em; text-align:center; box-shadow:0 2px 8px rgba(0,0,0,0.13); transition:opacity 0.4s; pointer-events:none; font-weight:normal; letter-spacing:0.01em;">コピーしました！</div>
+      </div>
+      <div class="share-buttons" style="display:flex; flex-wrap:wrap; gap:1em; justify-content:center; margin-bottom:1.2em;">
+        <a
+          id="twitterBtn"
+          href="https://twitter.com/intent/tweet?text=無料で使える過去問共有サイト「秋高考査村」%0A考査問題に限らず、テスト問題をアップロード・閲覧できるサービスです。%0A%0Ahttps://akt-kosamura.github.io/kosamura/%0A%0A%23考査村%20%23過去問"
+          class="share-btn"
+          style="background:#fff; color:var(--accent); border:1.5px solid var(--accent); border-radius:8px; font-size:1.05rem; font-weight:bold; cursor:pointer; padding:0.7rem 1.5rem; transition:background 0.2s, color 0.2s; display:flex; align-items:center; gap:0.5em; text-decoration:none;"
+          target="_blank" rel="noopener noreferrer"
+        >
+          <i class="fa-brands fa-twitter"></i><span style="margin-left:0.5em;">ツイート</span>
+        </a>
+        <button class="share-btn" id="nativeShareBtn" style="background:#fff; color:var(--accent); border:1.5px solid var(--accent); border-radius:8px; font-size:1.05rem; font-weight:bold; cursor:pointer; padding:0.7rem 1.5rem; transition:background 0.2s, color 0.2s; display:flex; align-items:center; gap:0.5em;"><i class="fa-solid fa-share-nodes"></i><span style="margin-left:0.5em;">共有</span></button>
+      </div>
+      <button class="print-btn" onclick="showPrintTemplateModal()" style="display:block; margin:1.2rem auto 0 auto; padding:0.7rem 2.2rem; background:#fff; color:var(--accent); border:1.5px solid var(--accent); border-radius:8px; font-size:1.05rem; font-weight:bold; cursor:pointer; transition:background 0.2s, color 0.2s;"><i class="fa-solid fa-print"></i> 印刷用テンプレートを見る（印刷して共有）</button>
+      <div style="margin-top:1.5em; color:#888; font-size:0.98em;">
+        ※元データもあるので、自由に編集、配布していただいて構いません。
+      </div><br>
+             <!-- 共有・拡散コンテンツここまで -->
+     </div>
+   </main>
+
+  <!-- 印刷用テンプレートモーダル -->
+  <div id="printTemplateModal" style="display:none; position:fixed; z-index:9999; left:0; top:0; width:100vw; height:100vh; background:rgba(0,0,0,0.25); align-items:center; justify-content:center;">
+    <div style="background:#fff; border-radius:12px; padding:24px 18px 18px 18px; box-shadow:0 4px 24px rgba(0,0,0,0.18); min-width:300px; max-width:90vw; text-align:center;">
+      <div style="font-size:1.2em; margin-bottom:20px; font-weight:bold; color:#333;">印刷用テンプレート</div>
+      <div style="margin-bottom:20px; text-align:left;">
+        <p style="margin-bottom:15px; color:#666;">以下のリンクから印刷用テンプレートをダウンロードできます：</p>
+        <div style="display:flex; flex-direction:column; gap:12px;">
+          <a href="../assets/documents/ミニカード.pdf" download style="display:flex; align-items:center; gap:10px; padding:12px 16px; background:#f8f9fa; border:1px solid #dee2e6; border-radius:8px; text-decoration:none; color:#333; transition:background 0.2s;">
+            <i class="fa-regular fa-file-pdf" style="color:#dc3545; font-size:1.2em;"></i>
+            <span>1. ミニカード (.pdf)</span>
+          </a>
+          <a href="../assets/documents/短冊.pdf" download style="display:flex; align-items:center; gap:10px; padding:12px 16px; background:#f8f9fa; border:1px solid #dee2e6; border-radius:8px; text-decoration:none; color:#333; transition:background 0.2s;">
+            <i class="fa-regular fa-file-pdf" style="color:#dc3545; font-size:1.2em;"></i>
+            <span>2. 短冊型PDF (.pdf)</span>
+          </a>
+          <a href="../assets/documents/宣伝用.jtd" download style="display:flex; align-items:center; gap:10px; padding:12px 16px; background:#f8f9fa; border:1px solid #dee2e6; border-radius:8px; text-decoration:none; color:#333; transition:background 0.2s;">
+            <img src="../assets/jtd_icon.gif" alt="一太郎アイコン" style="width:1.2em; height:1.2em; object-fit:contain;">
+            <span>3. 元ファイル (.jtd)　 ※複数シート</span>
+          </a>
+        </div>
+      </div>
+      <button id="printTemplateClose" style="background:#6c757d; color:#fff; padding:8px 20px; border:none; border-radius:6px; font-size:1em; cursor:pointer;">閉じる</button>
+    </div>
+  </div>
+
+  <div class="copyright-note">Copyright© 2020 考査村 All Rights Reserved.</div><br><br>
+
+  <style>
+    /* 印刷用テンプレートモーダルのダウンロードリンクホバー効果 */
+    #printTemplateModal a:hover {
+      background: #e9ecef !important;
+      border-color: #adb5bd !important;
+      transform: translateY(-1px);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+  </style>
+
+  <script>
+    // Intersection Observerでカードをアニメーション表示
+    document.addEventListener('DOMContentLoaded', function() {
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+            observer.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.15 });
+      document.querySelectorAll('.card, .dynamic-card').forEach(card => {
+        observer.observe(card);
+      });
+    });
+
+    // フリーモード管理（既存）
+    function isInFreeMode() {
+      const freeModeEnd = localStorage.getItem('freeModeEnd');
+      if (!freeModeEnd) return false;
+      return new Date().getTime() < parseInt(freeModeEnd);
+    }
+    function updateFreeModeStatus() {
+      const status = document.getElementById('freeModeStatus');
+      if (!status) return;
+      if (isInFreeMode()) {
+        const freeModeEnd = parseInt(localStorage.getItem('freeModeEnd'));
+        const remaining = freeModeEnd - new Date().getTime();
+        if (remaining <= 0) {
+          localStorage.removeItem('freeModeEnd');
+          status.textContent = '問題アップロードで広告フリー';
+          status.className = 'free-mode-status ad';
+          return;
+        }
+        const hours = Math.floor(remaining / (60 * 60 * 1000));
+        const minutes = Math.floor((remaining % (60 * 60 * 1000)) / (60 * 1000));
+        const seconds = Math.floor((remaining % (60 * 1000)) / 1000);
+        status.textContent = `フリーモード ${hours}時間${minutes}分${seconds}秒`;
+        status.className = 'free-mode-status free';
+      } else {
+        status.textContent = '問題アップロードで広告フリー';
+        status.className = 'free-mode-status ad';
+      }
+    }
+    // フリーモード表示を即座に更新
+    updateFreeModeStatus();
+    setInterval(updateFreeModeStatus, 1000);
+    
+    document.addEventListener('DOMContentLoaded', () => {
+      // 他の初期化処理
+    });
+  </script>
+
+
+
+  <script>
+    function copyButton(elementId) {
+      var element = document.getElementById(elementId);
+      navigator.clipboard.writeText(element.value || element.textContent);
+      // トースト表示
+      var toast = document.getElementById('copyToast');
+      toast.style.display = 'block';
+      setTimeout(function() { toast.style.opacity = 1; }, 10);
+      setTimeout(function() {
+        toast.style.opacity = 0;
+        setTimeout(function() { toast.style.display = 'none'; }, 400);
+      }, 1600);
+      // ボタンデザイン変更
+      var btn = document.getElementById('copyBtn');
+      var originalBg = btn.style.background;
+      var originalColor = btn.style.color;
+      btn.style.background = '#e0e0e0';
+      btn.style.color = '#0071e3';
+      btn.innerHTML = '<i class="fa-regular fa-copy"></i> コピーしました！';
+      setTimeout(function() {
+        btn.style.background = originalBg;
+        btn.style.color = originalColor;
+        btn.innerHTML = '<i class="fa-regular fa-copy"></i> コピー';
+      }, 1400);
+    }
+  </script>
+
+  <script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const urlInput  = document.getElementById('siteUrl')
+    const copyBtn   = document.getElementById('copyBtn')
+    const twitterBtn= document.getElementById('twitterBtn')
+    const shareBtn  = document.getElementById('nativeShareBtn')
+    const toast     = document.getElementById('copyToast')
+
+    // ネイティブ共有
+    shareBtn.addEventListener('click', async () => {
+      const shareData = {
+        title: '秋高考査村',
+        text: '無料で使える問題共有サイト',
+        url: urlInput.value
+      }
+      if (navigator.share) {
+        try {
+          await navigator.share(shareData)
+        } catch (err) {
+          console.error('共有に失敗しました', err)
+        }
+      } else {
+        toast.textContent = 'この端末は共有非対応です。URLをコピーして使ってください'
+        toast.style.display = 'block'
+        setTimeout(() => { toast.style.opacity = 1 }, 10)
+        setTimeout(() => {
+          toast.style.opacity = 0
+          setTimeout(() => {
+            toast.style.display = 'none'
+            toast.textContent = 'コピーしました！'
+          }, 400)
+        }, 2000)
+      }
+    })
+  })
+  </script>
+
+  <script>
+    // 印刷用テンプレートモーダル機能
+    function showPrintTemplateModal() {
+      document.getElementById('printTemplateModal').style.display = 'flex';
+    }
+    
+    function closePrintTemplateModal() {
+      document.getElementById('printTemplateModal').style.display = 'none';
+    }
+    
+    // モーダル閉じるボタンのイベントリスナー
+    document.addEventListener('DOMContentLoaded', function() {
+      document.getElementById('printTemplateClose').addEventListener('click', closePrintTemplateModal);
+      
+      // モーダル外クリックで閉じる
+      document.getElementById('printTemplateModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+          closePrintTemplateModal();
+        }
+      });
+      
+      // ESCキーで閉じる
+      document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+          closePrintTemplateModal();
+        }
+      });
+    });
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,920 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <title>管理ページ - 考査村</title>
+  <meta name="viewport" content="width=1200, initial-scale=0.3, user-scalable=yes" />
+  <style>
+    body {
+      font-family: "MS UI Gothic", "MS Sans Serif", sans-serif;
+      background-color: #ffffe0;
+      margin: 0;
+      padding: 0;
+      min-width: 1200px;
+    }
+    
+    .sidebar {
+      width: 250px;
+      background-color: #f0f0f0;
+      padding: 20px;
+      border-right: 1px solid #ccc;
+      position: fixed;
+      left: 0;
+      top: 0;
+      height: 100vh;
+    }
+    
+    .main-content {
+      flex: 1;
+      padding: 20px;
+      margin-left: 290px;
+      margin-top: 0;
+    }
+    
+    .page-title {
+      font-size: 20px;
+      font-weight: bold;
+      color: #333;
+      margin-bottom: 15px;
+      border-bottom: 1px solid #ccc;
+      padding-bottom: 5px;
+    }
+    
+    .nav-menu {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    
+    .nav-menu li {
+      margin-bottom: 5px;
+    }
+    
+    .nav-menu a {
+      display: block;
+      padding: 5px 8px;
+      text-decoration: none;
+      color: #333;
+      background-color: transparent;
+      border: none;
+    }
+    
+    .nav-menu a:hover {
+      background-color: #e0e0e0;
+      color: #000;
+    }
+    
+    .nav-menu a.active {
+      background-color: #e0e0e0;
+      color: #000;
+      font-weight: bold;
+    }
+    
+    .logout-link {
+      margin-top: 15px;
+      padding-top: 10px;
+      border-top: 1px solid #ccc;
+    }
+    
+    .logout-link a {
+      color: #800000 !important;
+      font-weight: bold;
+    }
+    
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background-color: white;
+      border: 1px solid #ccc;
+    }
+    
+         th, td {
+       border: 1px solid #ccc;
+       padding: 6px;
+       text-align: left;
+       font-size: 14px;
+     }
+    
+    th {
+      background-color: #f5f5f5;
+      font-weight: bold;
+    }
+    
+         button {
+       background-color: #f5f5f5;
+       border: 1px solid #ccc;
+       padding: 4px 8px;
+       cursor: pointer;
+       font-family: inherit;
+       font-size: 14px;
+     }
+    
+    button:hover {
+      background-color: #e0e0e0;
+    }
+    
+         input, select, textarea {
+       border: 1px solid #ccc;
+       padding: 3px 5px;
+       font-family: inherit;
+       font-size: 14px;
+     }
+    
+    .edit-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.5);
+      z-index: 1000;
+    }
+    
+    .edit-modal-content {
+      background-color: white;
+      margin: 50px auto;
+      padding: 15px;
+      width: 80%;
+      max-width: 600px;
+      border: 1px solid #ccc;
+    }
+    
+    .edit-form {
+      display: grid;
+      grid-template-columns: 1fr 2fr;
+      gap: 8px;
+      align-items: center;
+    }
+    
+    .edit-buttons {
+      grid-column: 1 / -1;
+      text-align: center;
+      margin-top: 15px;
+    }
+    
+    .save-btn:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+    
+    .sortable {
+      cursor: pointer;
+      user-select: none;
+      position: relative;
+    }
+    
+    .sortable:hover {
+      background-color: #f0f0f0;
+    }
+    
+    .sortable.asc::after {
+      content: ' ▲';
+      color: #333;
+      font-weight: bold;
+    }
+    
+    .sortable.desc::after {
+      content: ' ▼';
+      color: #333;
+      font-weight: bold;
+    }
+    
+    .login-container {
+      max-width: 500px;
+      margin: 100px auto;
+      background-color: white;
+      padding: 20px;
+      border: 1px solid #ccc;
+    }
+    
+    .login-title {
+      font-size: 18px;
+      font-weight: bold;
+      color: #333;
+      text-align: center;
+      margin-bottom: 15px;
+    }
+    
+    .login-form {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    
+    .login-button {
+      background-color: #0066cc;
+      color: white;
+      border: 1px solid #0052a3;
+      padding: 8px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    
+    .login-button:hover {
+      background-color: #0052a3;
+    }
+    
+    .login-instructions {
+      margin-top: 10px;
+      font-size: 11px;
+      color: #666;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="sidebar">
+    <div class="page-title">投稿管理システム</div>
+        <ul class="nav-menu">
+      <li><a href="../index.html">> ホーム</a></li>
+      <li><a href="../pages/upload.html">> アップロード</a></li>
+      <li><a href="../pages/search.html">> データベース</a></li>
+      <li><a href="../pages/share.html">> 共有・拡散</a></li>
+             <li><a href="../ph-index.html">> スマホ版</a></li>
+        <li style="border-top: 1px solid #ccc; margin-top: 15px; padding-top: 15px;"></li>
+        <li><a href="admin.html" class="active">> 投稿管理システム</a></li>
+      <li><a href="password-generator.html">> ハッシュ値変換ツール</a></li>
+      <li class="logout-link"><a href="#" onclick="logout(); return false;">> ログアウト</a></li>
+    </ul>
+    <div style="margin-top: 20px; padding-top: 15px; border-top: 1px solid #ccc; font-size: 16px; color: #666; text-align: center; line-height: 1.4;">
+      考査村管理画面<br>
+      Ver. 2.0.0<br>
+      2025/8/1
+    </div>
+  </div>
+  
+  <div class="main-content">
+      <div id="loginForm" style="display:none;">
+        <div class="login-container">
+          <div class="login-title">管理画面へ進む</div>
+          <div class="login-form">
+            <label for="adminPass">パスワード:</label>
+            <input type="password" id="adminPass" placeholder="パスワードを入力してください" onkeypress="if(event.key==='Enter') login();">
+            <button onclick="login()" class="login-button">ログイン</button>
+          </div>
+          <div class="login-instructions">
+            パスワードを忘れた時：ハッシュ値で上書き</div>
+        </div>
+      </div>
+      
+      <div id="adminContent" style="display:none;">
+        <div class="page-title">考査村 管理システム</div>
+        <div style="margin:1em 0; display:flex; align-items:center; gap:1em;">
+          <button id="deleteSelectedBtn">選択した投稿を一括削除</button>
+          <span id="deleteProgress" style="display:none;">削除中...</span>
+          <label style="display:flex; align-items:center; gap:0.5em; margin-left:1em;">
+            <input type="checkbox" id="showDeviceInfo" style="margin:0;">
+            <span>デバイス情報表示</span>
+          </label>
+        </div>
+        <table id="postTable">
+          <thead>
+            <tr id="headerRow">
+              <th><input type="checkbox" id="checkAll"></th>
+              <th data-key="id" class="sortable">ID</th>
+              <th data-key="grade" class="sortable">学年</th>
+              <th data-key="year" class="sortable">年度</th>
+              <th data-key="type" class="sortable">種類</th>
+              <th data-key="subject" class="sortable">科目</th>
+              <th data-key="stream" class="sortable">文理区分</th>
+              <th data-key="contentType" class="sortable">内容</th>
+              <th data-key="format" class="sortable">形式</th>
+              <th data-key="comment" class="sortable">コメント</th>
+              <th data-key="fileSize" class="sortable">ファイルサイズ</th>
+              <th data-key="url">URL</th>
+              <th data-key="date" class="sortable">日付</th>
+              <th data-key="likes" class="sortable">いいね</th>
+              <th data-key="bad" class="sortable">バッド</th>
+              <th>操作</th>
+            </tr>
+            <tr id="deviceHeaderRow" style="display:none;">
+              <th><input type="checkbox" id="checkAllDevice"></th>
+              <th data-key="id" class="sortable">ID</th>
+              <th data-key="grade" class="sortable">学年</th>
+              <th data-key="year" class="sortable">年度</th>
+              <th data-key="type" class="sortable">種類</th>
+              <th data-key="subject" class="sortable">科目</th>
+              <th data-key="stream" class="sortable">文理区分</th>
+              <th data-key="contentType" class="sortable">内容</th>
+              <th data-key="format" class="sortable">形式</th>
+              <th data-key="comment" class="sortable">コメント</th>
+              <th data-key="fileSize" class="sortable">ファイルサイズ</th>
+              <th data-key="url">URL</th>
+              <th data-key="date" class="sortable">日付</th>
+              <th data-key="likes" class="sortable">いいね</th>
+              <th data-key="bad" class="sortable">バッド</th>
+              <th data-key="publicIP" class="sortable">公開IP</th>
+              <th data-key="privateIP" class="sortable">プライベートIP</th>
+              <th data-key="userAgent" class="sortable">User-Agent</th>
+              <th data-key="platform" class="sortable">プラットフォーム</th>
+              <th data-key="screenResolution" class="sortable">画面解像度</th>
+              <th data-key="windowSize" class="sortable">ウィンドウサイズ</th>
+              <th>操作</th>
+            </tr>
+            <tr class="filter-row">
+              <td></td>
+              <td><input type="text" id="filter-id" style="width:4em"></td>
+              <td><input type="text" id="filter-grade" style="width:4em"></td>
+              <td><input type="text" id="filter-year" style="width:5em"></td>
+              <td><input type="text" id="filter-type" style="width:5em"></td>
+              <td><input type="text" id="filter-subject" style="width:5em"></td>
+              <td><input type="text" id="filter-stream" style="width:5em"></td>
+              <td><input type="text" id="filter-contentType" style="width:5em"></td>
+              <td><input type="text" id="filter-format" style="width:4em"></td>
+              <td><input type="text" id="filter-comment" style="width:6em"></td>
+              <td><input type="text" id="filter-fileSize" style="width:4em"></td>
+              <td></td>
+              <td></td>
+              <td><input type="text" id="filter-likes" style="width:3em"></td>
+              <td><input type="text" id="filter-bad" style="width:3em"></td>
+              <td><button id="filterBtn">絞込</button><button id="clearBtn">解除</button></td>
+            </tr>
+            <tr class="filter-row" id="deviceFilterRow" style="display:none;">
+              <td></td>
+              <td><input type="text" id="filter-id-device" style="width:4em"></td>
+              <td><input type="text" id="filter-grade-device" style="width:4em"></td>
+              <td><input type="text" id="filter-year-device" style="width:5em"></td>
+              <td><input type="text" id="filter-type-device" style="width:5em"></td>
+              <td><input type="text" id="filter-subject-device" style="width:5em"></td>
+              <td><input type="text" id="filter-stream-device" style="width:5em"></td>
+              <td><input type="text" id="filter-contentType-device" style="width:5em"></td>
+              <td><input type="text" id="filter-format-device" style="width:4em"></td>
+              <td><input type="text" id="filter-comment-device" style="width:6em"></td>
+              <td><input type="text" id="filter-fileSize-device" style="width:4em"></td>
+              <td></td>
+              <td></td>
+              <td><input type="text" id="filter-likes-device" style="width:3em"></td>
+              <td><input type="text" id="filter-bad-device" style="width:3em"></td>
+              <td><input type="text" id="filter-publicIP-device" style="width:6em"></td>
+              <td><input type="text" id="filter-privateIP-device" style="width:6em"></td>
+              <td><input type="text" id="filter-userAgent-device" style="width:8em"></td>
+              <td><input type="text" id="filter-platform-device" style="width:6em"></td>
+              <td><input type="text" id="filter-screenResolution-device" style="width:6em"></td>
+              <td><input type="text" id="filter-windowSize-device" style="width:6em"></td>
+              <td><button id="filterBtnDevice">絞込</button><button id="clearBtnDevice">解除</button></td>
+            </tr>
+          </thead>
+          <tbody id="postTbody">
+            <tr><td colspan="15" style="text-align:center; color:#888;">読み込み中...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  <!-- 編集モーダル -->
+  <div id="editModal" class="edit-modal" style="display:none;">
+    <div class="edit-modal-content">
+      <h3>投稿を編集</h3>
+      <form class="edit-form" id="editForm">
+        <label for="edit-id">ID:</label>
+                 <div id="edit-id-display" style="padding: 8px 12px; border: 1px solid #ccc; background: #f5f5f5; color: #666;"></div>
+        
+        <label for="edit-grade">学年:</label>
+        <select id="edit-grade">
+          <option value="1">1年</option>
+          <option value="2">2年</option>
+          <option value="3">3年</option>
+        </select>
+        
+        <label for="edit-year">年度:</label>
+        <input type="text" id="edit-year">
+        
+        <label for="edit-type">種類:</label>
+        <select id="edit-type">
+          <option value="定期考査">定期考査</option>
+          <option value="実力テスト">実力テスト</option>
+          <option value="確認テスト">確認テスト</option>
+          <option value="その他">その他</option>
+        </select>
+        
+        <label for="edit-subject">科目:</label>
+        <input type="text" id="edit-subject">
+        
+        <label for="edit-stream">文理区分:</label>
+        <select id="edit-stream">
+          <option value="共通">共通</option>
+          <option value="文系">文系</option>
+          <option value="理系">理系</option>
+        </select>
+        
+        <label for="edit-contentType">内容:</label>
+        <select id="edit-contentType">
+          <option value="問題">問題</option>
+          <option value="解答">解答</option>
+          <option value="問題・解答">問題・解答</option>
+        </select>
+        
+        <label for="edit-format">形式:</label>
+        <select id="edit-format">
+          <option value="PDF">PDF</option>
+          <option value="画像">画像</option>
+          <option value="その他">その他</option>
+        </select>
+        
+        <label for="edit-url">URL:</label>
+        <input type="url" id="edit-url">
+        
+        <label for="edit-likes">いいね:</label>
+        <input type="number" id="edit-likes" min="0">
+        
+        <label for="edit-bad">バッド:</label>
+        <input type="number" id="edit-bad" min="0">
+        
+        <label for="edit-fileSize">ファイルサイズ:</label>
+        <input type="number" id="edit-fileSize" min="0" step="0.01" readonly>
+        
+        <label for="edit-comment">コメント:</label>
+        <textarea id="edit-comment"></textarea>
+        
+        <div class="edit-buttons">
+          <button type="button" onclick="closeEditModal()">キャンセル</button>
+          <button type="button" id="saveEditBtn" onclick="saveEdit()">保存</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="../assets/js/api.js"></script>
+  <script>
+    // 認証ロジック
+    function checkAuth() {
+      if (localStorage.getItem('admin_auth') === 'ok') {
+        document.getElementById('adminContent').style.display = '';
+        document.getElementById('loginForm').style.display = 'none';
+      } else {
+        document.getElementById('adminContent').style.display = 'none';
+        document.getElementById('loginForm').style.display = '';
+      }
+    }
+    
+    async function login() {
+      const pass = document.getElementById('adminPass').value;
+      if (!pass) {
+        alert('パスワードを入力してください');
+        return;
+      }
+      try {
+        const result = await window.kosamuraAPI.checkAdminPassword(pass);
+        if (result) {
+          localStorage.setItem('admin_auth', 'ok');
+          checkAuth();
+          document.getElementById('adminPass').value = ''; // パスワードフィールドをクリア
+        } else {
+          alert('パスワードが違います');
+          document.getElementById('adminPass').value = ''; // パスワードフィールドをクリア
+        }
+      } catch (error) {
+        console.error('ログインエラー:', error);
+        alert('ログインに失敗しました');
+        document.getElementById('adminPass').value = ''; // パスワードフィールドをクリア
+      }
+    }
+    
+    function logout() {
+      if (confirm('ログアウトしますか？')) {
+        localStorage.removeItem('admin_auth');
+        checkAuth();
+        alert('ログアウトしました');
+      }
+    }
+    
+    window.onload = checkAuth;
+    let tableData = [];
+    let currentSort = { key: null, direction: 'asc' };
+    let currentEditId = null;
+    let isSaving = false;
+    
+    // データ取得
+    async function fetchData() {
+      try {
+        const data = await window.kosamuraAPI.getData();
+        tableData = data || [];
+        renderTable(tableData);
+      } catch (error) {
+        console.error('データ取得エラー:', error);
+        document.getElementById('postTbody').innerHTML = '<tr><td colspan="15" style="text-align:center; color:red;">データの取得に失敗しました</td></tr>';
+      }
+    }
+    
+    // 並び替え機能
+    function sortTable(key) {
+      if (currentSort.key === key) {
+        currentSort.direction = currentSort.direction === 'asc' ? 'desc' : 'asc';
+      } else {
+        currentSort.key = key;
+        currentSort.direction = 'asc';
+      }
+      
+      // ヘッダーの並び替え表示を更新
+      document.querySelectorAll('.sortable').forEach(th => {
+        th.classList.remove('asc', 'desc');
+      });
+      
+      const currentHeader = document.querySelector(`[data-key="${key}"]`);
+      if (currentHeader) {
+        currentHeader.classList.add(currentSort.direction);
+      }
+      
+      // データを並び替え
+      const sortedData = [...tableData].sort((a, b) => {
+        let aVal = a[key];
+        let bVal = b[key];
+        
+        // 数値の場合は数値として比較
+        if (key === 'id' || key === 'likes' || key === 'bad' || key === 'fileSize') {
+          aVal = Number(aVal) || 0;
+          bVal = Number(bVal) || 0;
+        } else {
+          // 文字列の場合は文字列として比較
+          aVal = String(aVal || '').toLowerCase();
+          bVal = String(bVal || '').toLowerCase();
+        }
+        
+        if (currentSort.direction === 'asc') {
+          return aVal > bVal ? 1 : aVal < bVal ? -1 : 0;
+        } else {
+          return aVal < bVal ? 1 : aVal > bVal ? -1 : 0;
+        }
+      });
+      
+      renderTable(sortedData);
+    }
+    
+    function renderTable(data) {
+      const tbody = document.getElementById('postTbody');
+      tbody.innerHTML = '';
+      if (!data || data.length === 0) {
+        const showDeviceInfo = document.getElementById('showDeviceInfo').checked;
+        const colspan = showDeviceInfo ? 22 : 16;
+        tbody.innerHTML = `<tr><td colspan="${colspan}" style="text-align:center; color:#888;">データなし</td></tr>`;
+        return;
+      }
+      data.forEach(row => {
+        const tr = document.createElement('tr');
+        // 日付フォーマット
+        let dateStr = row.date;
+        if (dateStr) {
+          const d = new Date(dateStr);
+          if (!isNaN(d.getTime())) {
+            const pad = n => n.toString().padStart(2, '0');
+            dateStr = `${d.getFullYear()}/${pad(d.getMonth()+1)}/${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+          }
+        }
+        const showDeviceInfo = document.getElementById('showDeviceInfo').checked;
+        
+        if (showDeviceInfo) {
+          // デバイス情報表示モード
+          tr.innerHTML = `
+            <td><input type="checkbox" class="rowCheck" value="${row.id}"></td>
+            <td>${row.id}</td>
+            <td>${row.grade}</td>
+            <td>${row.year}</td>
+            <td>${row.type}</td>
+            <td>${row.subject}</td>
+            <td>${row.stream}</td>
+            <td>${row.contentType}</td>
+            <td>${row.format}</td>
+            <td>${row.comment ? row.comment.replace(/</g,'&lt;').replace(/>/g,'&gt;') : ''}</td>
+            <td>${row.fileSize ? row.fileSize + ' MB' : ''}</td>
+            <td><a href="${row.url}" target="_blank">リンク</a></td>
+            <td>${dateStr}</td>
+            <td>${row.likes}</td>
+            <td>${row.bad}</td>
+                         <td style="color:#666; font-size:12px;">${row.publicIP || ''}</td>
+             <td style="color:#666; font-size:12px;">${row.privateIP || ''}</td>
+             <td style="color:#666; font-size:12px; max-width:150px; overflow:hidden; text-overflow:ellipsis;" title="${row.userAgent || ''}">${row.userAgent || ''}</td>
+             <td style="color:#666; font-size:12px;">${row.platform || ''}</td>
+             <td style="color:#666; font-size:12px;">${row.screenResolution || ''}</td>
+             <td style="color:#666; font-size:12px;">${row.windowSize || ''}</td>
+            <td>
+              <button class="edit-btn" onclick="editPost('${row.id}')">編集</button>
+              <button class="del-btn" onclick="deletePost('${row.id}')">削除</button>
+            </td>
+          `;
+        } else {
+          // 通常表示モード
+          tr.innerHTML = `
+            <td><input type="checkbox" class="rowCheck" value="${row.id}"></td>
+            <td>${row.id}</td>
+            <td>${row.grade}</td>
+            <td>${row.year}</td>
+            <td>${row.type}</td>
+            <td>${row.subject}</td>
+            <td>${row.stream}</td>
+            <td>${row.contentType}</td>
+            <td>${row.format}</td>
+            <td>${row.comment ? row.comment.replace(/</g,'&lt;').replace(/>/g,'&gt;') : ''}</td>
+            <td>${row.fileSize ? row.fileSize + ' MB' : ''}</td>
+            <td><a href="${row.url}" target="_blank">リンク</a></td>
+            <td>${dateStr}</td>
+            <td>${row.likes}</td>
+            <td>${row.bad}</td>
+            <td>
+              <button class="edit-btn" onclick="editPost('${row.id}')">編集</button>
+              <button class="del-btn" onclick="deletePost('${row.id}')">削除</button>
+            </td>
+          `;
+        }
+        tbody.appendChild(tr);
+      });
+      // 全選択チェックボックスの状態をリセット
+      document.getElementById('checkAll').checked = false;
+      if (showDeviceInfo) {
+        document.getElementById('checkAllDevice').checked = false;
+      }
+      
+      // 並び替え状態を復元
+      if (currentSort.key) {
+        const currentHeader = document.querySelector(`[data-key="${currentSort.key}"]`);
+        if (currentHeader) {
+          currentHeader.classList.add(currentSort.direction);
+        }
+      }
+    }
+    
+    // 編集モーダル関連
+    function editPost(id) {
+      const row = tableData.find(r => r.id == id);
+      if (!row) return;
+      
+      currentEditId = id;
+      
+      // フォームに値を設定
+      document.getElementById('edit-id-display').textContent = row.id;
+      document.getElementById('edit-grade').value = row.grade || '';
+      document.getElementById('edit-year').value = row.year || '';
+      document.getElementById('edit-type').value = row.type || '';
+      document.getElementById('edit-subject').value = row.subject || '';
+      document.getElementById('edit-stream').value = row.stream || '';
+      document.getElementById('edit-contentType').value = row.contentType || '';
+      document.getElementById('edit-format').value = row.format || '';
+      document.getElementById('edit-fileSize').value = row.fileSize || '';
+      document.getElementById('edit-comment').value = row.comment || '';
+      document.getElementById('edit-url').value = row.url || '';
+      document.getElementById('edit-likes').value = row.likes || 0;
+      document.getElementById('edit-bad').value = row.bad || 0;
+      
+
+      
+      // モーダルを表示
+      document.getElementById('editModal').style.display = 'flex';
+    }
+    
+    function closeEditModal() {
+      if (isSaving) {
+        if (!confirm('保存中です。本当に閉じますか？')) {
+          return;
+        }
+      }
+      document.getElementById('editModal').style.display = 'none';
+      currentEditId = null;
+      isSaving = false;
+      resetSaveButton();
+    }
+    
+    async function saveEdit() {
+      if (!currentEditId || isSaving) return;
+      
+      isSaving = true;
+      const saveBtn = document.getElementById('saveEditBtn');
+      saveBtn.disabled = true;
+      saveBtn.textContent = '保存中...';
+      
+      const formData = {
+        id: currentEditId,
+        grade: document.getElementById('edit-grade').value,
+        year: document.getElementById('edit-year').value,
+        type: document.getElementById('edit-type').value,
+        subject: document.getElementById('edit-subject').value,
+        stream: document.getElementById('edit-stream').value,
+        contentType: document.getElementById('edit-contentType').value,
+        format: document.getElementById('edit-format').value,
+        fileSize: document.getElementById('edit-fileSize').value,
+        comment: document.getElementById('edit-comment').value,
+        url: document.getElementById('edit-url').value,
+        likes: parseInt(document.getElementById('edit-likes').value) || 0,
+        bad: parseInt(document.getElementById('edit-bad').value) || 0
+      };
+      
+      try {
+        const result = await window.kosamuraAPI.updatePost(formData);
+        isSaving = false;
+        resetSaveButton();
+        
+        if (result === 'ok') {
+          closeEditModal();
+          fetchData(); // テーブルを再読み込み
+          alert('更新しました');
+        } else {
+          alert('更新に失敗しました: ' + result);
+        }
+      } catch (error) {
+        isSaving = false;
+        resetSaveButton();
+        alert('更新に失敗しました: ' + error.message);
+      }
+    }
+    
+    function resetSaveButton() {
+      const saveBtn = document.getElementById('saveEditBtn');
+      saveBtn.disabled = false;
+      saveBtn.textContent = '保存';
+    }
+    
+    // モーダル外クリックで閉じる
+    document.getElementById('editModal').onclick = function(e) {
+      if (e.target === this) {
+        closeEditModal();
+      }
+    };
+    
+         // ページ離脱時の警告
+     window.addEventListener('beforeunload', function(e) {
+       if (isSaving) {
+         e.preventDefault();
+         e.returnValue = '保存中です。ページを離れると処理が中断される可能性があります。';
+         return e.returnValue;
+       }
+       
+       // タブを閉じたときにログアウト
+       if (localStorage.getItem('admin_auth') === 'ok') {
+         localStorage.removeItem('admin_auth');
+       }
+     });
+    
+    // 削除処理
+    async function deletePost(id) {
+      if (!confirm('本当に削除しますか？')) return;
+      try {
+        await window.kosamuraAPI.deletePost(Number(id));
+        fetchData();
+      } catch (error) {
+        console.error('削除エラー:', error);
+        alert('削除に失敗しました');
+      }
+    }
+    
+    // 一括削除処理
+    async function deletePostsBulk(ids) {
+      var progress = document.getElementById('deleteProgress');
+      window._isDeleting = true;
+      progress.style.display = '';
+      window.addEventListener('beforeunload', beforeUnloadHandler);
+      
+      try {
+        await window.kosamuraAPI.deletePostsBulk(ids.map(String));
+        progress.style.display = 'none';
+        window._isDeleting = false;
+        window.removeEventListener('beforeunload', beforeUnloadHandler);
+        fetchData();
+      } catch (error) {
+        console.error('一括削除エラー:', error);
+        alert('一括削除に失敗しました');
+        progress.style.display = 'none';
+        window._isDeleting = false;
+        window.removeEventListener('beforeunload', beforeUnloadHandler);
+      }
+    }
+    
+    function beforeUnloadHandler(e) {
+      if (window._isDeleting) {
+        e.preventDefault();
+        e.returnValue = '削除処理中です。ページを離れると処理が中断される可能性があります。';
+        return e.returnValue;
+      }
+    }
+    
+    // フィルタ処理
+    async function applyFilter() {
+      const id = document.getElementById('filter-id').value.trim();
+      const grade = document.getElementById('filter-grade').value.trim();
+      const year = document.getElementById('filter-year').value.trim();
+      const type = document.getElementById('filter-type').value.trim();
+      const subject = document.getElementById('filter-subject').value.trim();
+      const stream = document.getElementById('filter-stream').value.trim();
+      const contentType = document.getElementById('filter-contentType').value.trim();
+      const format = document.getElementById('filter-format').value.trim();
+      const comment = document.getElementById('filter-comment').value.trim();
+      const likes = document.getElementById('filter-likes').value.trim();
+      const bad = document.getElementById('filter-bad').value.trim();
+      const publicIP = document.getElementById('filter-publicIP').value.trim();
+      const privateIP = document.getElementById('filter-privateIP').value.trim();
+      const userAgent = document.getElementById('filter-userAgent').value.trim();
+      const platform = document.getElementById('filter-platform').value.trim();
+      const screenResolution = document.getElementById('filter-screenResolution').value.trim();
+      const windowSize = document.getElementById('filter-windowSize').value.trim();
+      
+      try {
+        const data = await window.kosamuraAPI.getData();
+        const filtered = data.filter(row =>
+          (id === '' || String(row.id).includes(id)) &&
+          (grade === '' || String(row.grade).includes(grade)) &&
+          (year === '' || String(row.year).includes(year)) &&
+          (type === '' || String(row.type).includes(type)) &&
+          (subject === '' || String(row.subject).includes(subject)) &&
+          (stream === '' || String(row.stream).includes(stream)) &&
+          (contentType === '' || String(row.contentType).includes(contentType)) &&
+          (format === '' || String(row.format).includes(format)) &&
+          (comment === '' || String(row.comment).includes(comment)) &&
+          (likes === '' || String(row.likes).includes(likes)) &&
+          (bad === '' || String(row.bad).includes(bad)) &&
+          (publicIP === '' || String(row.publicIP).includes(publicIP)) &&
+          (privateIP === '' || String(row.privateIP).includes(privateIP)) &&
+          (userAgent === '' || String(row.userAgent).includes(userAgent)) &&
+          (platform === '' || String(row.platform).includes(platform)) &&
+          (screenResolution === '' || String(row.screenResolution).includes(screenResolution)) &&
+          (windowSize === '' || String(row.windowSize).includes(windowSize))
+        );
+        renderTable(filtered);
+      } catch (error) {
+        console.error('フィルタエラー:', error);
+        alert('フィルタ処理に失敗しました');
+      }
+    }
+    
+    // イベントリスナーの設定
+    document.addEventListener('DOMContentLoaded', function() {
+      // 全選択チェックボックス
+      document.getElementById('checkAll').onclick = function() {
+        const checked = this.checked;
+        document.querySelectorAll('.rowCheck').forEach(cb => { cb.checked = checked; });
+      };
+      document.getElementById('checkAllDevice').onclick = function() {
+        const checked = this.checked;
+        document.querySelectorAll('.rowCheck').forEach(cb => { cb.checked = checked; });
+      };
+      
+      // 一括削除ボタン
+      document.getElementById('deleteSelectedBtn').onclick = function() {
+        const ids = Array.from(document.querySelectorAll('.rowCheck:checked')).map(cb => cb.value);
+        if (ids.length === 0) { alert('削除する投稿を選択してください'); return; }
+        if (!confirm(ids.length + '件の投稿を削除します。よろしいですか？')) return;
+        deletePostsBulk(ids);
+      };
+      
+      // デバイス情報表示チェックボックス
+      document.getElementById('showDeviceInfo').onchange = function() {
+        const showDeviceInfo = this.checked;
+        
+        // ヘッダー行の切り替え
+        document.getElementById('headerRow').style.display = showDeviceInfo ? 'none' : 'table-row';
+        document.getElementById('deviceHeaderRow').style.display = showDeviceInfo ? 'table-row' : 'none';
+        
+        // フィルター行の切り替え
+        document.querySelector('.filter-row').style.display = showDeviceInfo ? 'none' : 'table-row';
+        document.getElementById('deviceFilterRow').style.display = showDeviceInfo ? 'table-row' : 'none';
+        
+        // テーブルを再描画
+        renderTable(tableData);
+      };
+      
+      // 並び替えヘッダーのクリックイベント
+      document.addEventListener('click', function(e) {
+        if (e.target.classList.contains('sortable')) {
+          const key = e.target.getAttribute('data-key');
+          if (key) {
+            sortTable(key);
+          }
+        }
+      });
+      
+      // フィルターボタン
+      document.getElementById('filterBtn').onclick = applyFilter;
+      document.getElementById('filterBtnDevice').onclick = applyFilter;
+      
+      // クリアボタン
+      document.getElementById('clearBtnDevice').onclick = function() {
+        // デバイス情報フィルターのクリア
+        ['id','grade','year','type','subject','stream','contentType','format','comment','fileSize','likes','bad','publicIP','privateIP','userAgent','platform','screenResolution','windowSize'].forEach(id => {
+          const filterElement = document.getElementById('filter-' + id + '-device');
+          if (filterElement) {
+            filterElement.value = '';
+          }
+        });
+        fetchData();
+      };
+      document.getElementById('clearBtn').onclick = function() {
+        // 通常フィルターのクリア
+        ['id','grade','year','type','subject','stream','contentType','format','comment','fileSize','likes','bad'].forEach(id => {
+          const filterElement = document.getElementById('filter-' + id);
+          if (filterElement) {
+            filterElement.value = '';
+          }
+        });
+        // デバイス情報フィルターのクリア
+        ['id','grade','year','type','subject','stream','contentType','format','comment','fileSize','likes','bad','publicIP','privateIP','userAgent','platform','screenResolution','windowSize'].forEach(id => {
+          const filterElement = document.getElementById('filter-' + id + '-device');
+          if (filterElement) {
+            filterElement.value = '';
+          }
+        });
+        fetchData();
+      };
+    });
+    
+    // 初期表示
+    fetchData();
+  </script>
+</body>
+</html> 
