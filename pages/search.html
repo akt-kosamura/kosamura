@@ -22,7 +22,7 @@
           <li><a href="upload.html"><i class="fa-solid fa-upload"></i> アップロード</a></li>
           <li><a href="search.html" class="active"><i class="fa-solid fa-database"></i> 問題データベース</a></li>
           <li><a href="share.html"><i class="fa-solid fa-share-nodes"></i> 共有・拡散</a></li>
-          <li><a href="https://c.kuku.lu/hmc853pz" target="_blank"><i class="fa-solid fa-comments"></i> 掲示板</a></li>
+          <li><a href="https://c.kuku.lu/hmc853pz" target="_blank"><i class="fa-solid fa-comments"></i> 匿名掲示板</a></li>
           <li><a href="https://forms.gle/ZWtQCvecH4eZtTEU7" target="_blank"><i class="fa-solid fa-envelope"></i> 報告・問い合わせ</a></li>
         </ul>
       </nav>
@@ -31,6 +31,7 @@
   <main>
     <h1>問題データベース</h1>
     <div class="subtitle">フィルターを使って検索できます</div>
+    
 
     <div class="page-container">
       <div class="combined-section">
@@ -186,7 +187,7 @@
       </table>
         </div>
   </div>
-  <div class="copyright-note">Copyright© 2020 考査村 All Rights Reserved.</div><br>
+  <div class="copyright-note">Copyright© 2024 考査村 All Rights Reserved.</div><br>
 <style>
 .copyright-note {
   font-size: 20px;
@@ -238,15 +239,15 @@
   };
 
   // 広告ポップアップ表示（通常モード）
-function showAdPopup(fileUrl) {
+function showAdPopup(fileId, fileUrl) {
   const overlay = document.createElement('div');
   overlay.className = 'popup-overlay';
   overlay.innerHTML = `
     <div class="popup-content">
       <button class="popup-close">&times;</button>
-      <h2>広告を視聴してファイルを開く</h2>
+      <h2>カウントダウンが終わるとファイルを開けます</h2>
       <div class="countdown-text" id="countdownText">100</div>
-      <p id="statusText">カウントダウンが終わるとファイルを開けます</p>
+      <p id="statusText">提供される問題が多くなれば、この画面は廃止する予定です。</p>
       <div class="ad-video">
         <video controls autoplay style="width: 100%; border-radius: 1rem; background: #000;">
           <source src="../assets/考査村ビデオ.mp4" type="video/mp4">
@@ -279,8 +280,28 @@ function showAdPopup(fileUrl) {
       countdownEl.style.borderRadius = '6px';
       countdownEl.style.padding = '0.4rem 0.8rem';
 
-      countdownEl.onclick = () => {
-        window.open(fileUrl, '_blank', 'noopener,noreferrer');
+      countdownEl.onclick = async () => {
+        try {
+          // トークンを取得
+          const token = await kosamuraAPI.getTemporaryAccessToken(fileId);
+          if (token) {
+            // トークンを使ってファイルにアクセス
+            const response = await kosamuraAPI.accessFileWithToken(fileId, token);
+            if (response.ok) {
+              // ファイルを新しいタブで開く
+              const blob = await response.blob();
+              const url = URL.createObjectURL(blob);
+              window.open(url, '_blank', 'noopener,noreferrer');
+            } else {
+              alert('ファイルの取得に失敗しました');
+            }
+          } else {
+            alert('アクセストークンの取得に失敗しました');
+          }
+        } catch (error) {
+          console.error('ファイルアクセスエラー:', error);
+          alert('ファイルの取得に失敗しました');
+        }
         document.body.removeChild(overlay);
       };
     }
@@ -327,13 +348,14 @@ function showAdPopup(fileUrl) {
     // 「見る」リンクの処理
     if (target.classList.contains('view-link')) {
       e.preventDefault();
+      const fileId = target.dataset.fileId;
       const fileUrl = target.dataset.url;
       if (isInFreeMode()) {
         // フリーモードなら直接開く
         window.open(fileUrl, '_blank', 'noopener,noreferrer');
       } else {
         // 通常モードはポップアップ
-        showAdPopup(fileUrl);
+        showAdPopup(fileId, fileUrl);
       }
       return;
     }
@@ -411,6 +433,80 @@ function showAdPopup(fileUrl) {
     }
   }
 
+  // 統計情報を読み込む関数
+  async function loadStats() {
+    try {
+      console.log('=== loadStats デバッグ開始 ===');
+      
+      // GASのURLを使用して統計情報を取得
+      const gasUrl = 'https://script.google.com/macros/s/AKfycbwEAhdiJOtbf44ifY-BoAFhLI7eQl_uIJKm9NDTexoWZD7U8l-7wsrT9ufRCZ9d8lZf/exec';
+      const response = await fetch(`${gasUrl}?function=getStats`);
+      console.log('fetch response:', response);
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const stats = await response.json();
+      console.log('取得した統計データ:', stats);
+      
+      // レスポンス形式を確認して適切に処理
+      let totalPosts, totalLikes, activeUsers;
+      
+      if (stats.result) {
+        // resultプロパティにラップされている場合
+        totalPosts = stats.result.totalPosts || 0;
+        totalLikes = stats.result.totalLikes || 0;
+        activeUsers = stats.result.activeUsers || 0;
+      } else {
+        // 直接プロパティとして含まれている場合
+        totalPosts = stats.totalPosts || 0;
+        totalLikes = stats.totalLikes || 0;
+        activeUsers = stats.activeUsers || 0;
+      }
+      
+      console.log('処理後の値:');
+      console.log('totalPosts:', totalPosts, '(型:', typeof totalPosts, ')');
+      console.log('totalLikes:', totalLikes, '(型:', typeof totalLikes, ')');
+      console.log('activeUsers:', activeUsers, '(型:', typeof activeUsers, ')');
+      
+      const totalPostsElement = document.getElementById('totalPosts');
+      console.log('totalPostsElement:', totalPostsElement);
+      if (totalPostsElement) {
+        totalPostsElement.textContent = Number(totalPosts).toLocaleString();
+        console.log('totalPostsElement.textContent を設定:', Number(totalPosts).toLocaleString());
+      }
+      
+      const totalLikesElement = document.getElementById('totalLikes');
+      console.log('totalLikesElement:', totalLikesElement);
+      if (totalLikesElement) {
+        totalLikesElement.textContent = Number(totalLikes).toLocaleString();
+        console.log('totalLikesElement.textContent を設定:', Number(totalLikes).toLocaleString());
+      }
+      
+      const activeUsersElement = document.getElementById('activeUsers');
+      console.log('activeUsersElement:', activeUsersElement);
+      if (activeUsersElement) {
+        activeUsersElement.textContent = Number(activeUsers).toLocaleString();
+        console.log('activeUsersElement.textContent を設定:', Number(activeUsers).toLocaleString());
+      }
+      
+      console.log('=== loadStats デバッグ終了 ===');
+    } catch (error) {
+      console.error('統計情報の読み込みに失敗しました:', error);
+      console.error('エラーの詳細:', error.toString());
+      
+      // エラー時は0を表示
+      const totalPostsElement = document.getElementById('totalPosts');
+      const totalLikesElement = document.getElementById('totalLikes');
+      const activeUsersElement = document.getElementById('activeUsers');
+      
+      if (totalPostsElement) totalPostsElement.textContent = '0';
+      if (totalLikesElement) totalLikesElement.textContent = '0';
+      if (activeUsersElement) activeUsersElement.textContent = '0';
+    }
+  }
+
   // データ取得（パフォーマンス改善版）
   async function fetchData() {
     const tbody = document.getElementById('resultBody');
@@ -444,7 +540,8 @@ function showAdPopup(fileUrl) {
   async function clearCacheAndFetch() {
     try {
       // キャッシュクリアAPIを呼び出し
-      await fetch(`${window.location.origin}/exec?function=clearCache`);
+      const gasUrl = 'https://script.google.com/macros/s/AKfycbwEAhdiJOtbf44ifY-BoAFhLI7eQl_uIJKm9NDTexoWZD7U8l-7wsrT9ufRCZ9d8lZf/exec';
+      await fetch(`${gasUrl}?function=clearCache`);
       console.log('キャッシュをクリアしました');
       
       // データを再取得
@@ -486,7 +583,7 @@ function showAdPopup(fileUrl) {
         <td class="content-cell">${String(item.contentType || '')}</td>
         <td class="format-cell">${String(item.format || '')}</td>
         <td class="comment-cell" data-comment="${safe}"><div class="comment-text">${safe}</div></td>
-        <td class="link-cell"><a href="#" class="view-link" data-url="${String(item.url || '')}">見る</a></td>
+        <td class="link-cell"><a href="#" class="view-link" data-file-id="${item.id}" data-url="${String(item.url || '')}">見る</a></td>
         <td class="col-date date-cell">${rel}</td>
         <td class="col-eval eval-cell">
           <button class="btn-like${vt==='good'?' active':''}" data-id="${item.id}">${item.likes || 0}</button>
@@ -638,6 +735,13 @@ function showAdPopup(fileUrl) {
   }
 
   document.addEventListener('DOMContentLoaded', () => {
+    // アクセスカウントを実行
+    kosamuraAPI.incrementAccessCount().then(count => {
+      console.log('アクセスカウント更新完了:', count);
+    }).catch(error => {
+      console.error('アクセスカウント更新エラー:', error);
+    });
+    
     updateFreeModeStatus();
     setInterval(updateFreeModeStatus, 1000);
     ['grade','year','type','subject','stream'].forEach(id => {
@@ -658,6 +762,7 @@ function showAdPopup(fileUrl) {
     document.getElementById('sortMenu').onchange = applySort;
          applyColumns();
      fetchData();
+     loadStats(); // 統計情報を読み込み
 
     // 横スクロール誘導アニメーションを数秒だけ表示（オーバーレイ）
     const overlay = document.getElementById('scroll-hint-overlay');

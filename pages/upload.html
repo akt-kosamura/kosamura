@@ -3,10 +3,11 @@
 <head>
   <meta charset="UTF-8" />
   <title>アップロード - 秋高考査村</title>
-  <meta name="viewport" content="width=1200" />
+  <meta name="viewport" content="width=1200, initial-scale=1.0" />
   <link rel="stylesheet" href="../assets/css/common.css" />
   <link rel="stylesheet" href="../assets/css/pages/upload.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
 </head>
 <body>
   <header>
@@ -22,7 +23,7 @@
           <li><a href="upload.html" class="active"><i class="fa-solid fa-upload"></i> アップロード</a></li>
           <li><a href="search.html"><i class="fa-solid fa-database"></i> 問題データベース</a></li>
           <li><a href="share.html"><i class="fa-solid fa-share-nodes"></i> 共有・拡散</a></li>
-          <li><a href="https://c.kuku.lu/hmc853pz" target="_blank"><i class="fa-solid fa-comments"></i> 掲示板</a></li>
+          <li><a href="https://c.kuku.lu/hmc853pz" target="_blank"><i class="fa-solid fa-comments"></i> 匿名掲示板</a></li>
           <li><a href="https://forms.gle/ZWtQCvecH4eZtTEU7" target="_blank"><i class="fa-solid fa-envelope"></i> 報告・問い合わせ</a></li>
         </ul>
       </nav>
@@ -68,7 +69,7 @@
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.2em; gap: 1em; flex-wrap: wrap;">
             <button type="button" id="reverseOrderBtn" style="padding: 0.5em 1.2em; border-radius: 8px; border: 1px solid #0071e3; background: #fff; color: #0071e3; font-weight: bold; cursor: pointer;">順序を逆にする</button>
             <label style="display: flex; align-items: center; gap: 0.5em; font-size: 1em; position: relative;">
-              <input type="checkbox" id="colorUploadCheckbox" style="width: 1.1em; height: 1.1em;"> 画像をカラーでアップロード(非推奨)
+              <input type="checkbox" id="colorUploadCheckbox"> 画像をカラーでアップロード(非推奨)
               <span id="colorHelp" style="cursor:pointer; color:#0071e3; font-weight:bold; font-size:1.1em; user-select:none;">？</span>
               <span id="colorHelpPopup" style="display:none; position:absolute; right:2.2em; top:50%; transform:translateY(-50%); background:#eee; color:#444; border:1px solid #bbb; border-radius:6px; padding:0.4em 0.7em; font-size:0.90em; box-shadow:0 2px 8px rgba(0,0,0,0.10); z-index:100; min-width:120px; text-align:left; white-space:normal;">カラーでのアップロードはファイルサイズが大きくなるため時間がかかります</span>
             </label>
@@ -683,6 +684,64 @@
         }
         if (uploadInfo) uploadInfo.style.display = 'block';
       });
+      
+      // 写真撮影時の注意ポップアップ機能
+      const photoGuideBtn = document.getElementById('photoGuideBtn');
+      const photoGuideModal = document.getElementById('photoGuideModal');
+      const closePhotoGuide = document.getElementById('closePhotoGuide');
+      const closePhotoGuideBottom = document.getElementById('closePhotoGuideBottom');
+      const photoGuideAutoOpenCheckbox = document.getElementById('photoGuideAutoOpenCheckbox');
+      
+      // ボタンクリックでポップアップを開く
+      photoGuideBtn.addEventListener('click', () => {
+        photoGuideModal.classList.add('show');
+        document.body.style.overflow = 'hidden';
+      });
+      
+      // 閉じるボタンでポップアップを閉じる
+      closePhotoGuide.addEventListener('click', () => {
+        photoGuideModal.classList.remove('show');
+        document.body.style.overflow = '';
+      });
+      
+      // 下部の閉じるボタンでポップアップを閉じる
+      closePhotoGuideBottom.addEventListener('click', () => {
+        photoGuideModal.classList.remove('show');
+        document.body.style.overflow = '';
+      });
+      
+      // モーダル外クリックでポップアップを閉じる
+      photoGuideModal.addEventListener('click', (e) => {
+        if (e.target === photoGuideModal) {
+          photoGuideModal.classList.remove('show');
+          document.body.style.overflow = '';
+        }
+      });
+      
+      // ESCキーでポップアップを閉じる
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && photoGuideModal.classList.contains('show')) {
+          photoGuideModal.classList.remove('show');
+          document.body.style.overflow = '';
+        }
+      });
+      
+      // チェックボックスの状態を保存
+      photoGuideAutoOpenCheckbox.addEventListener('change', () => {
+        localStorage.setItem('photoGuideAutoOpen', !photoGuideAutoOpenCheckbox.checked);
+      });
+      
+      // ページ読み込み時に自動でポップアップを表示
+      function showPhotoGuideOnLoad() {
+        const shouldAutoOpen = localStorage.getItem('photoGuideAutoOpen') !== 'false';
+        if (shouldAutoOpen) {
+          photoGuideModal.classList.add('show');
+          document.body.style.overflow = 'hidden';
+        }
+      }
+      
+      // ページ読み込み完了後に自動表示
+      setTimeout(showPhotoGuideOnLoad, 500);
     });
   </script>
   <script>
@@ -778,6 +837,12 @@
     setInterval(updateFreeModeStatus, 1000);
     
     document.addEventListener('DOMContentLoaded', () => {
+      // アクセスカウントを実行
+      kosamuraAPI.incrementAccessCount().then(count => {
+        console.log('アクセスカウント更新完了:', count);
+      }).catch(error => {
+        console.error('アクセスカウント更新エラー:', error);
+      });
       
       // カラーモード変更時にプレビューを更新
       const colorUploadCheckbox = document.getElementById('colorUploadCheckbox');
@@ -820,114 +885,80 @@
         }
       });
       
-             // 写真撮影時の注意ポップアップ機能
-       const photoGuideBtn = document.getElementById('photoGuideBtn');
-       const photoGuideModal = document.getElementById('photoGuideModal');
-       const closePhotoGuide = document.getElementById('closePhotoGuide');
-       const closePhotoGuideBottom = document.getElementById('closePhotoGuideBottom');
-      
-      // ボタンクリックでポップアップを開く
-      photoGuideBtn.addEventListener('click', () => {
-        photoGuideModal.style.display = 'flex';
-        document.body.style.overflow = 'hidden'; // 背景スクロールを無効化
-      });
-      
-             // 閉じるボタンでポップアップを閉じる
-       closePhotoGuide.addEventListener('click', () => {
-         photoGuideModal.style.display = 'none';
-         document.body.style.overflow = ''; // 背景スクロールを有効化
-       });
-       
-       // 下部の閉じるボタンでポップアップを閉じる
-       closePhotoGuideBottom.addEventListener('click', () => {
-         photoGuideModal.style.display = 'none';
-         document.body.style.overflow = ''; // 背景スクロールを有効化
-       });
-      
-      // モーダル外クリックでポップアップを閉じる
-      photoGuideModal.addEventListener('click', (e) => {
-        if (e.target === photoGuideModal) {
-          photoGuideModal.style.display = 'none';
-          document.body.style.overflow = '';
-        }
-      });
-      
-      // ESCキーでポップアップを閉じる
-      document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && photoGuideModal.style.display === 'flex') {
-          photoGuideModal.style.display = 'none';
-          document.body.style.overflow = '';
-        }
-      });
+
     });
   </script>
   
+
+  
   <!-- 写真撮影時の注意ポップアップ -->
-  <div id="photoGuideModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 1000; display: flex; justify-content: center; align-items: center;">
-    <div style="background: white; border-radius: 12px; padding: 2.5rem; max-width: 95%; max-height: 95%; overflow-y: auto; position: relative; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);">
-      <!-- 閉じるボタン -->
-      <button id="closePhotoGuide" style="position: absolute; top: 1rem; right: 1rem; background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #666; padding: 0.5rem; border-radius: 50%; transition: background-color 0.2s;">
+  <div id="photoGuideModal" class="photo-guide-modal">
+    <div class="photo-guide-content">
+      <button id="closePhotoGuide" class="photo-guide-close">
         <i class="fa-solid fa-times"></i>
       </button>
       
-      <!-- ポップアップの内容 -->
-      <div style="max-width: 750px;">
-        <h2 style="color: #000000; margin-bottom: 0.3rem; text-align: center; font-size: 1.5rem;">写真を投稿する際のお願い</h2>
-        <h3 style="color: #000000; margin-bottom: 1.5rem; font-size: 0.9rem; text-align: center;">※PDFのみ投稿の方は無視してください</h3>
+      <div class="photo-guide-inner">
+        <h2 class="photo-guide-title">写真を投稿する際のお願い</h2>
+        <p class="photo-guide-subtitle">※PDFのみ投稿の方は無視してください</p>
         
-        <div style="line-height: 1.8; font-size: 1rem;">
-                       <div style="margin-bottom: 2rem;">
-               <h3 style="color: #0071e3; margin-bottom: 1rem; font-size: 1.2rem;">①できるだけ、問題・解答・解説を分けて別々にアップしてください。</h3>
-             </div>
+        <div class="photo-guide-body">
+          <div class="photo-guide-section">
+            <h3 class="photo-guide-heading">①できるだけ、問題・解答・解説を分けて別々にアップしてください。</h3>
+          </div>
           
-                                   <div style="margin-bottom: 2rem;">
-              <h3 style="color: #0071e3; margin-bottom: 1rem; font-size: 1.2rem;">②すでに同じ内容が投稿されていないか検索をお願いします。</h3>
-              <p style="color: #555;">問題データベース画面から検索をお願いします。</p>
-            </div>
+          <div class="photo-guide-section">
+            <h3 class="photo-guide-heading">②すでに同じ内容が投稿されていないか検索をお願いします。</h3>
+            <p class="photo-guide-text">問題データベース画面から検索をお願いします。</p>
+          </div>
           
-                       <div style="margin-bottom: 2rem;">
-               <h3 style="color: #0071e3; margin-bottom: 1rem; font-size: 1.2rem;">③冊子形式の問題を投稿するときは、なるべく片ページずつ撮影してください。</h3>
-               <div style="display: flex; align-items: flex-start; gap: 1rem; margin: 1rem 0; flex-wrap: wrap;">
-                                 <div style="flex: 1; min-width: 200px;">
-                  <p style="color: #555; font-size: 1.1rem;">※ページ数が多い場合は見開きでOKです。</p>
-                   <div style="background: #f8f9fa; padding: 1rem; border-radius: 8px; margin-top: 1rem; border-left: 4px solid #0071e3;">
-
-                     <p style="margin: 0.5rem 0 0 0; color: #555; font-size: 1.1rem;">全体でB4サイズはなんとか読めました。<br>文字が小さくない場合は、片ページB5までなら見開きでもOK。</p>
-                   </div>
-                 </div>
-                                <div style="flex: 0 0 180px; text-align: center;">
-                 <img src="../assets/page.png" alt="ページ撮影" style="max-width: 100%; height: auto; border-radius: 8px; transform: scale(1.2);">
-               </div>
-               </div>
-             </div>
-          
-                                   <div style="margin-bottom: 2rem;">
-              <h3 style="color: #0071e3; margin-bottom: 1rem; font-size: 1.2rem;">④用紙いっぱいを撮影するようにしてください</h3>
-              <div style="display: flex; align-items: center; gap: 1rem; margin: 1rem 0; flex-wrap: wrap;">
-                <div style="flex: 1; min-width: 200px;">
-                  <p style="color: #555; font-size: 1.1rem;">B4以上の用紙では特にご留意ください。<br>圧縮処理をするので文字が読めなくなってしまいます。</p>
-                </div>
-                <div style="flex: 0 0 180px; text-align: center;">
-                  <img src="../assets/margin.png" alt="用紙全体撮影" style="max-width: 100%; height: auto; border-radius: 8px; transform: scale(1.2);">
+          <div class="photo-guide-section">
+            <h3 class="photo-guide-heading">③冊子形式の問題を投稿するときは、なるべく片ページずつ撮影してください。</h3>
+            <div class="photo-guide-flex">
+              <div class="photo-guide-text-content">
+                <p class="photo-guide-text">※ページ数が多い場合は見開きでOKです。</p>
+                <div class="photo-guide-note">
+                  <p class="photo-guide-text">全体でB4サイズはなんとか読めました。<br>文字が小さくない場合は、片ページB5までなら見開きでもOK。</p>
                 </div>
               </div>
+              <div class="photo-guide-image">
+                <img src="../assets/page.png" alt="ページ撮影">
+              </div>
             </div>
+          </div>
           
-                                   <div style="margin-bottom: 2rem;">
-              <h3 style="color: #0071e3; margin-bottom: 1rem; font-size: 1.2rem;">⑤氏名などの個人情報は処理してください。</h3>
-              <p style="color: #555;">※ファイル名とファイルに含まれる情報は一切アップロードされないのでご安心ください。</p>
+          <div class="photo-guide-section">
+            <h3 class="photo-guide-heading">④用紙いっぱいを撮影するようにしてください</h3>
+            <div class="photo-guide-flex">
+              <div class="photo-guide-text-content">
+                <p class="photo-guide-text">B4以上の用紙では特にご留意ください。<br>圧縮処理をするので文字が読めなくなってしまいます。</p>
+              </div>
+              <div class="photo-guide-image">
+                <img src="../assets/margin.png" alt="用紙全体撮影">
+              </div>
             </div>
-           
-           <!-- 閉じるボタン -->
-           <div style="text-align: center; margin-top: 2rem;">
-             <button id="closePhotoGuideBottom" style="padding: 0.8em 2em; border-radius: 8px; border: none; background: #0071e3; color: white; font-weight: bold; cursor: pointer; font-size: 1rem; transition: background-color 0.2s;">
-               閉じる
-             </button>
-           </div>
-         </div>
-       </div>
-     </div>
-   </div>
+          </div>
+          
+          <div class="photo-guide-section">
+            <h3 class="photo-guide-heading">⑤氏名などの個人情報は処理してください。</h3>
+            <p class="photo-guide-text">※ファイル名とファイルに含まれる情報は一切アップロードされないのでご安心ください。</p>
+          </div>
+          
+          <div class="photo-guide-actions">
+            <div class="photo-guide-checkbox-wrapper">
+              <label class="photo-guide-checkbox-label">
+                <input type="checkbox" id="photoGuideAutoOpenCheckbox">
+                <span class="photo-guide-checkbox-text">次回から自動で開かない</span>
+              </label>
+            </div>
+            <button id="closePhotoGuideBottom" class="photo-guide-button">
+              閉じる
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
   
   <script src="../assets/js/api.js"></script>
 </body>

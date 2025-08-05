@@ -248,6 +248,120 @@ class KosamuraAPI {
       return { totalPosts: 0, totalLikes: 0, activeUsers: 0 };
     }
   }
+
+  // アクセス数を増加（GAS運用時と同じ）
+  async incrementAccessCount() {
+    try {
+      console.log('=== incrementAccessCount 開始 ===');
+      
+      // localStorageで3時間制限をチェック
+      const lastAccessKey = 'kosamura_last_access';
+      const now = Date.now();
+      const threeHoursInMs = 3 * 60 * 60 * 1000; // 3時間をミリ秒で
+      
+      const lastAccess = localStorage.getItem(lastAccessKey);
+      console.log('localStorage lastAccess:', lastAccess);
+      
+      if (lastAccess) {
+        const timeDiff = now - parseInt(lastAccess);
+        console.log('timeDiff (hours):', timeDiff / (1000 * 60 * 60));
+        if (timeDiff < threeHoursInMs) {
+          console.log('3時間以内にアクセス済みです。カウントを増加しません。');
+          return 0; // 3時間以内の場合は増加しない
+        }
+      }
+      
+      console.log('3時間制限チェック通過');
+      
+      // IPアドレスを取得（簡易的な方法）
+      console.log('IPアドレスを取得中...');
+      const ipResponse = await fetch('https://api.ipify.org?format=json');
+      const ipData = await ipResponse.json();
+      const ipAddress = ipData.ip;
+      console.log('取得したIPアドレス:', ipAddress);
+      
+      const formData = new FormData();
+      formData.append('function', 'incrementAccessCount');
+      formData.append('ipAddress', ipAddress);
+      formData.append('userAgent', navigator.userAgent);
+      formData.append('clientTimestamp', now.toString());
+
+      console.log('GASにリクエスト送信中...');
+      console.log('baseURL:', this.baseURL);
+      
+      const response = await fetch(`${this.baseURL}`, {
+        method: 'POST',
+        body: formData
+      });
+      
+      console.log('レスポンス status:', response.status);
+      console.log('レスポンス ok:', response.ok);
+      
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('レスポンスエラー:', errorText);
+        throw new Error('アクセス数の更新に失敗しました');
+      }
+      
+      const result = await response.json();
+      console.log('GASからのレスポンス:', result);
+      
+      // レスポンス形式を確認して適切に処理
+      let accessCount;
+      if (result.result && result.result.accessCount !== undefined) {
+        accessCount = result.result.accessCount;
+      } else if (result.accessCount !== undefined) {
+        accessCount = result.accessCount;
+      } else {
+        console.error('アクセス数がレスポンスに含まれていません:', result);
+        accessCount = 0;
+      }
+      
+      // 成功した場合、localStorageにアクセス時刻を記録
+      if (accessCount > 0) {
+        localStorage.setItem(lastAccessKey, now.toString());
+        console.log('アクセス数を更新しました。3時間後に再カウント可能になります。');
+      }
+      
+      console.log('=== incrementAccessCount 終了 ===');
+      return accessCount;
+    } catch (error) {
+      console.error('incrementAccessCount error:', error);
+      console.error('エラーの詳細:', error.toString());
+      return 0;
+    }
+  }
+
+  // 広告視聴後に一時的なアクセストークンを取得
+  async getTemporaryAccessToken(fileId) {
+    try {
+      const formData = new FormData();
+      formData.append('fileId', fileId);
+
+      const response = await fetch(`${this.baseURL}?function=getTemporaryAccessToken`, {
+        method: 'POST',
+        body: formData
+      });
+      if (!response.ok) throw new Error('アクセストークンの取得に失敗しました');
+      const result = await response.json();
+      return result.token || result || '';
+    } catch (error) {
+      console.error('getTemporaryAccessToken error:', error);
+      throw error;
+    }
+  }
+
+  // トークンを使用してファイルにアクセス
+  async accessFileWithToken(fileId, token) {
+    try {
+      const response = await fetch(`${this.baseURL}?function=accessFileWithToken&fileId=${fileId}&token=${token}`);
+      if (!response.ok) throw new Error('ファイルアクセスに失敗しました');
+      return response;
+    } catch (error) {
+      console.error('accessFileWithToken error:', error);
+      throw error;
+    }
+  }
 }
 
 // グローバルインスタンスを作成
@@ -338,6 +452,14 @@ window.google = {
           kosamuraAPI.getStats()
             .then(stats => resolve(stats))
             .catch(() => resolve({ totalPosts: 0, totalLikes: 0, activeUsers: 0 }));
+        });
+      },
+      
+      incrementAccessCount: function() {
+        return new Promise((resolve) => {
+          kosamuraAPI.incrementAccessCount()
+            .then(count => resolve(count))
+            .catch(() => resolve(0));
         });
       }
     }

@@ -421,3 +421,428 @@ textarea::placeholder {
   border-radius: 0 !important;
   overflow: visible !important;
 } 
+
+/* チェックボックスデザイン - search.htmlと同じスタイル */
+input[type="checkbox"] {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  width: 18px;
+  height: 18px;
+  border: 2px solid #ccc;
+  border-radius: 3px;
+  background: #fff;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.3s ease;
+  flex-shrink: 0;
+}
+
+input[type="checkbox"]:checked {
+  background: #007AFF;
+  border-color: #007AFF;
+}
+
+input[type="checkbox"]:checked::after {
+  content: '';
+  position: absolute;
+  left: 4px;
+  top: 1px;
+  width: 6px;
+  height: 10px;
+  border: solid white;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+input[type="checkbox"]:hover {
+  border-color: #007AFF;
+  transform: scale(1.05);
+}
+
+input[type="checkbox"]:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(0, 113, 227, 0.2);
+}
+
+/* ラジオボタンデザイン - チェックボックスと同じ雰囲気 */
+input[type="radio"] {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  width: 18px;
+  height: 18px;
+  border: 2px solid #ccc;
+  border-radius: 50%;
+  background: #fff;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.3s ease;
+  flex-shrink: 0;
+}
+
+input[type="radio"]:checked {
+  background: #007AFF;
+  border-color: #007AFF;
+}
+
+input[type="radio"]:checked::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 6px;
+  height: 6px;
+  background: white;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+}
+
+input[type="radio"]:hover {
+  border-color: #007AFF;
+  transform: scale(1.05);
+}
+
+input[type="radio"]:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(0, 113, 227, 0.2);
+}
+
+/* 写真撮影時の注意ポップアップ */
+.photo-guide-modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 1000;
+  justify-content: center;
+  align-items: center;
+  backdrop-filter: blur(4px);
+  transition: opacity 0.3s ease;
+  /* ポップアップ内のすべての要素で文字サイズを統一 */
+  font-size: 16px !important;
+}
+
+.photo-guide-modal.show {
+  display: flex;
+  opacity: 1;
+}
+
+/* ポップアップ内のすべての要素で文字サイズを統一 */
+.photo-guide-modal * {
+  font-size: inherit !important;
+}
+
+.photo-guide-content {
+  background: white;
+  border-radius: 16px;
+  padding: 2.5rem;
+  max-width: 800px;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  margin: 2rem;
+  animation: modalSlideIn 0.3s ease;
+}
+
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.photo-guide-close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: none;
+  border: none;
+  font-size: 1.5rem !important;
+  cursor: pointer;
+  color: #666;
+  padding: 0.5rem;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+  width: 40px !important;
+  height: 40px !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.photo-guide-close:hover {
+  background: #f0f0f0;
+  color: #333;
+}
+
+.photo-guide-inner {
+  max-width: 750px;
+}
+
+.photo-guide-title {
+  color: #000;
+  margin-bottom: 0.5rem;
+  text-align: center;
+  font-size: 1.75rem !important;
+  font-weight: bold;
+  line-height: 1.3;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  min-width: 0;
+  flex-shrink: 0;
+}
+
+.photo-guide-subtitle {
+  color: #000;
+  margin-bottom: 2rem;
+  font-size: 1rem !important;
+  text-align: center;
+  font-family: 'Meiryo', 'Yu Gothic', sans-serif;
+  font-weight: normal;
+  line-height: 1.7;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  min-width: 0;
+  flex-shrink: 0;
+}
+
+.photo-guide-body {
+  line-height: 1.8;
+  font-size: 1rem !important;
+}
+
+.photo-guide-section {
+  margin-bottom: 2rem;
+}
+
+.photo-guide-heading {
+  color: #0071e3;
+  margin-bottom: 1rem;
+  font-size: 1.125rem !important;
+  font-weight: bold;
+  line-height: 1.4;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  min-width: 0;
+  flex-shrink: 0;
+}
+
+.photo-guide-text {
+  color: #555;
+  font-size: 1rem !important;
+  font-family: 'Meiryo', 'Yu Gothic', sans-serif;
+  font-weight: normal;
+  line-height: 1.7;
+  margin: 0 0 1em 0;
+  padding: 0;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  min-width: 0;
+  flex-shrink: 0;
+}
+
+.photo-guide-flex {
+  display: flex;
+  align-items: flex-start;
+  gap: 1.5rem;
+  margin: 1rem 0;
+  flex-wrap: wrap;
+}
+
+.photo-guide-text-content {
+  flex: 1;
+  min-width: 250px;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  flex-shrink: 0;
+  font-size: 1rem !important;
+}
+
+.photo-guide-note {
+  background: #f8f9fa;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-top: 1rem;
+  border-left: 4px solid #0071e3;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  min-width: 0;
+  flex-shrink: 0;
+  font-size: 1rem !important;
+}
+
+.photo-guide-image {
+  flex: 0 0 200px;
+  text-align: center;
+}
+
+.photo-guide-image img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease;
+}
+
+.photo-guide-image img:hover {
+  transform: scale(1.05);
+}
+
+.photo-guide-actions {
+  text-align: center;
+  margin-top: 2.5rem;
+}
+
+.photo-guide-button {
+  padding: 0.8em 2em;
+  border-radius: 8px;
+  border: none;
+  background: #0071e3;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  font-size: 1rem !important;
+  transition: all 0.2s ease;
+  min-width: 120px;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  flex-shrink: 0;
+}
+
+.photo-guide-button:hover {
+  background: #005bb5;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 113, 227, 0.3);
+}
+
+.photo-guide-button:active {
+  transform: translateY(0);
+}
+
+.photo-guide-checkbox-wrapper {
+  margin-top: 1rem;
+  text-align: center;
+}
+
+.photo-guide-checkbox-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  font-size: 1rem !important;
+  color: #555;
+  user-select: none;
+}
+
+.photo-guide-checkbox-label input[type="checkbox"] {
+  /* スタイルは新しいinput[type="checkbox"]ルールで統一 */
+}
+
+.photo-guide-checkbox-text {
+  font-size: 1rem !important;
+  line-height: 1.4;
+}
+
+/* レスポンシブデザイン */
+@media screen and (max-width: 768px) {
+  .photo-guide-content {
+    max-width: 95%;
+    max-height: 95%;
+    padding: 1.5rem;
+    margin: 1rem;
+  }
+  
+  .photo-guide-flex {
+    flex-direction: column;
+  }
+  
+  .photo-guide-text-content {
+    min-width: auto;
+    flex: none;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    flex-shrink: 0;
+  }
+  
+  .photo-guide-image {
+    flex: none;
+    margin-top: 1rem;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .photo-guide-content {
+    max-width: 100%;
+    max-height: 100%;
+    padding: 1rem;
+    margin: 0;
+    border-radius: 0;
+  }
+  
+  .photo-guide-close {
+    top: 0.5rem;
+    right: 0.5rem;
+  }
+  
+  /* スマホでの文字サイズ固定 - どのタグでも統一 */
+  .photo-guide-modal,
+  .photo-guide-modal * {
+    font-size: 16px !important;
+  }
+  
+  .photo-guide-title {
+    font-size: 1.75rem !important;
+  }
+  
+  .photo-guide-subtitle {
+    font-size: 1rem !important;
+  }
+  
+  .photo-guide-heading {
+    font-size: 1.125rem !important;
+  }
+  
+  .photo-guide-text {
+    font-size: 1rem !important;
+  }
+  
+  .photo-guide-text-content {
+    font-size: 1rem !important;
+  }
+  
+  .photo-guide-button {
+    font-size: 1rem !important;
+    padding: 0.8em 2em;
+    min-width: 120px;
+  }
+  
+  .photo-guide-note {
+    font-size: 1rem !important;
+  }
+  
+  .photo-guide-body {
+    font-size: 1rem !important;
+  }
+  
+  .photo-guide-checkbox-label {
+    font-size: 1rem !important;
+  }
+  
+  .photo-guide-checkbox-text {
+    font-size: 1rem !important;
+  }
+  
+  .photo-guide-checkbox-label input[type="checkbox"] {
+    /* スタイルは新しいinput[type="checkbox"]ルールで統一 */
+  }
+} 

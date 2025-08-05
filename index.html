@@ -8,6 +8,16 @@
 
 <html lang="ja">
 <head>
+  <!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-471J8G71L3"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-471J8G71L3');
+</script>
+
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=1200" />
   <title>秋高考査村 - ホーム</title>
@@ -38,12 +48,14 @@
           <li><a href="pages/upload.html"><i class="fa-solid fa-upload"></i> アップロード</a></li>
           <li><a href="pages/search.html"><i class="fa-solid fa-database"></i> 問題データベース</a></li>
           <li><a href="pages/share.html"><i class="fa-solid fa-share-nodes"></i> 共有・拡散</a></li>
-          <li><a href="https://c.kuku.lu/hmc853pz" target="_blank"><i class="fa-solid fa-comments"></i> 掲示板</a></li>
+          <li><a href="https://c.kuku.lu/hmc853pz" target="_blank"><i class="fa-solid fa-comments"></i> 匿名掲示板</a></li>
           <li><a href="https://forms.gle/ZWtQCvecH4eZtTEU7" target="_blank"><i class="fa-solid fa-envelope"></i> 報告・問い合わせ</a></li>
         </ul>
       </nav>
     </div>
   </header>
+
+  
 
     <div id="redirect-message" style="display:none; text-align:center; background:#fffbe6; color:#b8860b; font-size:32px; font-weight:bold; padding:32px 0; border-bottom:1px solid #ffe58f; margin-top:80px;">スマホ版に転送中...</div>
     
@@ -70,7 +82,7 @@
           </a>
           <a href="https://c.kuku.lu/hmc853pz" target="_blank">
             <i class="fa-solid fa-comments"></i>
-            <span>掲示板</span>
+            <span>匿名掲示板</span>
           </a>
         </div>
         <div class="card-info-text">
@@ -107,13 +119,13 @@
           </div>
           
           <div class="stat-card">
-            <div class="stat-number" id="totalLikes">-</div>
+            <div class="stat-number" id="totalLikes">Loading</div>
             <div class="stat-label">いいね数</div>
           </div>
           
           <div class="stat-card">
             <div class="stat-number" id="activeUsers">-</div>
-            <div class="stat-label">本日の訪問者</div>
+            <div class="stat-label">訪問者数</div>
           </div>
         </div>
       </div>
@@ -135,11 +147,11 @@
       <div class="dynamic-card" id="history-card">
         <div class="card-title">更新履歴</div>
         <ul class="history-list">
-          <li>2025/07/22　PDF結合ロジックの修正。アップロード時間改善</li>
-          <li>2025/07/21　UIデザインの修正</li>
-          <li>2025/07/21　評価システム導入</li>
-          <li>2025/07/20　掲示板オープン　詳細については、下を御覧ください。</li>
-          <li>2020/06/26　サービス開始</li>
+          <li class="history-item"><span class="history-date">2025/08/05</span><span class="history-desc">　サーバー移行 新システムでの運用開始</span></li>
+          <li class="history-item"><span class="history-date">2025/06/12</span><span class="history-desc">　PDF結合ロジック修正</span></li>
+          <li class="history-item"><span class="history-date">2024/07/21</span><span class="history-desc">　評価システム導入</span></li>
+          <li class="history-item"><span class="history-date">2024/07/20</span><span class="history-desc">　匿名掲示板オープン　詳細については、下を御覧ください。</span></li>
+          <li class="history-item"><span class="history-date">2024/06/26</span><span class="history-desc">　サービス開始</span></li>
         </ul>
       </div>
 
@@ -277,7 +289,7 @@
       <!-- 管理者画面ボタンとモーダルここまで -->
 
     </main>
-    <div class="copyright-note">Copyright© 2020 考査村 All Rights Reserved.</div><br><br>
+    <div class="copyright-note">Copyright© 2024 考査村 All Rights Reserved.</div><br><br>
   </div>
 
   <script src="assets/js/api.js"></script>
@@ -330,6 +342,16 @@
     setInterval(updateFreeModeStatus, 1000);
     
     document.addEventListener('DOMContentLoaded', () => {
+      // デバッグ用: localStorageをリセット（テスト時のみ使用）
+      // localStorage.removeItem('kosamura_last_access');
+      
+      // アクセスカウントを実行
+      kosamuraAPI.incrementAccessCount().then(count => {
+        console.log('アクセスカウント更新完了:', count);
+      }).catch(error => {
+        console.error('アクセスカウント更新エラー:', error);
+      });
+      
       // 他の初期化処理
     });
   </script>
@@ -531,35 +553,152 @@
     // 統計情報を読み込む関数
     async function loadStats() {
       try {
-        const response = await fetch(`${window.location.origin}/exec?function=getStats`);
+        console.log('=== loadStats デバッグ開始 ===');
+        
+        // GASのURLを使用して統計情報を取得
+        const gasUrl = 'https://script.google.com/macros/s/AKfycbwEAhdiJOtbf44ifY-BoAFhLI7eQl_uIJKm9NDTexoWZD7U8l-7wsrT9ufRCZ9d8lZf/exec';
+        const response = await fetch(`${gasUrl}?function=getStats`);
+        console.log('fetch response:', response);
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
         const stats = await response.json();
+        console.log('取得した統計データ:', stats);
+        
+        // レスポンス形式を確認して適切に処理
+        let totalPosts, totalLikes, activeUsers;
+        
+        if (stats.result) {
+          // resultプロパティにラップされている場合
+          totalPosts = stats.result.totalPosts || 0;
+          totalLikes = stats.result.totalLikes || 0;
+          activeUsers = stats.result.activeUsers || 0;
+        } else {
+          // 直接プロパティとして含まれている場合
+          totalPosts = stats.totalPosts || 0;
+          totalLikes = stats.totalLikes || 0;
+          activeUsers = stats.activeUsers || 0;
+        }
+        
+        console.log('処理後の値:');
+        console.log('totalPosts:', totalPosts, '(型:', typeof totalPosts, ')');
+        console.log('totalLikes:', totalLikes, '(型:', typeof totalLikes, ')');
+        console.log('activeUsers:', activeUsers, '(型:', typeof activeUsers, ')');
         
         const totalPostsElement = document.getElementById('totalPosts');
+        console.log('totalPostsElement:', totalPostsElement);
         if (totalPostsElement) {
-          totalPostsElement.textContent = stats.totalPosts.toLocaleString();
+          totalPostsElement.textContent = Number(totalPosts).toLocaleString();
+          console.log('totalPostsElement.textContent を設定:', Number(totalPosts).toLocaleString());
         }
         
         const totalLikesElement = document.getElementById('totalLikes');
+        console.log('totalLikesElement:', totalLikesElement);
         if (totalLikesElement) {
-          totalLikesElement.textContent = stats.totalLikes.toLocaleString();
+          totalLikesElement.textContent = Number(totalLikes).toLocaleString();
+          console.log('totalLikesElement.textContent を設定:', Number(totalLikes).toLocaleString());
         }
         
         const activeUsersElement = document.getElementById('activeUsers');
+        console.log('activeUsersElement:', activeUsersElement);
         if (activeUsersElement) {
-          activeUsersElement.textContent = stats.activeUsers.toLocaleString();
+          activeUsersElement.textContent = Number(activeUsers).toLocaleString();
+          console.log('activeUsersElement.textContent を設定:', Number(activeUsers).toLocaleString());
         }
+        
+        console.log('=== loadStats デバッグ終了 ===');
       } catch (error) {
         console.error('統計情報の読み込みに失敗しました:', error);
-        document.getElementById('totalPosts').textContent = '0';
-        document.getElementById('totalLikes').textContent = '0';
-        document.getElementById('activeUsers').textContent = '0';
+        console.error('エラーの詳細:', error.toString());
+        
+        // エラー時は0を表示
+        const totalPostsElement = document.getElementById('totalPosts');
+        const totalLikesElement = document.getElementById('totalLikes');
+        const activeUsersElement = document.getElementById('activeUsers');
+        
+        if (totalPostsElement) totalPostsElement.textContent = '0';
+        if (totalLikesElement) totalLikesElement.textContent = '0';
+        if (activeUsersElement) activeUsersElement.textContent = '0';
+      }
+    }
+    
+    // アクセス数を増加させる関数
+    async function incrementAccessCount() {
+      try {
+        // IPアドレスを取得（簡易的な方法）
+        const ipResponse = await fetch('https://api.ipify.org?format=json');
+        const ipData = await ipResponse.json();
+        const ipAddress = ipData.ip;
+        
+        // GASのURLを使用してアクセス数を増加
+        const gasUrl = 'https://script.google.com/macros/s/AKfycbwEAhdiJOtbf44ifY-BoAFhLI7eQl_uIJKm9NDTexoWZD7U8l-7wsrT9ufRCZ9d8lZf/exec';
+        const formData = new FormData();
+        formData.append('function', 'incrementAccessCount');
+        formData.append('ipAddress', ipAddress);
+        formData.append('userAgent', navigator.userAgent);
+        
+        const response = await fetch(gasUrl, {
+          method: 'POST',
+          body: formData
+        });
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const result = await response.json();
+        console.log('アクセス数更新結果:', result);
+        
+        // レスポンス形式を確認して適切に処理
+        if (result.result && result.result.accessCount) {
+          console.log('更新後のアクセス数:', result.result.accessCount);
+        }
+        
+        // 統計情報を再読み込み
+        loadStats();
+        
+      } catch (error) {
+        console.error('アクセス数の更新に失敗しました:', error);
+        console.error('エラーの詳細:', error.toString());
       }
     }
     
     // ページ読み込み時に統計情報を読み込む
     document.addEventListener('DOMContentLoaded', () => {
       loadStats();
+      // アクセス数を増加（重複防止はサーバー側で処理）
+      incrementAccessCount();
     });
   </script>
+  <!-- crack.png ポップアップモーダル -->
+<div id="crackModal" style="display:none; position:fixed; z-index:10000; left:0; top:0; width:100vw; height:100vh; background:rgba(0,0,0,0.35); align-items:center; justify-content:center;">
+  <div style="background:#fff; border-radius:14px; padding:24px 18px 18px 18px; box-shadow:0 4px 24px rgba(0,0,0,0.18); min-width:220px; max-width:90vw; text-align:center; position:relative;">
+    <img src="assets/crack.png" alt="crack" style="max-width:60vw; max-height:60vh; width:auto; height:auto; display:block; margin:0 auto 18px auto;" />
+    <button id="crackModalClose" style="background:#0071e3; color:#fff; padding:8px 32px; border:none; border-radius:6px; font-size:1.1em; cursor:pointer;">閉じる</button>
+  </div>
+</div>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    var crackModal = document.getElementById('crackModal');
+    var crackModalClose = document.getElementById('crackModalClose');
+    if(crackModal && crackModalClose) {
+      crackModal.style.display = 'flex';
+      crackModalClose.onclick = function() {
+        crackModal.style.display = 'none';
+      };
+      // モーダル外クリックで閉じる
+      crackModal.onclick = function(e) {
+        if (e.target === crackModal) crackModal.style.display = 'none';
+      };
+      // ESCキーで閉じる
+      document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') crackModal.style.display = 'none';
+      });
+    }
+  });
+</script>
+<!-- /crack.png ポップアップモーダル -->
 </body>
 </html>

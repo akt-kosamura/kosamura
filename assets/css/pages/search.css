@@ -4,6 +4,7 @@
   --bg-card: #ffffff;
   --radius: 12px;
   --transition: 0.3s ease;
+  --accent: #007AFF;
 }
 
 /* ナビバーアイコンのスタイル */
@@ -55,6 +56,62 @@ h1 {
   font-size: 19px;
   margin-bottom: 32px; 
   color: #6e6e73;
+}
+
+/* 統計情報セクションのスタイル */
+.stats-section {
+  margin-bottom: 32px;
+  padding: 0 32px;
+}
+
+.stats-container {
+  display: flex;
+  justify-content: center;
+  gap: 48px;
+  background: var(--bg-card);
+  border-radius: var(--radius);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+  padding: 24px 32px;
+}
+
+.stat-item {
+  text-align: center;
+  min-width: 120px;
+}
+
+.stat-number {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--accent);
+  margin-bottom: 8px;
+  line-height: 1;
+}
+
+.stat-label {
+  font-size: 0.9rem;
+  color: #6e6e73;
+  font-weight: 500;
+}
+
+/* レスポンシブ対応 */
+@media (max-width: 768px) {
+  .stats-section {
+    padding: 0 16px;
+  }
+  
+  .stats-container {
+    flex-direction: column;
+    gap: 24px;
+    padding: 20px 24px;
+  }
+  
+  .stat-item {
+    min-width: auto;
+  }
+  
+  .stat-number {
+    font-size: 2rem;
+  }
 }
 
 /* search.html用のmainスタイルを上書き */
