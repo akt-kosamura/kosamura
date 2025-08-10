@@ -82,8 +82,10 @@ class AuthManager {
       background: rgba(0, 0, 0, 0.8);
       display: flex;
       justify-content: center;
-      align-items: center;
+      align-items: flex-start;
       z-index: 10000;
+      overflow-y: auto;
+      padding: 20px;
     `;
 
     const modalContent = document.createElement('div');
@@ -94,10 +96,13 @@ class AuthManager {
       max-width: 500px;
       width: 90%;
       text-align: center;
+      margin: auto;
+      max-height: 90vh;
+      overflow-y: auto;
     `;
 
     const title = document.createElement('h2');
-    title.textContent = '認証が必要です';
+    title.textContent = '秋高生限定';
     title.style.marginBottom = '20px';
 
     const passwordInput = document.createElement('input');
@@ -439,12 +444,11 @@ class AuthManager {
     // タイマーを停止
     this.stopTimer();
     
-    const authInfo = {
-      isAuthenticated: true
-    };
+    // skipNextTimeがtrueの場合のみlocalStorageに保存
     if (skipNextTime) {
-      localStorage.setItem('kosamuraAuth', JSON.stringify(authInfo));
-    } else {
+      const authInfo = {
+        isAuthenticated: true
+      };
       localStorage.setItem('kosamuraAuth', JSON.stringify(authInfo));
     }
     
@@ -484,8 +488,15 @@ class AuthManager {
       modal.remove();
     }
     
-    // 常にトップページ（index.html）に移動
-    window.location.href = '/index.html';
+    // 現在のページの場所に応じて適切なパスでリダイレクト
+    const currentPath = window.location.pathname;
+    if (currentPath.includes('/pages/')) {
+      // pagesディレクトリ内の場合は親ディレクトリのindex.htmlに移動
+      window.location.href = '../index.html';
+    } else {
+      // ルートディレクトリの場合はindex.htmlに移動
+      window.location.href = 'index.html';
+    }
   }
   
   startTimer(seconds) {
