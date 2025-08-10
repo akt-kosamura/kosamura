@@ -45,7 +45,7 @@
       </nav>
     </div>
   </header>
-  <main id="main-content" style="display: none;">
+  <main id="main-content">
     <h1 class="hero-title">共有・拡散</h1>
     <div class="subtitle">このサイトを友達やクラスに広めてください</div>
     <div class="dynamic-card">
@@ -168,17 +168,19 @@
     setInterval(updateFreeModeStatus, 1000);
     
     document.addEventListener('DOMContentLoaded', () => {
-      // アクセスカウントを実行
-      kosamuraAPI.incrementAccessCount().then(count => {
-        console.log('アクセスカウント更新完了:', count);
-      }).catch(error => {
-        console.error('アクセスカウント更新エラー:', error);
-      });
+      // アクセスカウントを実行（APIが利用可能な場合のみ）
+      if (window.kosamuraAPI && typeof window.kosamuraAPI.incrementAccessCount === 'function') {
+        kosamuraAPI.incrementAccessCount().then(count => {
+          console.log('アクセスカウント更新完了:', count);
+        }).catch(error => {
+          console.error('アクセスカウント更新エラー:', error);
+        });
+      }
       
       // 他の初期化処理
     });
   </script>
-
+  <script src="../assets/js/api.js"></script>
 
 
   <script>
@@ -274,6 +276,5 @@
       });
     });
   </script>
-  <script src="../assets/js/auth.js"></script>
 </body>
 </html>
