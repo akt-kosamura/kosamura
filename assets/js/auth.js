@@ -2,10 +2,16 @@
 class AuthManager {
   constructor() {
     this.authData = null;
+    this.noAuthMode = false;
     this.init();
   }
 
   async init() {
+    // 認証不要モードの場合は何もしない
+    if (this.noAuthMode) {
+      return;
+    }
+    
     // 特定のページでは認証状態に関係なく即座に認証画面を表示
     const currentPage = window.location.pathname;
     if (currentPage.includes('upload.html') || currentPage.includes('search.html')) {
@@ -21,6 +27,11 @@ class AuthManager {
   }
 
   checkAuthStatus() {
+    // 認証不要モードの場合は認証済みとして扱う
+    if (this.noAuthMode) {
+      return true;
+    }
+    
     const authInfo = localStorage.getItem('kosamuraAuth');
     if (!authInfo) return false;
 
@@ -89,14 +100,10 @@ class AuthManager {
     title.textContent = '認証が必要です';
     title.style.marginBottom = '20px';
 
-    const passwordLabel = document.createElement('label');
-    passwordLabel.textContent = 'パスワード:';
-    passwordLabel.style.display = 'block';
-    passwordLabel.style.marginBottom = '10px';
-
     const passwordInput = document.createElement('input');
     passwordInput.type = 'password';
     passwordInput.id = 'auth-password';
+    passwordInput.placeholder = 'パスワード';
     passwordInput.style.cssText = `
       width: 100%;
       padding: 10px;
@@ -317,7 +324,6 @@ class AuthManager {
     });
 
     modalContent.appendChild(title);
-    modalContent.appendChild(passwordLabel);
     modalContent.appendChild(passwordInput);
     modalContent.appendChild(sentenceLabel);
     modalContent.appendChild(sentenceContainer);
@@ -427,6 +433,9 @@ class AuthManager {
   }
 
   authenticate(skipNextTime) {
+    // 認証不要モードを解除
+    this.noAuthMode = false;
+    
     // タイマーを停止
     this.stopTimer();
     
@@ -455,24 +464,28 @@ class AuthManager {
     
     // 認証成功後、ページの読み込みを完了させる
     document.body.style.visibility = 'visible';
+    
+    // 認証不要モードの場合は、タイマーやその他の認証関連の処理を停止
+    if (this.noAuthMode) {
+      this.stopTimer();
+    }
   }
   
   showNoAuthPages() {
+    // 認証不要モードに設定
+    this.noAuthMode = true;
+    
+    // タイマーを停止
+    this.stopTimer();
+    
     // 認証モーダルを閉じる
     const modal = document.getElementById('auth-modal');
     if (modal) {
       modal.remove();
     }
     
-    // 現在のページが認証不要のページかチェック
-    const currentPage = window.location.pathname;
-    if (currentPage.includes('index.html') || currentPage.includes('ph-index.html') || currentPage === '/' || currentPage === '/index.html') {
-      // 認証不要のページの場合は、メインコンテンツを表示
-      this.showMainContent();
-    } else {
-      // 認証が必要なページの場合は、index.htmlにリダイレクト
-      window.location.href = '/index.html';
-    }
+    // 常にトップページ（index.html）に移動
+    window.location.href = '/index.html';
   }
   
   startTimer(seconds) {
