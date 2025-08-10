@@ -354,7 +354,7 @@ class AuthManager {
     
     // 認証不要のページを閲覧するリンク
     const noAuthLink = document.createElement('a');
-    noAuthLink.href = '../';
+    noAuthLink.href = '/index.html';
     noAuthLink.textContent = '認証不要のページを閲覧';
     noAuthLink.style.cssText = `
       display: block;
