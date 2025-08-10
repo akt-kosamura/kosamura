@@ -3,7 +3,13 @@ class AuthManager {
   constructor() {
     this.authData = null;
     this.noAuthMode = false;
+    this.isAuthenticated = false;
+    this.authAttempts = 0;
+    this.maxAuthAttempts = 5;
+    this.lockoutTime = 0;
+    this.securityChecks = [];
     this.init();
+    this.setupSecurityChecks();
   }
 
   async init() {
@@ -17,10 +23,10 @@ class AuthManager {
     if (currentPage.includes('upload.html') || currentPage.includes('search.html')) {
       // upload.htmlとsearch.htmlのみで認証画面を表示
       // share.html、index.html、ph-index.htmlなどは認証不要
-      if (this.checkAuthStatus()) {
-        this.showMainContent();
-      } else {
-        this.showAuthModal();
+    if (this.checkAuthStatus()) {
+      this.showMainContent();
+    } else {
+      this.showAuthModal();
       }
     } else {
       // その他のページ（share.html、index.html、ph-index.htmlなど）では認証不要モードで動作
@@ -35,15 +41,47 @@ class AuthManager {
       return true;
     }
     
+    // ロックアウトチェック
+    if (this.lockoutTime > Date.now()) {
+      return false;
+    }
+    
+    // メモリ上の認証状態を優先チェック
+    if (this.isAuthenticated) {
+      return true;
+    }
+    
     const authInfo = localStorage.getItem('kosamuraAuth');
     if (!authInfo) return false;
 
     try {
-      const { isAuthenticated } = JSON.parse(authInfo);
+      const { isAuthenticated, timestamp, sessionId } = JSON.parse(authInfo);
+      
+      // セッションの有効期限チェック（24時間）
+      if (timestamp && (Date.now() - timestamp > 24 * 60 * 60 * 1000)) {
+        localStorage.removeItem('kosamuraAuth');
+        return false;
+      }
+      
+      // セッションIDの検証
+      if (sessionId && sessionId !== this.getSessionId()) {
+        localStorage.removeItem('kosamuraAuth');
+        return false;
+      }
+      
       return isAuthenticated === true;
     } catch (error) {
+      localStorage.removeItem('kosamuraAuth');
       return false;
     }
+  }
+  
+  // セッションID生成
+  getSessionId() {
+    if (!this.sessionId) {
+      this.sessionId = Math.random().toString(36).substring(2) + Date.now().toString(36);
+    }
+    return this.sessionId;
   }
 
   async showAuthModal() {
@@ -165,6 +203,23 @@ class AuthManager {
   }
 
   validateAuth(password, selectedSentences, skipNextTime) {
+    // ロックアウトチェック
+    if (this.lockoutTime > Date.now()) {
+      const remainingTime = Math.ceil((this.lockoutTime - Date.now()) / 1000 / 60);
+      alert(`認証が一時的にロックされています。${remainingTime}分後に再試行してください。`);
+      return;
+    }
+    
+         // 認証試行回数チェック
+     if (this.authAttempts >= this.maxAuthAttempts) {
+       this.lockoutTime = Date.now() + (1 * 60 * 1000); // 1分ロックアウト
+       this.authAttempts = 0;
+       alert('認証試行回数が上限に達しました。1分後に再試行してください。');
+       return;
+     }
+    
+    this.authAttempts++;
+    
     const isPasswordCorrect = password === this.authData.password;
     
     // 選択された文章が2つで、かつ正しい文章のみが選択されているかチェック
@@ -173,22 +228,26 @@ class AuthManager {
                                     this.authData.correctSentences.includes(text)
                                   );
 
-    // デバッグ情報をコンソールに出力
-    console.log('認証デバッグ情報:');
-    console.log('入力されたパスワード:', password);
-    console.log('正しいパスワード:', this.authData.password);
-    console.log('パスワード一致:', isPasswordCorrect);
-    console.log('選択された文章数:', selectedSentences.size);
-    console.log('選択された文章:', Array.from(selectedSentences));
-    console.log('正しい文章リスト:', this.authData.correctSentences);
-    console.log('文章選択正解:', hasTwoCorrectSentences);
+    // デバッグ情報をコンソールに出力（本番環境では削除）
+    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+      console.log('認証デバッグ情報:');
+      console.log('入力されたパスワード:', password);
+      console.log('正しいパスワード:', this.authData.password);
+      console.log('パスワード一致:', isPasswordCorrect);
+      console.log('選択された文章数:', selectedSentences.size);
+      console.log('選択された文章:', Array.from(selectedSentences));
+      console.log('正しい文章リスト:', this.authData.correctSentences);
+      console.log('文章選択正解:', hasTwoCorrectSentences);
+    }
 
     if (isPasswordCorrect && hasTwoCorrectSentences) {
+      this.authAttempts = 0; // 成功時はリセット
       this.authenticate(skipNextTime);
     } else {
       // エラー時は質問をシャッフルしてパスワードをクリア
       this.resetAuthModal();
-      alert('あなたは秋高生ではありません。お帰りください。');
+      const remainingAttempts = this.maxAuthAttempts - this.authAttempts;
+      alert(`認証に失敗しました。残り試行回数: ${remainingAttempts}回`);
     }
   }
 
@@ -222,13 +281,18 @@ class AuthManager {
     // 認証不要モードを解除
     this.noAuthMode = false;
     
+    // メモリ上の認証状態を設定
+    this.isAuthenticated = true;
+    
     // タイマーを停止
     this.stopTimer();
     
     // skipNextTimeがtrueの場合のみlocalStorageに保存
     if (skipNextTime) {
       const authInfo = {
-        isAuthenticated: true
+        isAuthenticated: true,
+        timestamp: Date.now(),
+        sessionId: this.getSessionId()
       };
       localStorage.setItem('kosamuraAuth', JSON.stringify(authInfo));
     }
@@ -624,7 +688,7 @@ class AuthManager {
     });
     
     modalContent.appendChild(noAuthLink);
-
+    
     // Enterキーで認証
     passwordInput.addEventListener('keypress', (e) => {
       if (e.key === 'Enter') {
@@ -702,6 +766,86 @@ class AuthManager {
     // タイマーを開始
     this.startTimer(20);
   }
+
+  // セキュリティチェックの設定
+  setupSecurityChecks() {
+    // ページ離脱時の認証状態クリア
+    window.addEventListener('beforeunload', () => {
+      if (!this.noAuthMode) {
+        this.isAuthenticated = false;
+      }
+    });
+    
+    // ページフォーカス時の認証状態再チェック
+    window.addEventListener('focus', () => {
+      if (!this.noAuthMode && !this.checkAuthStatus()) {
+        this.showAuthModal();
+      }
+    });
+    
+    // 定期的なセキュリティチェック
+    setInterval(() => {
+      this.performSecurityChecks();
+    }, 30000); // 30秒ごと
+    
+    // 開発者ツール検出の強化
+    this.detectDevTools();
+  }
+  
+  // セキュリティチェック実行
+  performSecurityChecks() {
+    if (this.noAuthMode) return;
+    
+    // 認証モーダルの存在チェック
+    const modal = document.getElementById('auth-modal');
+    if (!modal && !this.isAuthenticated && !this.checkAuthStatus()) {
+      this.showAuthModal();
+    }
+    
+    // メインコンテンツの表示状態チェック
+    const mainContent = document.getElementById('main-content');
+    if (mainContent && !this.isAuthenticated && !this.noAuthMode) {
+      mainContent.style.display = 'none';
+    }
+  }
+  
+  // 開発者ツール検出の強化
+  detectDevTools() {
+    let devtools = { open: false, orientation: null };
+    
+    setInterval(() => {
+      const threshold = 160;
+      const widthThreshold = window.outerWidth - window.innerWidth > threshold;
+      const heightThreshold = window.outerHeight - window.innerHeight > threshold;
+      
+      if (widthThreshold || heightThreshold) {
+        if (!devtools.open) {
+          devtools.open = true;
+          this.handleDevToolsOpen();
+        }
+      } else {
+        devtools.open = false;
+      }
+    }, 500);
+  }
+  
+  // 開発者ツールが開かれた時の処理
+  handleDevToolsOpen() {
+    if (!this.noAuthMode) {
+      // 認証状態をリセット
+      this.isAuthenticated = false;
+      localStorage.removeItem('kosamuraAuth');
+      
+      // 認証画面を再表示
+    const modal = document.getElementById('auth-modal');
+    if (modal) {
+      modal.remove();
+    }
+      this.showAuthModal();
+      
+      alert('セキュリティ上の理由により、認証が必要です。');
+    }
+  }
 }
 
 // 初期化
@@ -715,4 +859,4 @@ function initAuth() {
 }
 
 // 即座に初期化を実行
-initAuth();
+  initAuth();
