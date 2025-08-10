@@ -772,24 +772,40 @@ body {
   display: block;
 }
 
-/* Share Input */
+/* Share Input - Text Field Aqua Design */
 .share-input {
   width: 100%;
   padding: 16px;
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  /* 白や薄いグレーの背景に、微かなグラデーションがかかっている */
+  background: linear-gradient(180deg, 
+    rgba(255, 255, 255, 0.9) 0%, 
+    rgba(248, 250, 255, 0.8) 100%);
+  /* 枠は丸みを帯びていて、細い青みがかった縁取りがあることが多い */
+  border: 1px solid rgba(180, 190, 220, 0.4);
   border-radius: 12px;
-  background: rgba(255, 255, 255, 0.8);
   font-size: 0.9rem;
   color: #1a1a1a;
   margin-bottom: 16px;
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
+  box-shadow: 
+    inset 0 1px 0 rgba(255, 255, 255, 0.8),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.05);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .share-input:focus {
   outline: none;
+  /* 入力中は枠や背景がわずかに光っている感じで、アクティブを示す */
   border-color: #007AFF;
-  box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.1);
+  background: linear-gradient(180deg, 
+    rgba(255, 255, 255, 1) 0%, 
+    rgba(248, 250, 255, 0.95) 100%);
+  box-shadow: 
+    0 0 0 3px rgba(0, 122, 255, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 1),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.05),
+    0 0 20px rgba(0, 122, 255, 0.1);
 }
 
 .share-buttons {
@@ -1225,22 +1241,40 @@ body {
   }
 }
 
-/* Scrollbar Styling */
+/* Scrollbar Styling - Aqua Design */
 ::-webkit-scrollbar {
-  width: 8px;
+  width: 12px;
 }
 
 ::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.1);
+  /* バックのバーは半透明のスモークグレーで、背景に溶け込む */
+  background: rgba(180, 190, 220, 0.2);
+  border-radius: 6px;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(0, 122, 255, 0.3);
-  border-radius: 4px;
+  /* スクロールバーのスライダーは丸みを帯びていて、中央に光沢のハイライト */
+  background: linear-gradient(180deg, 
+    rgba(180, 190, 220, 0.8) 0%, 
+    rgba(160, 170, 200, 0.6) 50%, 
+    rgba(140, 150, 180, 0.8) 100%);
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 
+    inset 0 1px 0 rgba(255, 255, 255, 0.6),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.1);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(0, 122, 255, 0.5);
+  /* マウスオーバー時やドラッグ時には少し濃く、立体感が増す演出 */
+  background: linear-gradient(180deg, 
+    rgba(160, 170, 200, 0.9) 0%, 
+    rgba(140, 150, 180, 0.7) 50%, 
+    rgba(120, 130, 160, 0.9) 100%);
+  box-shadow: 
+    inset 0 1px 0 rgba(255, 255, 255, 0.8),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.2),
+    0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 /* Focus Styles */
