@@ -457,3 +457,16 @@ tr:hover {
   border-top: 1px solid var(--gray-200);
   margin-top: 0.5rem;
 } 
+
+/* ===== 認証用チェックボックス ===== */
+.auth-checkbox-checked::after {
+  content: '';
+  position: absolute;
+  left: 3px;
+  top: 0px;
+  width: 6px;
+  height: 10px;
+  border: solid white;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+} 

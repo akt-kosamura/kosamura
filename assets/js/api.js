@@ -341,6 +341,38 @@ class KosamuraAPI {
       throw error;
     }
   }
+
+  // 認証データ取得（新規追加）
+  async getAuthData() {
+    try {
+      console.log('getAuthData: APIリクエストを開始');
+      const response = await fetch(`${this.baseURL}?function=getAuthData`);
+      
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('getAuthData: HTTPエラー', response.status, errorText);
+        throw new Error(`認証データの取得に失敗しました: ${response.status} ${errorText}`);
+      }
+      
+      const result = await response.json();
+      console.log('getAuthData: レスポンス受信', result);
+      
+      // レスポンスの形式を確認
+      if (result && result.password && result.correctSentences && result.incorrectSentences) {
+        console.log('getAuthData: 有効な認証データを取得');
+        return result;
+      } else if (result && result.result && result.result.password && result.result.correctSentences && result.result.incorrectSentences) {
+        console.log('getAuthData: resultプロパティから認証データを取得');
+        return result.result;
+      } else {
+        console.warn('getAuthData: 不完全なデータ形式', result);
+        throw new Error('認証データの形式が正しくありません');
+      }
+    } catch (error) {
+      console.error('getAuthData error:', error);
+      throw error;
+    }
+  }
 }
 
 // グローバルインスタンスを作成

@@ -54,13 +54,8 @@ tmp/
 temp/
 
 # アップロードファイル（本番環境ではGoogle Driveを使用）
-uploads/ [33mefd3a9e[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m share
-[33m062b498[m index
-[33m1743bba[m share.htmlをGitHub Pages用に修正 - サイトURLを正しいGitHub Pages URLに更新
-[33mcdb106b[m api
-[33m34d86ab[m api
-[33m7427145[m gas
-[33mc148bf5[m Update ph-index.html
-[33m38cf23c[m api
-[33m5932e05[m up
-[33ma3a2f79[m ph
+uploads/
+
+# Google Apps Scriptファイル
+*.gs
+code.gs
