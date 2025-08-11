@@ -8,8 +8,117 @@ class AuthManager {
     this.maxAuthAttempts = 5;
     this.lockoutTime = 0;
     this.securityChecks = [];
+    // 新仕様: パスワード要否とブロック管理
+    this.requirePassword = false;
+    this.blockCountdownInterval = null;
+    // モーダル状態管理（多重表示防止）
+    this.isModalVisible = false;
+    this.isModalRendering = false;
+    // リロード時に段階状態を復元
+    this.loadRuntimeState();
     this.init();
     this.setupSecurityChecks();
+  }
+
+  // 文字列正規化（パスワード比較用）
+  normalizeText(text) {
+    if (typeof text !== 'string') return '';
+    try {
+      // 前後の全角/半角空白を除去し、NFKC正規化
+      return text.replace(/[\u3000\s]+$/u, '').replace(/^[\u3000\s]+/u, '').normalize('NFKC');
+    } catch (_) {
+      return text.trim();
+    }
+  }
+
+  // モバイル端末かどうか（認証ダイアログ最適化用。ページ全体のビューポートは変更しない）
+  isMobileAuth() {
+    try {
+      if (window.matchMedia) {
+        if (window.matchMedia('(pointer: coarse)').matches) return true;
+        if (window.matchMedia('(max-device-width: 768px)').matches) return true;
+      }
+      return (typeof screen !== 'undefined' && screen.width && screen.width <= 480);
+    } catch (_) {
+      return false;
+    }
+  }
+
+  // --- 認証状態 永続化ユーティリティ ---
+  tryPersistStorage() {
+    if (navigator.storage && navigator.storage.persist) {
+      navigator.storage.persist().catch(() => {});
+    }
+  }
+
+  setAuthCookie(value, days = 7) {
+    try {
+      const exp = new Date(Date.now() + days * 86400000).toUTCString();
+      const secure = location.protocol === 'https:' ? '; Secure' : '';
+      document.cookie = `kosamura_auth=${encodeURIComponent(value)}; Expires=${exp}; Path=/; SameSite=Lax${secure}`;
+    } catch (_) {}
+  }
+
+  getAuthCookie() {
+    try {
+      const m = document.cookie.match(/(?:^|; )kosamura_auth=([^;]+)/);
+      return m ? decodeURIComponent(m[1]) : '';
+    } catch (_) {
+      return '';
+    }
+  }
+
+  clearAuthCookie() {
+    try {
+      document.cookie = `kosamura_auth=; Expires=Thu, 01 Jan 1970 00:00:00 GMT; Path=/; SameSite=Lax${location.protocol==='https:'?'; Secure':''}`;
+    } catch (_) {}
+  }
+
+  saveAuthState(authInfo) {
+    try {
+      const json = JSON.stringify(authInfo);
+      localStorage.setItem('kosamuraAuth', json);
+      this.setAuthCookie(json, 7);
+      this.tryPersistStorage();
+    } catch (_) {}
+  }
+
+  loadAuthState() {
+    try {
+      const fromCookie = this.getAuthCookie();
+      if (fromCookie) return JSON.parse(fromCookie);
+    } catch (_) {}
+    try {
+      const fromLS = localStorage.getItem('kosamuraAuth');
+      if (fromLS) return JSON.parse(fromLS);
+    } catch (_) {}
+    return null;
+  }
+
+  clearAuthState() {
+    try { localStorage.removeItem('kosamuraAuth'); } catch (_) {}
+    this.clearAuthCookie();
+  }
+
+  // --- ランタイム状態（パスワード要求/ロック）を簡易永続化 ---
+  saveRuntimeState() {
+    try {
+      const state = {
+        requirePassword: this.requirePassword === true,
+        lockoutTime: this.lockoutTime || 0,
+      };
+      localStorage.setItem('kosamuraRuntime', JSON.stringify(state));
+    } catch (_) {}
+  }
+
+  loadRuntimeState() {
+    try {
+      const raw = localStorage.getItem('kosamuraRuntime');
+      if (!raw) return;
+      const st = JSON.parse(raw);
+      this.requirePassword = !!st.requirePassword;
+      this.lockoutTime = typeof st.lockoutTime === 'number' ? st.lockoutTime : 0;
+    } catch (_) {}
   }
 
   async init() {
@@ -51,27 +160,27 @@ class AuthManager {
       return true;
     }
     
-    const authInfo = localStorage.getItem('kosamuraAuth');
+    const authInfo = this.loadAuthState();
     if (!authInfo) return false;
 
     try {
-      const { isAuthenticated, timestamp, sessionId } = JSON.parse(authInfo);
+      const { isAuthenticated, timestamp, sessionId } = authInfo;
       
       // セッションの有効期限チェック（24時間）
       if (timestamp && (Date.now() - timestamp > 24 * 60 * 60 * 1000)) {
-        localStorage.removeItem('kosamuraAuth');
+        this.clearAuthState();
         return false;
       }
       
       // セッションIDの検証
       if (sessionId && sessionId !== this.getSessionId()) {
-        localStorage.removeItem('kosamuraAuth');
+        this.clearAuthState();
         return false;
       }
       
       return isAuthenticated === true;
     } catch (error) {
-      localStorage.removeItem('kosamuraAuth');
+      this.clearAuthState();
       return false;
     }
   }
@@ -85,8 +194,14 @@ class AuthManager {
   }
 
   async showAuthModal() {
+    // すでに表示中/描画中なら何もしない（多重表示防止）
+    if (this.isModalVisible || this.isModalRendering) {
+      return;
+    }
+    this.isModalRendering = true;
     // 即座に認証画面を表示（ローディング状態で）
     this.createAndShowModal(true);
+    this.isModalVisible = true;
     
     // APIから認証データを取得
     await this.fetchAuthData();
@@ -94,11 +209,14 @@ class AuthManager {
     if (!this.authData) {
       // APIが利用できない場合は利用不可メッセージを表示
       this.showUnavailableMessage();
+      // 描画中フラグを解除
+      this.isModalRendering = false;
       return;
     }
     
     // 認証データが取得できた場合は通常の認証画面に切り替え
     this.updateModalWithAuthData();
+    this.isModalRendering = false;
   }
 
   async fetchAuthData() {
@@ -122,6 +240,7 @@ class AuthManager {
   createAndShowModal(isLoading = false) {
     const modal = document.createElement('div');
     modal.id = 'auth-modal';
+    const isMobile = this.isMobileAuth();
     modal.style.cssText = `
       position: fixed;
       top: 0;
@@ -131,23 +250,27 @@ class AuthManager {
       background: rgba(0, 0, 0, 0.8);
       display: flex;
       justify-content: center;
-      align-items: flex-start;
+      align-items: ${isMobile ? 'center' : 'flex-start'};
       z-index: 10000;
       overflow-y: auto;
-      padding: 20px;
+      padding: ${isMobile ? '0' : '20px'};
     `;
 
     const modalContent = document.createElement('div');
     modalContent.style.cssText = `
       background: white;
-      padding: 30px;
-      border-radius: 10px;
-      max-width: 500px;
-      width: 90%;
-      text-align: center;
-      margin: auto;
-      max-height: 90vh;
+      padding: ${isMobile ? '14px 12px' : '30px'};
+      border-radius: ${isMobile ? '0' : '12px'};
+      max-width: ${isMobile ? '100vw' : '500px'};
+      width: ${isMobile ? '100vw' : '90%'};
+      text-align: left;
+      margin: ${isMobile ? '0' : 'auto'};
+      ${isMobile ? 'min-height: 100vh; max-height: 100vh;' : 'max-height: 90vh;'}
       overflow-y: auto;
+      position: relative;
+      box-shadow: ${isMobile ? 'none' : '0 12px 36px rgba(0,0,0,0.25)'};
+      font-size: ${isMobile ? '16px' : '14px'};
+      line-height: 1.5;
     `;
 
     if (isLoading) {
@@ -203,51 +326,39 @@ class AuthManager {
   }
 
   validateAuth(password, selectedSentences, skipNextTime) {
-    // ロックアウトチェック
+    // ブロック中はカウントダウンのみ更新
     if (this.lockoutTime > Date.now()) {
-      const remainingTime = Math.ceil((this.lockoutTime - Date.now()) / 1000 / 60);
-      alert(`認証が一時的にロックされています。${remainingTime}分後に再試行してください。`);
+      this.startBlockCountdownFromExisting();
       return;
     }
-    
-         // 認証試行回数チェック
-     if (this.authAttempts >= this.maxAuthAttempts) {
-       this.lockoutTime = Date.now() + (1 * 60 * 1000); // 1分ロックアウト
-       this.authAttempts = 0;
-       alert('認証試行回数が上限に達しました。1分後に再試行してください。');
-       return;
-     }
-    
-    this.authAttempts++;
-    
-    const isPasswordCorrect = password === this.authData.password;
-    
-    // 選択された文章が2つで、かつ正しい文章のみが選択されているかチェック
-    const hasTwoCorrectSentences = selectedSentences.size === 2 && 
-                                  Array.from(selectedSentences).every(text => 
-                                    this.authData.correctSentences.includes(text)
-                                  );
 
-    // デバッグ情報をコンソールに出力（本番環境では削除）
-    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-      console.log('認証デバッグ情報:');
-      console.log('入力されたパスワード:', password);
-      console.log('正しいパスワード:', this.authData.password);
-      console.log('パスワード一致:', isPasswordCorrect);
-      console.log('選択された文章数:', selectedSentences.size);
-      console.log('選択された文章:', Array.from(selectedSentences));
-      console.log('正しい文章リスト:', this.authData.correctSentences);
-      console.log('文章選択正解:', hasTwoCorrectSentences);
-    }
+    // パスワードは必要時のみ評価
+    const isPasswordCorrect = this.requirePassword ? (this.normalizeText(password) === this.normalizeText(this.authData.password)) : true;
+
+    // 選択肢の正解判定（2つ選び、いずれも正しい）
+    const hasTwoCorrectSentences = selectedSentences.size === 2 &&
+      Array.from(selectedSentences).every(text => this.authData.correctSentences.includes(text));
 
     if (isPasswordCorrect && hasTwoCorrectSentences) {
-      this.authAttempts = 0; // 成功時はリセット
+      this.authAttempts = 0;
+      this.requirePassword = false;
       this.authenticate(skipNextTime);
+      return;
+    }
+
+    // 失敗時処理
+    this.authAttempts++;
+    if (this.authAttempts === 1) {
+      // 1回目の失敗: 10秒ブロック
+      this.startBlockCountdown(10);
     } else {
-      // エラー時は質問をシャッフルしてパスワードをクリア
-      this.resetAuthModal();
-      const remainingAttempts = this.maxAuthAttempts - this.authAttempts;
-      alert(`認証に失敗しました。残り試行回数: ${remainingAttempts}回`);
+      // 2回目以降: パスワード要求 + 60秒ブロック
+      if (!this.requirePassword) {
+        this.requirePassword = true;
+        this.saveRuntimeState();
+        this.updateModalWithAuthData();
+      }
+      this.startBlockCountdown(60);
     }
   }
 
@@ -255,25 +366,17 @@ class AuthManager {
     // タイマーを停止
     this.stopTimer();
     
-    // 既存のモーダルを削除
-    const modal = document.getElementById('auth-modal');
-    if (modal) {
-      modal.remove();
-    }
+    // 既存モーダルを残したまま中身だけ再生成（多重表示防止）
+    const oldInput = document.getElementById('auth-password');
+    const prevValue = keepPassword && oldInput ? oldInput.value : '';
     
-    // 新しいモーダルを表示（質問がシャッフルされる）
-    this.createAndShowModal(false);
+    // 認証データでモーダル内容を再構築（シャッフル適用）
+    this.updateModalWithAuthData();
     
-    // パスワードが保持される場合は、パスワード入力欄をクリアしない
-    if (keepPassword) {
-      const passwordInput = document.getElementById('auth-password');
-      if (passwordInput) {
-        // 既存のパスワードを保持
-        const oldPasswordInput = modal.querySelector('#auth-password');
-        if (oldPasswordInput) {
-          passwordInput.value = oldPasswordInput.value;
-        }
-      }
+    // パスワード保持が必要なら復元
+    if (keepPassword && prevValue) {
+      const newInput = document.getElementById('auth-password');
+      if (newInput) newInput.value = prevValue;
     }
   }
 
@@ -287,20 +390,22 @@ class AuthManager {
     // タイマーを停止
     this.stopTimer();
     
-    // skipNextTimeがtrueの場合のみlocalStorageに保存
+    // skipNextTimeがtrueの場合のみ状態を保存（Cookie + localStorage）
     if (skipNextTime) {
       const authInfo = {
         isAuthenticated: true,
         timestamp: Date.now(),
         sessionId: this.getSessionId()
       };
-      localStorage.setItem('kosamuraAuth', JSON.stringify(authInfo));
+      this.saveAuthState(authInfo);
     }
     
     const modal = document.getElementById('auth-modal');
     if (modal) {
       modal.remove();
     }
+    this.isModalVisible = false;
+    this.isModalRendering = false;
     
     this.showMainContent();
   }
@@ -332,6 +437,8 @@ class AuthManager {
     if (modal) {
       modal.remove();
     }
+    this.isModalVisible = false;
+    this.isModalRendering = false;
     
     // 現在のページの場所に応じて適切なパスでリダイレクト
     const currentPath = window.location.pathname;
@@ -345,6 +452,10 @@ class AuthManager {
   }
   
   startTimer(seconds) {
+    // ブロック中は問題更新タイマーを起動しない（毎秒のUI更新のみ許可）
+    if (this.lockoutTime > Date.now()) {
+      return;
+    }
     const timerDisplay = document.getElementById('timer-display');
     if (!timerDisplay) return;
     
@@ -357,8 +468,14 @@ class AuthManager {
       
       if (timeLeft <= 0) {
         clearInterval(this.timerInterval);
-        // 時間切れでモーダルをリセット（パスワードは保持）
-        this.resetAuthModal(true);
+        // 時間切れ：パスワード入力が必要な段階では選択肢は再生成しない
+        // （ユーザーの選択肢が毎秒変わらないようにする）
+        if (!this.requirePassword) {
+          this.resetAuthModal(true);
+        } else {
+          // パスワード段階では表示中のUIを維持し、必要ならタイマーだけ再始動
+          this.startTimer(seconds);
+        }
       }
     }, 1000);
   }
@@ -415,29 +532,22 @@ class AuthManager {
 
   // 認証コンテンツを作成
   createAuthContent(modalContent) {
+    const isMobile = this.isMobileAuth();
     const title = document.createElement('h2');
     title.textContent = '秋高生限定';
-    title.style.marginBottom = '20px';
-
-    const passwordInput = document.createElement('input');
-    passwordInput.type = 'password';
-    passwordInput.id = 'auth-password';
-    passwordInput.placeholder = 'パスワード';
-    passwordInput.style.cssText = `
-      width: 100%;
-      padding: 10px;
-      margin-bottom: 20px;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-      -webkit-user-select: text;
-      -moz-user-select: text;
-      -ms-user-select: text;
-      user-select: text;
-    `;
+    title.style.margin = isMobile ? '6px 4px 12px' : '0 0 20px';
+    title.style.fontSize = isMobile ? '20px' : '22px';
+    title.style.textAlign = isMobile ? 'center' : 'center';
+    
+    // パスワード欄（2回以上間違えたら表示）: 選択肢の下に配置
+    let passwordInput = null;
 
     const sentenceLabel = document.createElement('p');
     sentenceLabel.textContent = '秋高について述べた文章を2つ選択';
-    sentenceLabel.style.marginBottom = '15px';
+    sentenceLabel.style.margin = '0 auto';
+    sentenceLabel.style.marginBottom = isMobile ? '10px' : '15px';
+    sentenceLabel.style.fontSize = isMobile ? '15px' : '14px';
+    sentenceLabel.style.textAlign = 'center';
 
     const sentenceContainer = document.createElement('div');
     sentenceContainer.id = 'sentence-options';
@@ -448,9 +558,9 @@ class AuthManager {
     
     sentenceContainer.style.cssText = `
       display: grid;
-      grid-template-columns: ${isPhonePage ? '1fr' : '1fr 1fr'};
-      gap: 10px;
-      margin-bottom: 20px;
+      grid-template-columns: ${isPhonePage ? '1fr' : (isMobile ? '1fr' : '1fr 1fr')};
+      gap: ${isMobile ? '8px' : '10px'};
+      margin-bottom: ${isMobile ? '14px' : '20px'};
     `;
 
     // 正しい文章と誤りの文章をシャッフルして表示
@@ -528,8 +638,8 @@ class AuthManager {
         display: flex;
         align-items: flex-start;
         text-align: left;
-        font-size: ${isPhonePage ? '16px' : '14px'};
-        line-height: 1.4;
+        font-size: ${isMobile ? '16px' : (isPhonePage ? '16px' : '14px')};
+        line-height: 1.5;
       `;
 
       const container = document.createElement('div');
@@ -537,9 +647,9 @@ class AuthManager {
       container.style.cssText = `
         display: flex;
         align-items: flex-start;
-        padding: ${isPhonePage ? '15px' : '10px'};
+        padding: ${isMobile ? '12px' : (isPhonePage ? '15px' : '10px')};
         border: 1px solid #ddd;
-        border-radius: 5px;
+        border-radius: 8px;
         background: #f9f9f9;
         transition: background-color 0.2s ease;
       `;
@@ -581,15 +691,17 @@ class AuthManager {
     });
 
     const submitButton = document.createElement('button');
+    submitButton.id = 'auth-submit-btn';
     submitButton.textContent = '認証';
     submitButton.style.cssText = `
       background: #007bff;
       color: white;
       border: none;
-      padding: 12px 30px;
-      border-radius: 5px;
+      padding: ${isMobile ? '14px 18px' : '12px 30px'};
+      border-radius: ${isMobile ? '12px' : '8px'};
       cursor: pointer;
-      font-size: 16px;
+      font-size: ${isMobile ? '17px' : '16px'};
+      width: ${isMobile ? '100%' : 'auto'};
     `;
 
     const skipCheckbox = document.createElement('input');
@@ -629,8 +741,8 @@ class AuthManager {
       display: flex;
       align-items: center;
       justify-content: center;
-      margin-bottom: 15px;
-      font-size: 14px;
+      margin-bottom: ${isMobile ? '10px' : '15px'};
+      font-size: ${isMobile ? '14px' : '14px'};
       color: #666;
       cursor: pointer;
     `;
@@ -639,19 +751,57 @@ class AuthManager {
     skipLabel.appendChild(document.createTextNode(' 次回からスキップ'));
 
     submitButton.addEventListener('click', () => {
-      this.validateAuth(passwordInput.value, this.selectedSentences, skipCheckbox.checked);
+      const pw = this.requirePassword ? (document.getElementById('auth-password')?.value || '') : '';
+      this.validateAuth(pw, this.selectedSentences, skipCheckbox.checked);
     });
 
     modalContent.appendChild(title);
-    modalContent.appendChild(passwordInput);
     modalContent.appendChild(sentenceLabel);
-    modalContent.appendChild(sentenceContainer);
+    // センター寄せのためのラッパー
+    const choicesWrapper = document.createElement('div');
+    choicesWrapper.style.cssText = 'margin: 0 auto;';
+    choicesWrapper.appendChild(sentenceContainer);
+    modalContent.appendChild(choicesWrapper);
+
+    // パスワードガイドと入力欄（必要時のみ）を選択肢の下に追加
+    if (this.requirePassword) {
+      const pwGuide = document.createElement('p');
+      pwGuide.textContent = '生徒手帳49ページのタイトルをタイプしてください';
+      pwGuide.style.cssText = 'margin: 6px 0 8px 0; color:#333; font-size:14px;';
+
+      passwordInput = document.createElement('input');
+      passwordInput.type = 'text';
+      passwordInput.id = 'auth-password';
+      passwordInput.placeholder = '生徒手帳49ページのタイトル';
+      passwordInput.autocomplete = 'off';
+      passwordInput.autocapitalize = 'off';
+      passwordInput.spellcheck = false;
+      passwordInput.setAttribute('inputmode', 'text');
+      passwordInput.setAttribute('lang', 'ja');
+      try { passwordInput.style.imeMode = 'active'; } catch (_) {}
+      passwordInput.style.cssText = `
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 12px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: 16px;
+        background:#fff;
+      `;
+
+      // パスワード行もセンター寄せ
+      const pwWrap = document.createElement('div');
+      pwWrap.style.cssText = 'margin: 0 auto;';
+      pwWrap.appendChild(pwGuide);
+      pwWrap.appendChild(passwordInput);
+      modalContent.appendChild(pwWrap);
+    }
     
     const timerContainer = document.createElement('div');
     timerContainer.id = 'timer-container';
     timerContainer.style.cssText = `
-      margin-bottom: 15px;
-      font-size: 16px;
+      margin-bottom: ${isMobile ? '10px' : '15px'};
+      font-size: ${isMobile ? '15px' : '16px'};
       font-weight: bold;
       color: #dc3545;
     `;
@@ -667,6 +817,40 @@ class AuthManager {
     timerContainer.appendChild(timerDisplay);
     
     modalContent.appendChild(timerContainer);
+
+    // ブロック中のカウントダウン表示領域
+    // 選択肢全体を覆うロックオーバーレイ（ブラー＋カウントダウン）
+    const overlay = document.createElement('div');
+    overlay.id = 'lockout-overlay';
+    overlay.style.cssText = `
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(4px);
+      background: rgba(255,255,255,0.3);
+      z-index: 10;
+    `;
+    const overlayBox = document.createElement('div');
+    overlayBox.style.cssText = `
+      background: rgba(0,0,0,0.7);
+      color: #fff;
+      padding: ${isMobile ? '14px 16px' : '16px 22px'};
+      border-radius: 12px;
+      text-align: center;
+      box-shadow: 0 6px 24px rgba(0,0,0,0.35);
+    `;
+    const overlayTitle = document.createElement('div');
+    overlayTitle.textContent = 'ロックされています';
+    overlayTitle.style.cssText = 'font-size:20px; font-weight:700; margin-bottom:6px; letter-spacing:0.02em;';
+    const lockoutDisplay = document.createElement('div');
+    lockoutDisplay.id = 'lockout-display';
+    lockoutDisplay.style.cssText = 'font-size:18px; font-weight:600;';
+    overlayBox.appendChild(overlayTitle);
+    overlayBox.appendChild(lockoutDisplay);
+    overlay.appendChild(overlayBox);
+    modalContent.appendChild(overlay);
     modalContent.appendChild(skipLabel);
     modalContent.appendChild(submitButton);
     
@@ -675,11 +859,12 @@ class AuthManager {
     noAuthLink.textContent = '認証不要のページに戻る';
     noAuthLink.style.cssText = `
       display: block;
-      margin-top: 15px;
+      margin-top: ${isMobile ? '12px' : '15px'};
       color: #007bff;
       text-decoration: none;
-      font-size: 14px;
+      font-size: ${isMobile ? '15px' : '14px'};
       cursor: pointer;
+      text-align: ${isMobile ? 'center' : 'left'};
     `;
     
     noAuthLink.addEventListener('click', (e) => {
@@ -689,14 +874,16 @@ class AuthManager {
     
     modalContent.appendChild(noAuthLink);
     
-    // Enterキーで認証
-    passwordInput.addEventListener('keypress', (e) => {
-      if (e.key === 'Enter') {
-        this.validateAuth(passwordInput.value, this.selectedSentences, skipCheckbox.checked);
-      }
-    });
-
-    passwordInput.focus();
+    // Enterキーで認証（パスワード表示時のみ）
+    if (this.requirePassword && passwordInput) {
+      passwordInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+          const pwEnter = document.getElementById('auth-password')?.value || '';
+          this.validateAuth(pwEnter, this.selectedSentences, skipCheckbox.checked);
+        }
+      });
+      passwordInput.focus();
+    }
   }
 
   // 利用不可メッセージを表示
@@ -763,8 +950,73 @@ class AuthManager {
     // 認証コンテンツを作成
     this.createAuthContent(modalContent);
 
-    // タイマーを開始
+    // タイマーを開始（パスワード入力が有効/ブロック中は開始しない）
     this.startTimer(20);
+    // ブロック中ならカウントダウン再開
+    if (this.lockoutTime > Date.now()) {
+      this.startBlockCountdownFromExisting();
+    }
+  }
+
+  // 入力UIの有効/無効化
+  disableAuthInputs(disabled) {
+    const submit = document.getElementById('auth-submit-btn');
+    if (submit) submit.disabled = disabled;
+    const pw = document.getElementById('auth-password');
+    if (pw) pw.disabled = disabled;
+    document.querySelectorAll('#sentence-options input[type="checkbox"]').forEach(cb => {
+      cb.disabled = disabled;
+    });
+  }
+
+  // ブロックを開始（秒）
+  startBlockCountdown(seconds) {
+    this.lockoutTime = Date.now() + seconds * 1000;
+    this.saveRuntimeState();
+    this.startBlockCountdownFromExisting();
+  }
+
+  // 既存のlockoutTimeから残り秒を表示
+  startBlockCountdownFromExisting() {
+    const overlay = document.getElementById('lockout-overlay');
+    const lockoutDisplay = document.getElementById('lockout-display');
+    const sentenceContainer = document.getElementById('sentence-options');
+    if (!overlay || !lockoutDisplay || !sentenceContainer) return;
+
+    // 入力無効化と問題更新タイマー停止
+    this.disableAuthInputs(true);
+    this.stopTimer();
+
+    // 選択肢全体をブラー
+    sentenceContainer.style.filter = 'blur(4px)';
+    overlay.style.display = 'flex';
+
+    if (this.blockCountdownInterval) {
+      clearInterval(this.blockCountdownInterval);
+      this.blockCountdownInterval = null;
+    }
+
+    const update = () => {
+      const remainingMs = Math.max(0, this.lockoutTime - Date.now());
+      const remaining = Math.ceil(remainingMs / 1000);
+      if (remaining > 0) {
+        lockoutDisplay.textContent = `あと${remaining}秒で再試行可能`;
+        this.saveRuntimeState();
+      } else {
+        clearInterval(this.blockCountdownInterval);
+        this.blockCountdownInterval = null;
+        overlay.style.display = 'none';
+        sentenceContainer.style.filter = '';
+        this.lockoutTime = 0;
+        this.disableAuthInputs(false);
+        this.saveRuntimeState();
+        // ロック解除時に問題を更新
+        this.resetAuthModal(true);
+      }
+    };
+
+    update();
+    this.blockCountdownInterval = setInterval(update, 1000);
   }
 
   // セキュリティチェックの設定
@@ -798,7 +1050,7 @@ class AuthManager {
     
     // 認証モーダルの存在チェック
     const modal = document.getElementById('auth-modal');
-    if (!modal && !this.isAuthenticated && !this.checkAuthStatus()) {
+    if (!modal && !this.isModalVisible && !this.isAuthenticated && !this.checkAuthStatus()) {
       this.showAuthModal();
     }
     
@@ -834,13 +1086,15 @@ class AuthManager {
     if (!this.noAuthMode) {
       // 認証状態をリセット
       this.isAuthenticated = false;
-      localStorage.removeItem('kosamuraAuth');
+      this.clearAuthState();
       
       // 認証画面を再表示
     const modal = document.getElementById('auth-modal');
     if (modal) {
       modal.remove();
     }
+      this.isModalVisible = false;
+      this.isModalRendering = false;
       this.showAuthModal();
       
       alert('セキュリティ上の理由により、認証が必要です。');
