@@ -199,6 +199,10 @@ class AuthManager {
       return;
     }
     this.isModalRendering = true;
+    
+    // モバイル用ビューポート設定を追加
+    this.setMobileViewport();
+    
     // 即座に認証画面を表示（ローディング状態で）
     this.createAndShowModal(true);
     this.isModalVisible = true;
@@ -217,6 +221,41 @@ class AuthManager {
     // 認証データが取得できた場合は通常の認証画面に切り替え
     this.updateModalWithAuthData();
     this.isModalRendering = false;
+  }
+
+  // モバイル用ビューポート設定
+  setMobileViewport() {
+    const isMobile = this.isMobileAuth();
+    if (isMobile) {
+      // 既存のビューポートメタタグを保存
+      const existingViewport = document.querySelector('meta[name="viewport"]');
+      if (existingViewport) {
+        this.originalViewport = existingViewport.getAttribute('content');
+        existingViewport.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no');
+      } else {
+        // ビューポートメタタグが存在しない場合は新規作成
+        const viewport = document.createElement('meta');
+        viewport.name = 'viewport';
+        viewport.content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no';
+        document.head.appendChild(viewport);
+        this.originalViewport = null;
+      }
+    }
+  }
+
+  // 元のビューポート設定に戻す
+  restoreViewport() {
+    if (this.originalViewport !== undefined) {
+      const viewport = document.querySelector('meta[name="viewport"]');
+      if (viewport) {
+        if (this.originalViewport) {
+          viewport.setAttribute('content', this.originalViewport);
+        } else {
+          viewport.remove();
+        }
+      }
+      this.originalViewport = undefined;
+    }
   }
 
   async fetchAuthData() {
@@ -247,28 +286,28 @@ class AuthManager {
       left: 0;
       width: 100%;
       height: 100%;
-      background: rgba(0, 0, 0, 0.8);
+      background: ${isMobile ? 'linear-gradient(135deg, #c0c0c0 0%, #d0d0d0 50%, #b8b8b8 100%)' : 'rgba(0, 0, 0, 0.8)'};
       display: flex;
       justify-content: center;
-      align-items: ${isMobile ? 'center' : 'flex-start'};
+      align-items: center;
       z-index: 10000;
       overflow-y: auto;
-      padding: ${isMobile ? '0' : '20px'};
+      padding: ${isMobile ? '8px' : '20px'};
     `;
 
     const modalContent = document.createElement('div');
     modalContent.style.cssText = `
-      background: white;
-      padding: ${isMobile ? '14px 12px' : '30px'};
-      border-radius: ${isMobile ? '0' : '12px'};
-      max-width: ${isMobile ? '100vw' : '500px'};
-      width: ${isMobile ? '100vw' : '90%'};
-      text-align: left;
-      margin: ${isMobile ? '0' : 'auto'};
-      ${isMobile ? 'min-height: 100vh; max-height: 100vh;' : 'max-height: 90vh;'}
+      background: repeating-linear-gradient(0deg, #f0f0f0, #f0f0f0 4px, #e8e8e8 4px, #e8e8e8 8px);
+      padding: ${isMobile ? '20px 16px' : '30px'};
+      border-radius: ${isMobile ? '12px' : '12px'};
+      max-width: ${isMobile ? 'calc(100vw - 16px)' : '500px'};
+      width: ${isMobile ? 'calc(100vw - 16px)' : '90%'};
+      text-align: center;
+      margin: auto;
+      max-height: ${isMobile ? 'calc(100vh - 16px)' : '90vh'};
       overflow-y: auto;
       position: relative;
-      box-shadow: ${isMobile ? 'none' : '0 12px 36px rgba(0,0,0,0.25)'};
+      box-shadow: ${isMobile ? '0 8px 32px rgba(0,0,0,0.3)' : '0 12px 36px rgba(0,0,0,0.25)'};
       font-size: ${isMobile ? '16px' : '14px'};
       line-height: 1.5;
     `;
@@ -390,6 +429,9 @@ class AuthManager {
     // タイマーを停止
     this.stopTimer();
     
+    // ビューポート設定を元に戻す
+    this.restoreViewport();
+    
     // skipNextTimeがtrueの場合のみ状態を保存（Cookie + localStorage）
     if (skipNextTime) {
       const authInfo = {
@@ -431,6 +473,9 @@ class AuthManager {
     
     // タイマーを停止
     this.stopTimer();
+    
+    // ビューポート設定を元に戻す
+    this.restoreViewport();
     
     // 認証モーダルを閉じる
     const modal = document.getElementById('auth-modal');
@@ -535,9 +580,17 @@ class AuthManager {
     const isMobile = this.isMobileAuth();
     const title = document.createElement('h2');
     title.textContent = '秋高生限定';
-    title.style.margin = isMobile ? '6px 4px 12px' : '0 0 20px';
-    title.style.fontSize = isMobile ? '20px' : '22px';
-    title.style.textAlign = isMobile ? 'center' : 'center';
+    title.style.margin = isMobile ? '0 0 16px' : '0 0 20px';
+    title.style.fontSize = isMobile ? '24px' : '22px';
+    title.style.textAlign = 'center';
+    title.style.fontWeight = 'bold';
+    title.style.cssText = `
+      margin: ${isMobile ? '0 0 16px' : '0 0 20px'};
+      font-size: ${isMobile ? '24px' : '22px'};
+      text-align: center;
+      font-weight: bold;
+      color: #333;
+    `;
     
     // パスワード欄（2回以上間違えたら表示）: 選択肢の下に配置
     let passwordInput = null;
@@ -545,8 +598,8 @@ class AuthManager {
     const sentenceLabel = document.createElement('p');
     sentenceLabel.textContent = '秋高について述べた文章を2つ選択';
     sentenceLabel.style.margin = '0 auto';
-    sentenceLabel.style.marginBottom = isMobile ? '10px' : '15px';
-    sentenceLabel.style.fontSize = isMobile ? '15px' : '14px';
+    sentenceLabel.style.marginBottom = isMobile ? '12px' : '15px';
+    sentenceLabel.style.fontSize = isMobile ? '18px' : '14px';
     sentenceLabel.style.textAlign = 'center';
 
     const sentenceContainer = document.createElement('div');
@@ -559,8 +612,12 @@ class AuthManager {
     sentenceContainer.style.cssText = `
       display: grid;
       grid-template-columns: ${isPhonePage ? '1fr' : (isMobile ? '1fr' : '1fr 1fr')};
-      gap: ${isMobile ? '8px' : '10px'};
-      margin-bottom: ${isMobile ? '14px' : '20px'};
+      gap: ${isMobile ? '10px' : '10px'};
+      margin-bottom: ${isMobile ? '16px' : '20px'};
+      text-align: left;
+      word-wrap: break-word;
+      word-break: break-word;
+      overflow-wrap: break-word;
     `;
 
     // 正しい文章と誤りの文章をシャッフルして表示
@@ -607,8 +664,8 @@ class AuthManager {
         appearance: none;
         -webkit-appearance: none;
         -moz-appearance: none;
-        width: 18px;
-        height: 18px;
+        width: ${isMobile ? '18px' : '18px'};
+        height: ${isMobile ? '18px' : '18px'};
         border: 2px solid #ccc;
         border-radius: 3px;
         background: #fff;
@@ -616,7 +673,7 @@ class AuthManager {
         position: relative;
         transition: all 0.2s;
         flex-shrink: 0;
-        margin-right: 8px;
+        margin-right: ${isMobile ? '8px' : '8px'};
       `;
       
       sentenceCheckbox.addEventListener('change', function() {
@@ -638,8 +695,11 @@ class AuthManager {
         display: flex;
         align-items: flex-start;
         text-align: left;
-        font-size: ${isMobile ? '16px' : (isPhonePage ? '16px' : '14px')};
-        line-height: 1.5;
+        font-size: ${isMobile ? '14px' : (isPhonePage ? '16px' : '14px')};
+        line-height: 1.4;
+        word-wrap: break-word;
+        word-break: break-word;
+        overflow-wrap: break-word;
       `;
 
       const container = document.createElement('div');
@@ -652,6 +712,9 @@ class AuthManager {
         border-radius: 8px;
         background: #f9f9f9;
         transition: background-color 0.2s ease;
+        word-wrap: break-word;
+        word-break: break-word;
+        overflow-wrap: break-word;
       `;
 
       container.appendChild(sentenceCheckbox);
@@ -698,10 +761,12 @@ class AuthManager {
       color: white;
       border: none;
       padding: ${isMobile ? '14px 18px' : '12px 30px'};
-      border-radius: ${isMobile ? '12px' : '8px'};
+      border-radius: ${isMobile ? '10px' : '8px'};
       cursor: pointer;
-      font-size: ${isMobile ? '17px' : '16px'};
+      font-size: ${isMobile ? '18px' : '16px'};
       width: ${isMobile ? '100%' : 'auto'};
+      font-weight: bold;
+      margin-bottom: ${isMobile ? '12px' : '15px'};
     `;
 
     const skipCheckbox = document.createElement('input');
@@ -711,8 +776,8 @@ class AuthManager {
       appearance: none;
       -webkit-appearance: none;
       -moz-appearance: none;
-      width: 18px;
-      height: 18px;
+      width: ${isMobile ? '18px' : '18px'};
+      height: ${isMobile ? '18px' : '18px'};
       border: 2px solid #ccc;
       border-radius: 3px;
       background: #fff;
@@ -720,7 +785,7 @@ class AuthManager {
       position: relative;
       transition: all 0.2s;
       flex-shrink: 0;
-      margin-right: 8px;
+      margin-right: ${isMobile ? '8px' : '8px'};
     `;
     
     skipCheckbox.addEventListener('change', function() {
@@ -741,7 +806,7 @@ class AuthManager {
       display: flex;
       align-items: center;
       justify-content: center;
-      margin-bottom: ${isMobile ? '10px' : '15px'};
+      margin-bottom: ${isMobile ? '12px' : '15px'};
       font-size: ${isMobile ? '14px' : '14px'};
       color: #666;
       cursor: pointer;
@@ -757,17 +822,14 @@ class AuthManager {
 
     modalContent.appendChild(title);
     modalContent.appendChild(sentenceLabel);
-    // センター寄せのためのラッパー
-    const choicesWrapper = document.createElement('div');
-    choicesWrapper.style.cssText = 'margin: 0 auto;';
-    choicesWrapper.appendChild(sentenceContainer);
-    modalContent.appendChild(choicesWrapper);
+    // 選択肢は左寄せのまま
+    modalContent.appendChild(sentenceContainer);
 
     // パスワードガイドと入力欄（必要時のみ）を選択肢の下に追加
     if (this.requirePassword) {
       const pwGuide = document.createElement('p');
-      pwGuide.textContent = '生徒手帳49ページのタイトルをタイプしてください';
-      pwGuide.style.cssText = 'margin: 6px 0 8px 0; color:#333; font-size:14px;';
+      pwGuide.textContent = '生徒手帳49ページのタイトルを入力';
+      pwGuide.style.cssText = `margin: ${isMobile ? '8px 0 10px 0' : '6px 0 8px 0'}; color:#333; font-size:${isMobile ? '16px' : '14px'};`;
 
       passwordInput = document.createElement('input');
       passwordInput.type = 'text';
@@ -781,17 +843,17 @@ class AuthManager {
       try { passwordInput.style.imeMode = 'active'; } catch (_) {}
       passwordInput.style.cssText = `
         width: 100%;
-        padding: 10px;
-        margin-bottom: 12px;
+        padding: ${isMobile ? '10px' : '10px'};
+        margin-bottom: ${isMobile ? '12px' : '12px'};
         border: 1px solid #ccc;
         border-radius: 5px;
-        font-size: 16px;
+        font-size: ${isMobile ? '16px' : '16px'};
         background:#fff;
       `;
 
       // パスワード行もセンター寄せ
       const pwWrap = document.createElement('div');
-      pwWrap.style.cssText = 'margin: 0 auto;';
+      pwWrap.style.cssText = 'text-align: center;';
       pwWrap.appendChild(pwGuide);
       pwWrap.appendChild(passwordInput);
       modalContent.appendChild(pwWrap);
@@ -800,10 +862,11 @@ class AuthManager {
     const timerContainer = document.createElement('div');
     timerContainer.id = 'timer-container';
     timerContainer.style.cssText = `
-      margin-bottom: ${isMobile ? '10px' : '15px'};
-      font-size: ${isMobile ? '15px' : '16px'};
+      margin-bottom: ${isMobile ? '12px' : '15px'};
+      font-size: ${isMobile ? '16px' : '16px'};
       font-weight: bold;
       color: #dc3545;
+      text-align: center;
     `;
     
     const timerLabel = document.createElement('span');
@@ -836,17 +899,17 @@ class AuthManager {
     overlayBox.style.cssText = `
       background: rgba(0,0,0,0.7);
       color: #fff;
-      padding: ${isMobile ? '14px 16px' : '16px 22px'};
+      padding: ${isMobile ? '16px 18px' : '16px 22px'};
       border-radius: 12px;
       text-align: center;
       box-shadow: 0 6px 24px rgba(0,0,0,0.35);
     `;
     const overlayTitle = document.createElement('div');
-    overlayTitle.textContent = 'ロックされています';
-    overlayTitle.style.cssText = 'font-size:20px; font-weight:700; margin-bottom:6px; letter-spacing:0.02em;';
+    overlayTitle.textContent = 'ロックしました';
+    overlayTitle.style.cssText = `font-size:${isMobile ? '20px' : '20px'}; font-weight:700; margin-bottom:${isMobile ? '6px' : '6px'}; letter-spacing:0.02em;`;
     const lockoutDisplay = document.createElement('div');
     lockoutDisplay.id = 'lockout-display';
-    lockoutDisplay.style.cssText = 'font-size:18px; font-weight:600;';
+    lockoutDisplay.style.cssText = `font-size:${isMobile ? '16px' : '18px'}; font-weight:600;`;
     overlayBox.appendChild(overlayTitle);
     overlayBox.appendChild(lockoutDisplay);
     overlay.appendChild(overlayBox);
@@ -862,9 +925,9 @@ class AuthManager {
       margin-top: ${isMobile ? '12px' : '15px'};
       color: #007bff;
       text-decoration: none;
-      font-size: ${isMobile ? '15px' : '14px'};
+      font-size: ${isMobile ? '14px' : '14px'};
       cursor: pointer;
-      text-align: ${isMobile ? 'center' : 'left'};
+      text-align: center;
     `;
     
     noAuthLink.addEventListener('click', (e) => {
@@ -926,6 +989,8 @@ class AuthManager {
     `;
 
     closeButton.addEventListener('click', () => {
+      // ビューポート設定を元に戻す
+      this.restoreViewport();
       modal.remove();
       this.showNoAuthPages();
     });
@@ -1000,7 +1065,7 @@ class AuthManager {
       const remainingMs = Math.max(0, this.lockoutTime - Date.now());
       const remaining = Math.ceil(remainingMs / 1000);
       if (remaining > 0) {
-        lockoutDisplay.textContent = `あと${remaining}秒で再試行可能`;
+        lockoutDisplay.textContent = `${remaining}秒後にやり直してください`;
         this.saveRuntimeState();
       } else {
         clearInterval(this.blockCountdownInterval);
@@ -1097,7 +1162,7 @@ class AuthManager {
       this.isModalRendering = false;
       this.showAuthModal();
       
-      alert('セキュリティ上の理由により、認証が必要です。');
+      alert('著作権上の理由により、認証が必要です。');
     }
   }
 }
