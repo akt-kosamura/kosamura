@@ -421,6 +421,11 @@ class AuthManager {
     
     // メモリ上の認証状態を設定
     this.isAuthenticated = true;
+
+    // 次回以降は選択のみで認証できるように、パスワード要求とロック状態を確実に解除・永続化
+    this.requirePassword = false;
+    this.lockoutTime = 0;
+    this.saveRuntimeState();
     
     // タイマーを停止
     this.stopTimer();
@@ -1141,22 +1146,21 @@ class AuthManager {
   
   // 開発者ツールが開かれた時の処理
   handleDevToolsOpen() {
-    if (!this.noAuthMode) {
-      // 認証状態をリセット
-      this.isAuthenticated = false;
-      this.clearAuthState();
-      
-      // 認証画面を再表示
+    if (this.noAuthMode) return; // 認証不要ページ
+    // 既に認証OKなら再表示しない
+    if (this.checkAuthStatus()) return;
+    // 認証リセット
+    this.isAuthenticated = false;
+    this.clearAuthState();
+    // 再表示
     const modal = document.getElementById('auth-modal');
     if (modal) {
       modal.remove();
     }
-      this.isModalVisible = false;
-      this.isModalRendering = false;
-      this.showAuthModal();
-      
-      alert('著作権上の理由により、認証が必要です。');
-    }
+    this.isModalVisible = false;
+    this.isModalRendering = false;
+    this.showAuthModal();
+    alert('著作権上の理由により、認証が必要です。');
   }
 }
 

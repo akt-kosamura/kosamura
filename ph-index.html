@@ -398,7 +398,7 @@
     window.addEventListener('load', function() {
       window.scrollTo(0, 0);
       
-      // ヘッダーを確実に表示（ページ読み込み完了時）
+      // ヘッダー表示（load）
       const header = document.querySelector('.header');
       if (header) {
         header.style.opacity = '1';
@@ -411,7 +411,7 @@
     document.addEventListener('DOMContentLoaded', function() {
       window.scrollTo(0, 0);
       
-      // ヘッダーを確実に表示
+      // ヘッダー表示（DOMContentLoaded）
       const header = document.querySelector('.header');
       if (header) {
         header.style.opacity = '1';
@@ -441,17 +441,16 @@
     
       function showNoticePopup() {
         if (localStorage.getItem('hideNoticePopup') === 'true') {
-          console.log('ポップアップは非表示設定のため表示しません');
-          // 「ごめんなさい」ポップアップが非表示の場合でも、crack.pngポップアップは表示
-          setTimeout(() => {
-            showCrackModal();
-          }, 100);
-          return;
+
+          // setTimeout(() => {
+          //   showCrackModal();
+          // }, 100);
+          // return;
         }
         
         const popup = document.getElementById('noticePopup');
         if (popup && popup.style.display === 'flex') {
-          console.log('ポップアップは既に表示されているため表示しません');
+          // すでに表示中
           return;
         }
         
@@ -472,7 +471,7 @@
               popup.style.opacity = '1';
             }, 20);
             document.body.style.overflow = 'hidden';
-            console.log('ポップアップを表示しました');
+            // 表示
           }, 10);
         }
       }
@@ -487,17 +486,15 @@
            popup.style.display = 'none';
            document.body.style.overflow = '';
            
-           // 「ごめんなさい」ポップアップが閉じられた後にcrack.pngポップアップを表示
-           setTimeout(() => {
-             showCrackModal();
-           }, 300);
+           // 「ごめんなさい」後のcrackは無効
+           // setTimeout(() => {
+           //   showCrackModal();
+           // }, 300);
          }, 200);
          
          if (checkbox && checkbox.checked) {
            localStorage.setItem('hideNoticePopup', 'true');
-           console.log('次回から非表示設定を保存しました');
-         } else {
-           console.log('チェックボックスがチェックされていないため、次回も表示されます');
+           // 保存
          }
        }
      }
@@ -839,7 +836,7 @@
         }
         if (e.ctrlKey && e.key === 'r') {
           localStorage.removeItem('hideNoticePopup');
-          console.log('ローカルストレージをリセットしました。次回ポップアップが表示されます。');
+          // reset notice flag
         }
       });
     
@@ -895,71 +892,40 @@
     
     async function loadStats() {
       try {
-        console.log('=== loadStats デバッグ開始 ===');
-        
-        // GASのURLを使用して統計情報を取得
+        // stats
         const gasUrl = 'https://script.google.com/macros/s/AKfycbwEAhdiJOtbf44ifY-BoAFhLI7eQl_uIJKm9NDTexoWZD7U8l-7wsrT9ufRCZ9d8lZf/exec';
         const response = await fetch(`${gasUrl}?function=getStats`);
-        console.log('fetch response:', response);
-        
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
-        
         const stats = await response.json();
-        console.log('取得した統計データ:', stats);
-        
-        // レスポンス形式を確認して適切に処理
         let totalPosts, totalLikes, activeUsers;
-        
         if (stats.result) {
-          // resultプロパティにラップされている場合
           totalPosts = stats.result.totalPosts || 0;
           totalLikes = stats.result.totalLikes || 0;
           activeUsers = stats.result.activeUsers || 0;
         } else {
-          // 直接プロパティとして含まれている場合
           totalPosts = stats.totalPosts || 0;
           totalLikes = stats.totalLikes || 0;
           activeUsers = stats.activeUsers || 0;
         }
-        
-        console.log('処理後の値:');
-        console.log('totalPosts:', totalPosts, '(型:', typeof totalPosts, ')');
-        console.log('totalLikes:', totalLikes, '(型:', typeof totalLikes, ')');
-        console.log('activeUsers:', activeUsers, '(型:', typeof activeUsers, ')');
-        
         const totalPostsElement = document.getElementById('totalPosts');
-        console.log('totalPostsElement:', totalPostsElement);
         if (totalPostsElement) {
           totalPostsElement.textContent = Number(totalPosts).toLocaleString();
-          console.log('totalPostsElement.textContent を設定:', Number(totalPosts).toLocaleString());
         }
-        
         const totalLikesElement = document.getElementById('totalLikes');
-        console.log('totalLikesElement:', totalLikesElement);
         if (totalLikesElement) {
           totalLikesElement.textContent = Number(totalLikes).toLocaleString();
-          console.log('totalLikesElement.textContent を設定:', Number(totalLikes).toLocaleString());
         }
-        
         const activeUsersElement = document.getElementById('activeUsers');
-        console.log('activeUsersElement:', activeUsersElement);
         if (activeUsersElement) {
           activeUsersElement.textContent = Number(activeUsers).toLocaleString();
-          console.log('activeUsersElement.textContent を設定:', Number(activeUsers).toLocaleString());
         }
-        
-        console.log('=== loadStats デバッグ終了 ===');
       } catch (error) {
-        console.error('統計情報の読み込みに失敗しました:', error);
-        console.error('エラーの詳細:', error.toString());
-        
-        // エラー時は0を表示
+        console.error('統計情報の読み込みに失敗:', error);
         const totalPostsElement = document.getElementById('totalPosts');
         const totalLikesElement = document.getElementById('totalLikes');
         const activeUsersElement = document.getElementById('activeUsers');
-        
         if (totalPostsElement) totalPostsElement.textContent = '0';
         if (totalLikesElement) totalLikesElement.textContent = '0';
         if (activeUsersElement) activeUsersElement.textContent = '0';
@@ -969,67 +935,46 @@
     // アクセス数を増加させる関数
     async function incrementAccessCount() {
       try {
-        // localStorageで3時間制限をチェック
         const lastAccessKey = 'kosamura_last_access';
         const now = Date.now();
-        const threeHoursInMs = 3 * 60 * 60 * 1000; // 3時間をミリ秒で
-        
+        const threeHoursInMs = 3 * 60 * 60 * 1000;
         const lastAccess = localStorage.getItem(lastAccessKey);
         if (lastAccess) {
           const timeDiff = now - parseInt(lastAccess);
           if (timeDiff < threeHoursInMs) {
-            console.log('3時間以内にアクセス済みです。カウントを増加しません。');
-            return; // 3時間以内の場合は増加しない
+            // 3h guard
+            return;
           }
         }
-        
-        // IPアドレスを取得（簡易的な方法）
         const ipResponse = await fetch('https://api.ipify.org?format=json');
         const ipData = await ipResponse.json();
         const ipAddress = ipData.ip;
-        
-        // GASのURLを使用してアクセス数を増加
         const gasUrl = 'https://script.google.com/macros/s/AKfycbwEAhdiJOtbf44ifY-BoAFhLI7eQl_uIJKm9NDTexoWZD7U8l-7wsrT9ufRCZ9d8lZf/exec';
         const formData = new FormData();
         formData.append('function', 'incrementAccessCount');
         formData.append('ipAddress', ipAddress);
         formData.append('userAgent', navigator.userAgent);
         formData.append('clientTimestamp', now.toString());
-        
-        const response = await fetch(gasUrl, {
-          method: 'POST',
-          body: formData
-        });
-        
+        const response = await fetch(gasUrl, { method: 'POST', body: formData });
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
-        
         const result = await response.json();
-        console.log('アクセス数更新結果:', result);
-        
-        // レスポンス形式を確認して適切に処理
         let accessCount;
         if (result.result && result.result.accessCount !== undefined) {
           accessCount = result.result.accessCount;
         } else if (result.accessCount !== undefined) {
           accessCount = result.accessCount;
         } else {
-          console.error('アクセス数がレスポンスに含まれていません:', result);
-          accessCount = 0;
+          accessCount = 0; // no count in response
         }
-        
-        // 成功した場合、localStorageにアクセス時刻を記録
         if (accessCount > 0) {
           localStorage.setItem(lastAccessKey, now.toString());
-          console.log('アクセス数を更新しました。3時間後に再カウント可能になります。');
+          // updated
         }
-        
-        // 統計情報を再読み込み
         loadStats();
-        
       } catch (error) {
-        console.error('アクセス数の更新に失敗しました:', error);
+        console.error('アクセス数の更新に失敗:', error);
       }
     }
     

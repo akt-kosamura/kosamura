@@ -259,9 +259,9 @@ function showAdPopup(fileUrl) {
   overlay.innerHTML = `
     <div class="popup-content">
       <button class="popup-close">&times;</button>
-      <h2>広告を視聴してファイルを開く</h2>
+      <h2>カウンドダウン後に開けます</h2>
       <div class="countdown-text" id="countdownText">100</div>
-      <p id="statusText">カウントダウンが終わるとファイルを開けます</p>
+      <p id="statusText">問題アップロードで待ち時間ゼロ！</p>
       <div class="ad-video">
         <video controls autoplay style="width: 100%; border-radius: 1rem; background: #000;">
           <source src="../assets/考査村ビデオ.mp4" type="video/mp4">
@@ -466,7 +466,7 @@ function showAdPopup(fileUrl) {
       fetchData();
     } catch (error) {
       console.error('キャッシュクリアエラー:', error);
-      // エラーが発生してもデータを再取得
+      // 失敗しても再取得
       fetchData();
     }
   }
@@ -671,19 +671,18 @@ function showAdPopup(fileUrl) {
     document.getElementById('toggleEval').onchange = applyColumns;
     document.getElementById('commentMode').onchange = applyColumns;
     document.getElementById('sortMenu').onchange = applySort;
-         applyColumns();
+     applyColumns();
      fetchData();
 
-    // 横スクロール誘導アニメーションを数秒だけ表示（オーバーレイ）
+    // 横スクロール誘導（数秒）
     const overlay = document.getElementById('scroll-hint-overlay');
-    const hint = document.getElementById('scroll-hint');
     const arrow = document.getElementById('scroll-arrow');
     let dir = 1, count = 0;
     const anim = setInterval(() => {
       arrow.style.transform = `translateX(${dir*32}px)`;
       dir *= -1;
       count++;
-      if(count > 5) { // 3往復で消す
+      if(count > 5) {
         clearInterval(anim);
         overlay.style.opacity = 0;
         setTimeout(()=>{ overlay.style.display = 'none'; }, 600);

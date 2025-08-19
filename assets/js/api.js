@@ -98,6 +98,7 @@ class KosamuraAPI {
       // GASの戻り値形式に合わせる（直接数値を返す）
       return result.result || result || 0;
     } catch (error) {
+      // like error
       console.error('like error:', error);
       throw error;
     }
@@ -118,6 +119,7 @@ class KosamuraAPI {
       // GASの戻り値形式に合わせる（直接数値を返す）
       return result.result || result || 0;
     } catch (error) {
+      // unlike error
       console.error('unlike error:', error);
       throw error;
     }
@@ -138,6 +140,7 @@ class KosamuraAPI {
       // GASの戻り値形式に合わせる（直接数値を返す）
       return result.result || result || 0;
     } catch (error) {
+      // bad error
       console.error('bad error:', error);
       throw error;
     }
@@ -158,6 +161,7 @@ class KosamuraAPI {
       // GASの戻り値形式に合わせる（直接数値を返す）
       return result.result || result || 0;
     } catch (error) {
+      // unbad error
       console.error('unbad error:', error);
       throw error;
     }
@@ -177,6 +181,7 @@ class KosamuraAPI {
       const result = await response.json();
       return result.result === 'ok';
     } catch (error) {
+      // admin auth error
       console.error('checkAdminPassword error:', error);
       return false;
     }
@@ -345,28 +350,26 @@ class KosamuraAPI {
   // 認証データ取得（新規追加）
   async getAuthData() {
     try {
-      console.log('getAuthData: APIリクエストを開始');
+      // getAuthData start
       const response = await fetch(`${this.baseURL}?function=getAuthData`);
       
       if (!response.ok) {
         const errorText = await response.text();
-        console.error('getAuthData: HTTPエラー', response.status, errorText);
-        throw new Error(`認証データの取得に失敗しました: ${response.status} ${errorText}`);
+        console.error('getAuthData http error', response.status, errorText);
+        throw new Error(`認証データの取得に失敗: ${response.status} ${errorText}`);
       }
       
       const result = await response.json();
-      console.log('getAuthData: レスポンス受信', result);
+      // getAuthData received
       
       // レスポンスの形式を確認
       if (result && result.password && result.correctSentences && result.incorrectSentences) {
-        console.log('getAuthData: 有効な認証データを取得');
         return result;
       } else if (result && result.result && result.result.password && result.result.correctSentences && result.result.incorrectSentences) {
-        console.log('getAuthData: resultプロパティから認証データを取得');
         return result.result;
       } else {
-        console.warn('getAuthData: 不完全なデータ形式', result);
-        throw new Error('認証データの形式が正しくありません');
+        console.warn('getAuthData invalid format');
+        throw new Error('認証データの形式が正しくない');
       }
     } catch (error) {
       console.error('getAuthData error:', error);

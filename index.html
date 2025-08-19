@@ -349,15 +349,9 @@
     setInterval(updateFreeModeStatus, 1000);
     
     document.addEventListener('DOMContentLoaded', () => {
-      // デバッグ用: localStorageをリセット（テスト時のみ使用）
-      // localStorage.removeItem('kosamura_last_access');
       
-      // アクセスカウントを実行
-      kosamuraAPI.incrementAccessCount().then(count => {
-        console.log('アクセスカウント更新完了:', count);
-      }).catch(error => {
-        console.error('アクセスカウント更新エラー:', error);
-      });
+      // アクセスカウント
+      kosamuraAPI.incrementAccessCount();
       
       // 他の初期化処理
     });
@@ -560,19 +554,15 @@
     // 統計情報を読み込む関数
     async function loadStats() {
       try {
-        console.log('=== loadStats デバッグ開始 ===');
-        
         // GASのURLを使用して統計情報を取得
         const gasUrl = 'https://script.google.com/macros/s/AKfycbwEAhdiJOtbf44ifY-BoAFhLI7eQl_uIJKm9NDTexoWZD7U8l-7wsrT9ufRCZ9d8lZf/exec';
         const response = await fetch(`${gasUrl}?function=getStats`);
-        console.log('fetch response:', response);
         
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
         
         const stats = await response.json();
-        console.log('取得した統計データ:', stats);
         
         // レスポンス形式を確認して適切に処理
         let totalPosts, totalLikes, activeUsers;
@@ -589,36 +579,22 @@
           activeUsers = stats.activeUsers || 0;
         }
         
-        console.log('処理後の値:');
-        console.log('totalPosts:', totalPosts, '(型:', typeof totalPosts, ')');
-        console.log('totalLikes:', totalLikes, '(型:', typeof totalLikes, ')');
-        console.log('activeUsers:', activeUsers, '(型:', typeof activeUsers, ')');
-        
         const totalPostsElement = document.getElementById('totalPosts');
-        console.log('totalPostsElement:', totalPostsElement);
         if (totalPostsElement) {
           totalPostsElement.textContent = Number(totalPosts).toLocaleString();
-          console.log('totalPostsElement.textContent を設定:', Number(totalPosts).toLocaleString());
         }
         
         const totalLikesElement = document.getElementById('totalLikes');
-        console.log('totalLikesElement:', totalLikesElement);
         if (totalLikesElement) {
           totalLikesElement.textContent = Number(totalLikes).toLocaleString();
-          console.log('totalLikesElement.textContent を設定:', Number(totalLikes).toLocaleString());
         }
         
         const activeUsersElement = document.getElementById('activeUsers');
-        console.log('activeUsersElement:', activeUsersElement);
         if (activeUsersElement) {
           activeUsersElement.textContent = Number(activeUsers).toLocaleString();
-          console.log('activeUsersElement.textContent を設定:', Number(activeUsers).toLocaleString());
         }
-        
-        console.log('=== loadStats デバッグ終了 ===');
       } catch (error) {
         console.error('統計情報の読み込みに失敗しました:', error);
-        console.error('エラーの詳細:', error.toString());
         
         // エラー時は0を表示
         const totalPostsElement = document.getElementById('totalPosts');
@@ -668,7 +644,6 @@
         
       } catch (error) {
         console.error('アクセス数の更新に失敗しました:', error);
-        console.error('エラーの詳細:', error.toString());
       }
     }
     
@@ -691,7 +666,8 @@
     var crackModal = document.getElementById('crackModal');
     var crackModalClose = document.getElementById('crackModalClose');
     if(crackModal && crackModalClose) {
-      crackModal.style.display = 'flex';
+      //コメントアウトでポップアップを無効化
+      // crackModal.style.display = 'flex'; // Disabled: do not auto-open the image modal
       crackModalClose.onclick = function() {
         crackModal.style.display = 'none';
       };

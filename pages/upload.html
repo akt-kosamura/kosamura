@@ -851,10 +851,8 @@
     setInterval(updateFreeModeStatus, 1000);
     
     document.addEventListener('DOMContentLoaded', () => {
-      // アクセスカウントを実行
-      kosamuraAPI.incrementAccessCount().then(count => {
-        console.log('アクセスカウント更新完了:', count);
-      }).catch(error => {
+      // アクセスカウント
+      kosamuraAPI.incrementAccessCount().catch(error => {
         console.error('アクセスカウント更新エラー:', error);
       });
       
@@ -892,10 +890,10 @@
       // ページ読み込み時に履歴を追加
       window.history.pushState(null, '', window.location.href);
       
-      // ページ非表示時の警告（タブ切り替えなど）
+      // ページ非表示（メモ）
       document.addEventListener('visibilitychange', () => {
         if (window.isUploading && document.visibilityState === 'hidden') {
-          console.warn('アップロード中にページが非表示になりました。アップロードは継続されますが、完了までお待ちください。');
+          // uploading in bg
         }
       });
       
