@@ -4,6 +4,7 @@ class AuthManager {
     this.authData = null;
     this.noAuthMode = false;
     this.isAuthenticated = false;
+    this.hasAuthenticatedOnce = false;
     this.authAttempts = 0;
     this.maxAuthAttempts = 5;
     this.lockoutTime = 0;
@@ -135,6 +136,7 @@ class AuthManager {
     if (this.checkAuthStatus()) {
       // スキップ等で認証済み扱いの場合もメモリに反映
       this.isAuthenticated = true;
+      this.hasAuthenticatedOnce = true;
       this.showMainContent();
     } else {
       this.showAuthModal();
@@ -427,6 +429,7 @@ class AuthManager {
     
     // メモリ上の認証状態を設定
     this.isAuthenticated = true;
+    this.hasAuthenticatedOnce = true;
 
     // 次回以降は選択のみで認証できるように、パスワード要求とロック状態を確実に解除・永続化
     this.requirePassword = false;
@@ -1103,6 +1106,7 @@ class AuthManager {
     
     // ページフォーカス時の認証状態再チェック
     window.addEventListener('focus', () => {
+      if (this.hasAuthenticatedOnce) return;
       if (!this.noAuthMode && !this.checkAuthStatus()) {
         this.showAuthModal();
       }
@@ -1120,6 +1124,7 @@ class AuthManager {
   // セキュリティチェック実行
   performSecurityChecks() {
     if (this.noAuthMode) return;
+    if (this.isAuthenticated || this.hasAuthenticatedOnce) return;
     
     // 認証モーダルの存在チェック
     const modal = document.getElementById('auth-modal');
@@ -1153,6 +1158,7 @@ class AuthManager {
   // 開発者ツールが開かれた時の処理
   handleDevToolsOpen() {
     if (this.noAuthMode) return; // 認証不要ページ
+    if (this.hasAuthenticatedOnce) return;
     // 既に認証OKなら再表示しない
     if (this.checkAuthStatus()) return;
     // 認証リセット
