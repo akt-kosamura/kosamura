@@ -133,6 +133,8 @@ class AuthManager {
       // upload.htmlとsearch.htmlのみで認証画面を表示
       // share.html、index.html、ph-index.htmlなどは認証不要
     if (this.checkAuthStatus()) {
+      // スキップ等で認証済み扱いの場合もメモリに反映
+      this.isAuthenticated = true;
       this.showMainContent();
     } else {
       this.showAuthModal();
@@ -149,6 +151,10 @@ class AuthManager {
     if (this.noAuthMode) {
       return true;
     }
+    // スキップ指定
+    try {
+      if (localStorage.getItem('kosamuraSkip') === 'true') return true;
+    } catch (_) {}
     
     // ロックアウトチェック
     if (this.lockoutTime > Date.now()) {
@@ -439,6 +445,10 @@ class AuthManager {
       timestamp: Date.now()
     };
     this.saveAuthState(authInfo);
+    // 次回スキップ保存
+    try {
+      if (skipNextTime) localStorage.setItem('kosamuraSkip', 'true');
+    } catch (_) {}
     
     const modal = document.getElementById('auth-modal');
     if (modal) {
@@ -1117,11 +1127,7 @@ class AuthManager {
       this.showAuthModal();
     }
     
-    // メインコンテンツの表示状態チェック
-    const mainContent = document.getElementById('main-content');
-    if (mainContent && !this.isAuthenticated && !this.noAuthMode) {
-      mainContent.style.display = 'none';
-    }
+    // メインコンテンツは触らない（隠すと入力が消えたように見えるため）
   }
   
   // 開発者ツール検出の強化
