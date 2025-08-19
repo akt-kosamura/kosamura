@@ -172,12 +172,8 @@ class AuthManager {
         return false;
       }
       
-      // セッションIDの検証
-      if (sessionId && sessionId !== this.getSessionId()) {
-        this.clearAuthState();
-        return false;
-      }
-      
+      // セッションIDの検証は無効化（リロード後も認証を維持するため）
+
       return isAuthenticated === true;
     } catch (error) {
       this.clearAuthState();
@@ -432,15 +428,12 @@ class AuthManager {
     // ビューポート設定を元に戻す
     this.restoreViewport();
     
-    // skipNextTimeがtrueの場合のみ状態を保存（Cookie + localStorage）
-    if (skipNextTime) {
-      const authInfo = {
-        isAuthenticated: true,
-        timestamp: Date.now(),
-        sessionId: this.getSessionId()
-      };
-      this.saveAuthState(authInfo);
-    }
+    // 認証状態を保存（Cookie + localStorage）
+    const authInfo = {
+      isAuthenticated: true,
+      timestamp: Date.now()
+    };
+    this.saveAuthState(authInfo);
     
     const modal = document.getElementById('auth-modal');
     if (modal) {
