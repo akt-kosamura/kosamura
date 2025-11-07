@@ -577,13 +577,26 @@
             }
           }
           const pdfBytes = await pdfDoc.save();
+          
+          // フォーム値取得（autoFileNameの前に取得）
+          const grade = this.querySelector('input[name="grade"]:checked')?.value || '';
+          const year = document.getElementById('year').value;
+          const type = document.getElementById('type').value;
+          const subject = document.getElementById('subject').value;
+          const stream = this.querySelector('input[name="stream"]:checked')?.value || '';
+          const contentType = this.querySelector('input[name="contentType"]:checked')?.value || '';
+          const comment = document.getElementById('comment').value;
+          const deletePassword = document.getElementById('deletePassword').value || '';
+          const fileFormat = 'PDF';
+          
+          // ファイル名生成（変数を使用）
           const autoFileName = [
-            this.querySelector('input[name="grade"]:checked')?.value || '',
-            document.getElementById('year').value,
-            document.getElementById('type').value,
-            document.getElementById('subject').value,
-            this.querySelector('input[name="stream"]:checked')?.value || '',
-            this.querySelector('input[name="contentType"]:checked')?.value || ''
+            grade,
+            year,
+            type,
+            subject,
+            stream,
+            contentType
           ].map(s => s.replace(/\s+/g, '')).filter(Boolean).join('_') + '.pdf';
           const mergedPdfBlob = new Blob([pdfBytes], { type: 'application/pdf' });
           
@@ -601,16 +614,7 @@
             reader.onerror = rej;
             reader.readAsDataURL(mergedPdfBlob);
           });
-          // フォーム値取得
-          const grade = this.querySelector('input[name="grade"]:checked')?.value || '';
-          const year = document.getElementById('year').value;
-          const type = document.getElementById('type').value;
-          const subject = document.getElementById('subject').value;
-          const stream = this.querySelector('input[name="stream"]:checked')?.value || '';
-          const contentType = this.querySelector('input[name="contentType"]:checked')?.value || '';
-          const comment = document.getElementById('comment').value;
-          const deletePassword = document.getElementById('deletePassword').value || '';
-          const fileFormat = 'PDF';
+          
           const filename = autoFileName;
           
           // デバッグ用：フォーム値をコンソールに出力（本番環境では削除可能）
@@ -628,7 +632,7 @@
             }
             
             // デバイス情報を収集
-            const deviceInfo = {
+            let deviceInfo = {
               userAgent: navigator.userAgent || 'Unknown',
               platform: navigator.platform || 'Unknown',
               screenWidth: screen.width || 0,

@@ -74,8 +74,8 @@ class KosamuraAPI {
       }
       
       // レスポンスがJSONでない場合（HTMLエラーページなど）をチェック
-      const contentType = response.headers.get('content-type');
-      if (!contentType || !contentType.includes('application/json')) {
+      const responseContentType = response.headers.get('content-type');
+      if (!responseContentType || !responseContentType.includes('application/json')) {
         const errorText = await response.text();
         if (errorText.includes('please tell me who you are') || errorText.includes('Please tell me who you are')) {
           throw new Error('Google Apps Scriptの認証設定が必要です。Webアプリケーションを「誰でもアクセス可能」に設定してください。');
@@ -480,9 +480,9 @@ window.google = {
         });
       },
       
-      uploadFileAndRecord: function(grade, year, type, subject, stream, contentType, fileFormat, comment, filename, base64, deviceInfo, fileSizeMB) {
+      uploadFileAndRecord: function(grade, year, type, subject, stream, contentType, fileFormat, comment, filename, base64, deviceInfo, fileSizeMB, deletePassword = '') {
         return new Promise((resolve, reject) => {
-          kosamuraAPI.uploadFileAndRecord(grade, year, type, subject, stream, contentType, fileFormat, comment, filename, base64, deviceInfo, fileSizeMB)
+          kosamuraAPI.uploadFileAndRecord(grade, year, type, subject, stream, contentType, fileFormat, comment, filename, base64, deviceInfo, fileSizeMB, deletePassword)
             .then(url => resolve(url))
             .catch(error => reject(error));
         });
