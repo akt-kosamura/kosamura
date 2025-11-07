@@ -37,7 +37,7 @@ class KosamuraAPI {
   }
 
   // ファイルアップロード（GAS運用時と同じ）
-  async uploadFileAndRecord(grade, year, type, subject, stream, contentType, fileFormat, comment, filename, base64, deviceInfo, fileSizeMB) {
+  async uploadFileAndRecord(grade, year, type, subject, stream, contentType, fileFormat, comment, filename, base64, deviceInfo, fileSizeMB, deletePassword = '') {
     try {
       // GASのdoPost関数が期待する形式でURLパラメータを作成
       const params = new URLSearchParams();
@@ -53,6 +53,7 @@ class KosamuraAPI {
       params.append('fileSizeMB', fileSizeMB);
       params.append('deviceInfo', JSON.stringify(deviceInfo));
       params.append('filename', filename);
+      params.append('deletePassword', deletePassword || '');
       
       // Base64エンコードされたファイルデータをリクエストボディとして送信
       const response = await fetch(`${this.baseURL}?${params.toString()}`, {
@@ -65,7 +66,21 @@ class KosamuraAPI {
       
       if (!response.ok) {
         const errorText = await response.text();
+        // 「please tell me who you are」エラーの場合、より分かりやすいメッセージを表示
+        if (errorText.includes('please tell me who you are') || errorText.includes('Please tell me who you are')) {
+          throw new Error('Google Apps Scriptの認証設定が必要です。Webアプリケーションを「誰でもアクセス可能」に設定してください。');
+        }
         throw new Error(`アップロードに失敗しました: ${errorText}`);
+      }
+      
+      // レスポンスがJSONでない場合（HTMLエラーページなど）をチェック
+      const contentType = response.headers.get('content-type');
+      if (!contentType || !contentType.includes('application/json')) {
+        const errorText = await response.text();
+        if (errorText.includes('please tell me who you are') || errorText.includes('Please tell me who you are')) {
+          throw new Error('Google Apps Scriptの認証設定が必要です。Webアプリケーションを「誰でもアクセス可能」に設定してください。');
+        }
+        throw new Error(`アップロードに失敗しました: サーバーから予期しない形式のレスポンスが返されました`);
       }
       
       const result = await response.json();
@@ -343,6 +358,78 @@ class KosamuraAPI {
       return response;
     } catch (error) {
       console.error('accessFileWithToken error:', error);
+      throw error;
+    }
+  }
+
+  // パスワード検証
+  async verifyPassword(id, password) {
+    try {
+      const formData = new FormData();
+      formData.append('id', id);
+      formData.append('password', password);
+
+      const response = await fetch(`${this.baseURL}?function=verifyPassword`, {
+        method: 'POST',
+        body: formData
+      });
+      if (!response.ok) throw new Error('パスワード検証に失敗しました');
+      const result = await response.json();
+      return result.result === true || result === true;
+    } catch (error) {
+      console.error('verifyPassword error:', error);
+      return false;
+    }
+  }
+
+  // パスワード付き投稿削除
+  async deletePostWithPassword(id, password) {
+    try {
+      const formData = new FormData();
+      formData.append('id', id);
+      formData.append('password', password);
+
+      const response = await fetch(`${this.baseURL}?function=deletePostWithPassword`, {
+        method: 'POST',
+        body: formData
+      });
+      if (!response.ok) throw new Error('削除に失敗しました');
+      return await response.json();
+    } catch (error) {
+      console.error('deletePostWithPassword error:', error);
+      throw error;
+    }
+  }
+
+  // パスワード付き投稿更新
+  async updatePostWithPassword(id, password, updateData) {
+    try {
+      const formData = new FormData();
+      formData.append('id', id);
+      formData.append('password', password);
+      formData.append('updateData', JSON.stringify(updateData));
+      
+      // ファイルがある場合は追加
+      if (updateData.file) {
+        // ファイルをBase64に変換
+        const base64 = await new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(reader.result.split(',')[1]);
+          reader.onerror = reject;
+          reader.readAsDataURL(updateData.file);
+        });
+        formData.append('fileBase64', base64);
+        formData.append('filename', updateData.file.name);
+      }
+
+      const response = await fetch(`${this.baseURL}?function=updatePostWithPassword`, {
+        method: 'POST',
+        body: formData
+      });
+      if (!response.ok) throw new Error('更新に失敗しました');
+      return await response.json();
+    } catch (error) {
+      console.error('updatePostWithPassword error:', error);
       throw error;
     }
   }
