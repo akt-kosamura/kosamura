@@ -42,6 +42,11 @@ class KosamuraAPI {
       // パスワードをトリムして確実に送信（空文字列の場合は空文字列を送信）
       const trimmedPassword = String(deletePassword || '').trim();
       
+      // デバッグ用：パスワード送信前のログ
+      console.log('=== uploadFileAndRecord パスワード送信前 ===');
+      console.log('deletePassword (入力):', deletePassword, '(型:', typeof deletePassword + ')');
+      console.log('trimmedPassword (処理後):', trimmedPassword, '(型:', typeof trimmedPassword + ', 長さ:', trimmedPassword.length + ')');
+      
       // GASのdoPost関数が期待する形式でURLパラメータを作成
       const params = new URLSearchParams();
       params.append('function', 'uploadFileAndRecord');
@@ -59,14 +64,24 @@ class KosamuraAPI {
       // パスワードを確実にURLパラメータとして送信（空文字列でも送信）
       params.append('deletePassword', trimmedPassword);
       
+      // デバッグ用：URLパラメータに含まれるパスワードを確認
+      const urlParams = params.toString();
+      console.log('URLパラメータ（パスワード部分）:', urlParams.includes('deletePassword=') ? urlParams.split('deletePassword=')[1].split('&')[0] : '見つかりません');
+      console.log('==============================');
+      
       // Base64エンコードされたファイルデータをリクエストボディとして送信
-      const response = await fetch(`${this.baseURL}?${params.toString()}`, {
+      const requestUrl = `${this.baseURL}?${params.toString()}`;
+      console.log('リクエストURL（パスワード部分のみ）:', requestUrl.includes('deletePassword=') ? requestUrl.split('deletePassword=')[1].split('&')[0] : '見つかりません');
+      
+      const response = await fetch(requestUrl, {
         method: 'POST',
         body: base64,
         headers: {
           'Content-Type': 'text/plain'
         }
       });
+      
+      console.log('レスポンスステータス:', response.status, response.statusText);
       
       if (!response.ok) {
         const errorText = await response.text();
@@ -89,15 +104,22 @@ class KosamuraAPI {
       
       const result = await response.json();
       
+      console.log('レスポンス結果:', result);
+      
       // GASの戻り値形式に合わせる（直接URL文字列を返す）
       if (result.error) {
+        console.error('アップロードエラー:', result.error);
         throw new Error(result.error);
       }
+      
+      console.log('アップロード成功。ファイルURL:', result.url || result);
+      console.log('=== uploadFileAndRecord 完了 ===');
       
       // resultが直接URL文字列の場合と、result.urlの場合の両方に対応
       return result.url || result || '';
     } catch (error) {
       console.error('uploadFileAndRecord error:', error);
+      console.error('エラー詳細:', error.message, error.stack);
       throw error;
     }
   }

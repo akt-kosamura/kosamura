@@ -589,6 +589,11 @@
           const deletePassword = document.getElementById('deletePassword').value;
           const fileFormat = 'PDF';
           
+          // デバッグ用：フォームから取得したパスワードをログ出力
+          console.log('=== フォームから取得したパスワード ===');
+          console.log('deletePassword:', deletePassword, '(型:', typeof deletePassword + ', 長さ:', deletePassword ? deletePassword.length : 0 + ')');
+          console.log('=====================================');
+          
           // ファイル名生成（変数を使用）
           const autoFileName = [
             grade,
