@@ -39,6 +39,9 @@ class KosamuraAPI {
   // ファイルアップロード（GAS運用時と同じ）
   async uploadFileAndRecord(grade, year, type, subject, stream, contentType, fileFormat, comment, filename, base64, deviceInfo, fileSizeMB, deletePassword = '') {
     try {
+      // パスワードをトリムして確実に送信（空文字列の場合は空文字列を送信）
+      const trimmedPassword = String(deletePassword || '').trim();
+      
       // GASのdoPost関数が期待する形式でURLパラメータを作成
       const params = new URLSearchParams();
       params.append('function', 'uploadFileAndRecord');
@@ -53,7 +56,8 @@ class KosamuraAPI {
       params.append('fileSizeMB', fileSizeMB);
       params.append('deviceInfo', JSON.stringify(deviceInfo));
       params.append('filename', filename);
-      params.append('deletePassword', deletePassword || '');
+      // パスワードを確実にURLパラメータとして送信（空文字列でも送信）
+      params.append('deletePassword', trimmedPassword);
       
       // Base64エンコードされたファイルデータをリクエストボディとして送信
       const response = await fetch(`${this.baseURL}?${params.toString()}`, {
@@ -365,9 +369,11 @@ class KosamuraAPI {
   // パスワード検証
   async verifyPassword(id, password) {
     try {
+      // パスワードをトリムして確実に送信
+      const trimmedPassword = String(password || '').trim();
       const formData = new FormData();
       formData.append('id', id);
-      formData.append('password', password);
+      formData.append('password', trimmedPassword);
 
       const response = await fetch(`${this.baseURL}?function=verifyPassword`, {
         method: 'POST',
@@ -385,9 +391,11 @@ class KosamuraAPI {
   // パスワード付き投稿削除
   async deletePostWithPassword(id, password) {
     try {
+      // パスワードをトリムして確実に送信
+      const trimmedPassword = String(password || '').trim();
       const formData = new FormData();
       formData.append('id', id);
-      formData.append('password', password);
+      formData.append('password', trimmedPassword);
 
       const response = await fetch(`${this.baseURL}?function=deletePostWithPassword`, {
         method: 'POST',
@@ -404,9 +412,11 @@ class KosamuraAPI {
   // パスワード付き投稿更新
   async updatePostWithPassword(id, password, updateData) {
     try {
+      // パスワードをトリムして確実に送信
+      const trimmedPassword = String(password || '').trim();
       const formData = new FormData();
       formData.append('id', id);
-      formData.append('password', password);
+      formData.append('password', trimmedPassword);
       formData.append('updateData', JSON.stringify(updateData));
       
       // ファイルがある場合は追加
