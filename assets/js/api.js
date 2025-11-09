@@ -45,38 +45,38 @@ class KosamuraAPI {
       console.log('=== uploadFileAndRecord パラメータ確認 ===');
       console.log('deletePassword length:', trimmedPassword ? trimmedPassword.length : 0);
  
-       // GASのdoPost関数が期待する形式でURLパラメータを作成
-       const params = new URLSearchParams();
-       params.append('function', 'uploadFileAndRecord');
-       params.append('grade', grade);
-       params.append('year', year);
-       params.append('type', type);
-       params.append('subject', subject);
-       params.append('stream', stream);
-       params.append('contentType', contentType);
-       params.append('fileFormat', fileFormat);
-       params.append('comment', comment);
-       params.append('fileSizeMB', fileSizeMB);
-       params.append('deviceInfo', JSON.stringify(deviceInfo));
-       params.append('filename', filename);
+       // サーバー側のフォームパーサ（multipart/form-data）に合わせて
+       // FormData を使って全てのフィールドを送信します。
+       // これにより deletePassword が確実に届き、コメントと同様に処理されます。
+       const formData = new FormData();
+       formData.append('function', 'uploadFileAndRecord');
+       formData.append('grade', grade);
+       formData.append('year', year);
+       formData.append('type', type);
+       formData.append('subject', subject);
+       formData.append('stream', stream);
+       formData.append('contentType', contentType);
+       formData.append('fileFormat', fileFormat);
+       formData.append('comment', comment);
+       formData.append('fileSizeMB', String(fileSizeMB));
+       formData.append('deviceInfo', JSON.stringify(deviceInfo));
+       formData.append('filename', filename);
        // パスワードを送信（空文字でも送信）
-       params.append('deletePassword', trimmedPassword);
-       
-       // デバッグ用：URLパラメータに含まれるパスワードを確認
-       const urlParams = params.toString();
-       console.log('URLパラメータ（deletePassword length shown）：', urlParams.includes('deletePassword=') ? (params.get('deletePassword') ? params.get('deletePassword').length : 0) : 'missing');
-       console.log('==============================');
- 
-       // Base64エンコードされたファイルデータをリクエストボディとして送信
-       const requestUrl = `${this.baseURL}?${params.toString()}`;
-       console.log('リクエストURL作成済み');
- 
-       const response = await fetch(requestUrl, {
+       formData.append('deletePassword', trimmedPassword);
+       // ファイル本体は fileBase64 フィールドで送る（サーバー側の parseFormData で扱いやすくする）
+       formData.append('fileBase64', base64);
+
+       // デバッグ用：フォームに含まれるパスワード長を確認
+       try {
+         console.log('FormData deletePassword length:', (formData.get('deletePassword') || '').length);
+       } catch (err) {
+         // 一部環境では FormData.get が存在しない場合があるが fetch に送れば問題ない
+         console.log('FormData prepared');
+       }
+
+       const response = await fetch(this.baseURL, {
          method: 'POST',
-         body: base64,
-         headers: {
-           'Content-Type': 'text/plain'
-         }
+         body: formData
        });
        
        console.log('レスポンスステータス:', response.status, response.statusText);
