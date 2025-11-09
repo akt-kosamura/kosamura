@@ -1,0 +1,66 @@
+スプレッドシート列構成（コード: code.gs に基づく）
+
+列番号 - ヘッダー（役割）
+1: ID（投稿ID、一意）
+2: 学年（grade）
+3: 年度（year）
+4: 種類（type）
+5: 科目（subject）
+6: 文理区分（stream）
+7: 内容（contentType）
+8: ファイル形式（fileFormat / format）
+9: コメント（comment）
+10: リンク（url、ファイルの公開URL）
+11: 管理パスワード（deletePassword、編集・削除用）
+12: アップロード日（uploadDate / date、yyyy/mm/dd hh:mm:ss形式の文字列）
+13: いいね（likes、数値）
+14: バッド（bad、数値）
+15: グローバルIP（publicIP）
+16: プライベートIP（privateIP）
+17: プラットフォーム（platform）
+18: OS / User-Agent（userAgent）
+19: 解像度（screenWidth x screenHeight）
+20: ウィンドウサイズ（windowWidth x windowHeight）
+21: ファイルサイズ（MB、fileSize）
+
+備考:
+- code.gs の uploadFileAndRecord は rowData を上記順で一括書き込みしています（setValues 与えた配列が 21 要素であることを確認）。
+- K列（11列目）が管理パスワード列です。search.html 等のフロント側はこの列を直接表示しませんが、パスワード検証（verifyPassword）や編集削除で参照されます。
+- getData() 側ではヘッダー名に依存しないためのヘッダーマップ/推論(inferColumnMap)があり、header 名の別名（日本語/英語）に対応しています。
+
+search.html（表示されるテーブル列）
+
+search.html の <table> ヘッダ順（UI 表示）:
+1: 学年
+2: 年度
+3: 種類
+4: 科目
+5: 文理区分
+6: 内容
+7: ファイル形式
+8: コメント
+9: リンク（"見る" のアクション、url から取得）
+10: アップロード日（相対表示: formatRelativeTime を使用）
+11: 評価（いいね / バッド を2ボタンで表示。スプレッドシートでは列13/14）
+12: 操作（編集 / 削除 ボタン。編集・削除時にパスワード入力が必要）
+
+表示列 ⇄ スプレッドシート列 の対応 (主な参照)
+- 学年 -> スプレッドシート列2 (grade)
+- 年度 -> 列3 (year)
+- 種類 -> 列4 (type)
+- 科目 -> 列5 (subject)
+- 文理区分 -> 列6 (stream)
+- 内容 -> 列7 (contentType)
+- ファイル形式 -> 列8 (fileFormat または format)
+- コメント -> 列9
+- リンク -> 列10 (url)
+- アップロード日 -> 列12 (uploadDate)
+- 評価 -> 列13（いいね）, 列14（バッド）
+- 操作 -> フロント側の UI 機能（サーバーへは verify/delete/update 等の API 呼び出しで ID とパスワードを送る）
+
+追加の注意点・推奨
+- code.gs 側で列ずれを防ぐために ensurePasswordColumn や明示的な上書き処理が入っています。スプレッドシートのヘッダー変更や列挿入・削除があるとずれが発生する可能性があるので、ヘッダーは固定することを推奨します。
+- フロント側 api.js は現在アップロード時に deletePassword を強制的に "pass" にしています。サーバー（code.gs）は受け取った deletePassword を K列に保存します。運用上、固定パスワードでよいか（セキュリティ面）再検討してください。
+- getData() はヘッダー名の別名（日本語/英語）に対応して読み取りますが、最終的には上記の列番号順を維持することが最も確実です。
+
+必要なら、このファイルを別名でスプレッドシートのヘッダー行（1行目）に貼り付ける用の CSV / ヘッダー行テキストも生成します。

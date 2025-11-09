@@ -1005,7 +1005,7 @@ function showAdPopup(fileUrl) {
         <td class="subject-cell">${String(item.subject || '')}</td>
         <td class="stream-cell">${String(item.stream || '')}</td>
         <td class="content-cell">${String(item.contentType || '')}</td>
-        <td class="format-cell">${String(item.format || '')}</td>
+        <td class="format-cell">${String(item.fileFormat || item.format || '')}</td>
         <td class="comment-cell" data-comment="${safe}"><div class="comment-text">${safe}</div></td>
         <td class="link-cell"><a href="#" class="view-link" data-url="${String(item.url || '')}">見る</a></td>
         <td class="col-date date-cell">${rel}</td>

@@ -39,84 +39,82 @@ class KosamuraAPI {
   // ファイルアップロード（GAS運用時と同じ）
   async uploadFileAndRecord(grade, year, type, subject, stream, contentType, fileFormat, comment, filename, base64, deviceInfo, fileSizeMB, deletePassword = '') {
     try {
-      // パスワードをトリムして確実に送信（空文字列の場合は空文字列を送信）
+      // クライアントで入力されたパスワードをそのまま送信（空文字可）。運用ではハッシュ化を推奨。
       const trimmedPassword = String(deletePassword || '').trim();
-      
-      // デバッグ用：パスワード送信前のログ
-      console.log('=== uploadFileAndRecord パスワード送信前 ===');
-      console.log('deletePassword (入力):', deletePassword, '(型:', typeof deletePassword + ')');
-      console.log('trimmedPassword (処理後):', trimmedPassword, '(型:', typeof trimmedPassword + ', 長さ:', trimmedPassword.length + ')');
-      
-      // GASのdoPost関数が期待する形式でURLパラメータを作成
-      const params = new URLSearchParams();
-      params.append('function', 'uploadFileAndRecord');
-      params.append('grade', grade);
-      params.append('year', year);
-      params.append('type', type);
-      params.append('subject', subject);
-      params.append('stream', stream);
-      params.append('contentType', contentType);
-      params.append('fileFormat', fileFormat);
-      params.append('comment', comment);
-      params.append('fileSizeMB', fileSizeMB);
-      params.append('deviceInfo', JSON.stringify(deviceInfo));
-      params.append('filename', filename);
-      // パスワードを確実にURLパラメータとして送信（空文字列でも送信）
-      params.append('deletePassword', trimmedPassword);
-      
-      // デバッグ用：URLパラメータに含まれるパスワードを確認
-      const urlParams = params.toString();
-      console.log('URLパラメータ（パスワード部分）:', urlParams.includes('deletePassword=') ? urlParams.split('deletePassword=')[1].split('&')[0] : '見つかりません');
-      console.log('==============================');
-      
-      // Base64エンコードされたファイルデータをリクエストボディとして送信
-      const requestUrl = `${this.baseURL}?${params.toString()}`;
-      console.log('リクエストURL（パスワード部分のみ）:', requestUrl.includes('deletePassword=') ? requestUrl.split('deletePassword=')[1].split('&')[0] : '見つかりません');
-      
-      const response = await fetch(requestUrl, {
-        method: 'POST',
-        body: base64,
-        headers: {
-          'Content-Type': 'text/plain'
-        }
-      });
-      
-      console.log('レスポンスステータス:', response.status, response.statusText);
-      
-      if (!response.ok) {
-        const errorText = await response.text();
-        // 「please tell me who you are」エラーの場合、より分かりやすいメッセージを表示
-        if (errorText.includes('please tell me who you are') || errorText.includes('Please tell me who you are')) {
-          throw new Error('Google Apps Scriptの認証設定が必要です。Webアプリケーションを「誰でもアクセス可能」に設定してください。');
-        }
-        throw new Error(`アップロードに失敗しました: ${errorText}`);
-      }
-      
-      // レスポンスがJSONでない場合（HTMLエラーページなど）をチェック
-      const responseContentType = response.headers.get('content-type');
-      if (!responseContentType || !responseContentType.includes('application/json')) {
-        const errorText = await response.text();
-        if (errorText.includes('please tell me who you are') || errorText.includes('Please tell me who you are')) {
-          throw new Error('Google Apps Scriptの認証設定が必要です。Webアプリケーションを「誰でもアクセス可能」に設定してください。');
-        }
-        throw new Error(`アップロードに失敗しました: サーバーから予期しない形式のレスポンスが返されました`);
-      }
-      
-      const result = await response.json();
-      
-      console.log('レスポンス結果:', result);
-      
-      // GASの戻り値形式に合わせる（直接URL文字列を返す）
-      if (result.error) {
-        console.error('アップロードエラー:', result.error);
-        throw new Error(result.error);
-      }
-      
-      console.log('アップロード成功。ファイルURL:', result.url || result);
-      console.log('=== uploadFileAndRecord 完了 ===');
-      
-      // resultが直接URL文字列の場合と、result.urlの場合の両方に対応
-      return result.url || result || '';
+      // デバッグ出力ではパスワードの中身は出力しない（長さのみ表示）
+      console.log('=== uploadFileAndRecord パラメータ確認 ===');
+      console.log('deletePassword length:', trimmedPassword ? trimmedPassword.length : 0);
+ 
+       // GASのdoPost関数が期待する形式でURLパラメータを作成
+       const params = new URLSearchParams();
+       params.append('function', 'uploadFileAndRecord');
+       params.append('grade', grade);
+       params.append('year', year);
+       params.append('type', type);
+       params.append('subject', subject);
+       params.append('stream', stream);
+       params.append('contentType', contentType);
+       params.append('fileFormat', fileFormat);
+       params.append('comment', comment);
+       params.append('fileSizeMB', fileSizeMB);
+       params.append('deviceInfo', JSON.stringify(deviceInfo));
+       params.append('filename', filename);
+       // パスワードを送信（空文字でも送信）
+       params.append('deletePassword', trimmedPassword);
+       
+       // デバッグ用：URLパラメータに含まれるパスワードを確認
+       const urlParams = params.toString();
+       console.log('URLパラメータ（deletePassword length shown）：', urlParams.includes('deletePassword=') ? (params.get('deletePassword') ? params.get('deletePassword').length : 0) : 'missing');
+       console.log('==============================');
+ 
+       // Base64エンコードされたファイルデータをリクエストボディとして送信
+       const requestUrl = `${this.baseURL}?${params.toString()}`;
+       console.log('リクエストURL作成済み');
+ 
+       const response = await fetch(requestUrl, {
+         method: 'POST',
+         body: base64,
+         headers: {
+           'Content-Type': 'text/plain'
+         }
+       });
+       
+       console.log('レスポンスステータス:', response.status, response.statusText);
+       
+       if (!response.ok) {
+         const errorText = await response.text();
+         // 「please tell me who you are」エラーの場合、より分かりやすいメッセージを表示
+         if (errorText.includes('please tell me who you are') || errorText.includes('Please tell me who you are')) {
+           throw new Error('Google Apps Scriptの認証設定が必要です。Webアプリケーションを「誰でもアクセス可能」に設定してください。');
+         }
+         throw new Error(`アップロードに失敗しました: ${errorText}`);
+       }
+       
+       // レスポンスがJSONでない場合（HTMLエラーページなど）をチェック
+       const responseContentType = response.headers.get('content-type');
+       if (!responseContentType || !responseContentType.includes('application/json')) {
+         const errorText = await response.text();
+         if (errorText.includes('please tell me who you are') || errorText.includes('Please tell me who you are')) {
+           throw new Error('Google Apps Scriptの認証設定が必要です。Webアプリケーションを「誰でもアクセス可能」に設定してください。');
+         }
+         throw new Error(`アップロードに失敗しました: サーバーから予期しない形式のレスポンスが返されました`);
+       }
+       
+       const result = await response.json();
+       
+       console.log('レスポンス結果:', result);
+       
+       // GASの戻り値形式に合わせる（直接URL文字列を返す）
+       if (result.error) {
+         console.error('アップロードエラー:', result.error);
+         throw new Error(result.error);
+       }
+       
+       console.log('アップロード成功。ファイルURL:', result.url || result);
+       console.log('=== uploadFileAndRecord 完了 ===');
+       
+       // resultが直接URL文字列の場合と、result.urlの場合の両方に対応
+       return result.url || result || '';
     } catch (error) {
       console.error('uploadFileAndRecord error:', error);
       console.error('エラー詳細:', error.message, error.stack);
@@ -597,4 +595,4 @@ window.google = {
       }
     }
   }
-}; 
+};
