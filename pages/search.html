@@ -182,11 +182,11 @@
             <th>科目</th>
             <th>文理区分</th>
             <th>内容</th>
-            <th class="col-format">形式</th>
+            <th class="col-format">ファイル形式</th>
             <th class="col-comment">コメント</th>
-            <th></th>
-            <th class="col-date"></th>
-            <th class="col-eval"></th>
+            <th>リンク</th>
+            <th class="col-date">アップロード日</th>
+            <th class="col-eval">評価</th>
             <th>操作</th>
           </tr>
         </thead>
@@ -862,9 +862,36 @@ function showAdPopup(fileUrl) {
   // 相対時間表示関数
   function formatRelativeTime(dateStr) {
     try {
-      const date = new Date(dateStr);
+      if (!dateStr || dateStr === '' || dateStr === 'undefined' || dateStr === 'null') {
+        return '不明';
+      }
+      
+      // 日付文字列をパース（yyyy/mm/dd hh:mm:ss形式に対応）
+      let date;
+      if (typeof dateStr === 'string' && dateStr.includes('/')) {
+        // yyyy/mm/dd hh:mm:ss形式の場合
+        date = new Date(dateStr.replace(/\//g, '-'));
+      } else if (typeof dateStr === 'number') {
+        // タイムスタンプの場合
+        date = new Date(dateStr);
+      } else {
+        // その他の形式
+        date = new Date(dateStr);
+      }
+      
+      // 無効な日付の場合は元の文字列を返す
+      if (isNaN(date.getTime())) {
+        return dateStr;
+      }
+      
       const now = new Date();
       const diffMs = now.getTime() - date.getTime();
+      
+      // 未来の日付の場合は「未来」と表示
+      if (diffMs < 0) {
+        return '未来';
+      }
+      
       const diffSec = Math.floor(diffMs / 1000);
       const diffMin = Math.floor(diffSec / 60);
       const diffHour = Math.floor(diffMin / 60);
@@ -880,7 +907,8 @@ function showAdPopup(fileUrl) {
         return `${diffSec}秒前`;
       }
     } catch (error) {
-      return dateStr;
+      console.error('formatRelativeTime error:', error, 'dateStr:', dateStr);
+      return dateStr || '不明';
     }
   }
 
@@ -950,6 +978,26 @@ function showAdPopup(fileUrl) {
       tr.dataset.date = String(item.date || '');
       const safe = String(item.comment || '').replace(/</g,'&lt;').replace(/>/g,'&gt;');
       const rel = formatRelativeTime(item.date);
+      
+      // いいねとバッドの数を正しく取得（数値として扱う）
+      const likesValue = Number(item.likes) || 0;
+      const badValue = Number(item.bad) || 0;
+      
+      // デバッグ用（最初の1件のみ）
+      if (data.indexOf(item) === 0) {
+        console.log('データサンプル:', {
+          id: item.id,
+          date: item.date,
+          dateType: typeof item.date,
+          likes: item.likes,
+          likesType: typeof item.likes,
+          likesValue: likesValue,
+          bad: item.bad,
+          badType: typeof item.bad,
+          badValue: badValue
+        });
+      }
+      
       tr.innerHTML = `
         <td class="grade-cell">${String(item.grade || '')}</td>
         <td class="year-cell">${String(item.year || '')}</td>
@@ -962,8 +1010,8 @@ function showAdPopup(fileUrl) {
         <td class="link-cell"><a href="#" class="view-link" data-url="${String(item.url || '')}">見る</a></td>
         <td class="col-date date-cell">${rel}</td>
         <td class="col-eval eval-cell">
-          <button class="btn-like${vt==='good'?' active':''}" data-id="${item.id}">${item.likes || 0}</button>
-          <button class="btn-bad${vt==='bad'?' active':''}" data-id="${item.id}">${item.bad || 0}</button>
+          <button class="btn-like${vt==='good'?' active':''}" data-id="${item.id}">${likesValue}</button>
+          <button class="btn-bad${vt==='bad'?' active':''}" data-id="${item.id}">${badValue}</button>
         </td>
         <td class="action-cell">
           <button class="btn-edit" data-id="${item.id}">編集</button>
