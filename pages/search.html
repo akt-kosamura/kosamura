@@ -17,6 +17,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=1200" />
   <title>問題データベース - 秋高考査村</title>
+  <meta name="kosamura-api-base" content="https://script.google.com/macros/s/AKfycbzS-uZ4c1OMBcCSq38G1Vx7a04BO3R7n7SLRJNVGSRS4AcjuYlDPSzTYDhMbpVebAnJ/exec">
   <link rel="icon" href="../assets/icon.png">
   <meta name="description" content="他の利用者が投稿した問題を閲覧できます。問題アップロードで待ち時間ゼロ！">
   <link rel="stylesheet" href="../assets/css/common.css" />
@@ -187,11 +188,13 @@
             <th></th>
             <th class="col-date"></th>
             <th class="col-eval"></th>
+            <th class="col-action" style="width:48px;text-align:center">編集</th>
+            <th class="col-action" style="width:48px;text-align:center">削除</th>
           </tr>
         </thead>
         <tbody id="resultBody">
           <tr id="loadingRow">
-                         <td colspan="11" style="text-align:center;color:#666">
+                         <td colspan="13" style="text-align:center;color:#666">
                <div class="loading-placeholder">
                  <div class="loading-spinner"></div>
                  <p>読み込み中…（表は横スクロール対応）</p>
@@ -211,6 +214,18 @@
   margin-top: 18px;
   margin-bottom: 18px;
 }
+/* アイコンボタンの統一スタイル（編集・削除） */
+.icon-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 6px;
+  font-size: 1rem;
+  color: #333;
+  border-radius: 6px;
+}
+.icon-btn:hover { background: rgba(0,0,0,0.05); }
+.edit-icon-cell, .delete-icon-cell { text-align: center; }
 </style>
 
 <script>
@@ -336,6 +351,56 @@ function showAdPopup(fileUrl) {
     tbody.addEventListener('click', handleTableClick);
   }
   
+  // 管理者パスワード入力モーダル表示
+    // action: 'edit' or 'delete'（将来的に拡張）
+    async function showAdminPasswordPrompt(itemId, action = 'edit') {
+    // Overlay
+    const overlay = document.createElement('div');
+    overlay.className = 'popup-overlay';
+    overlay.style = 'position:fixed;left:0;top:0;right:0;bottom:0;display:flex;align-items:center;justify-content:center;z-index:3000;background:rgba(0,0,0,0.5);';
+    overlay.innerHTML = `
+      <div style="background:#fff;padding:1.2rem;border-radius:10px;max-width:420px;width:90%;box-shadow:0 6px 30px rgba(0,0,0,0.25);">
+  <h3 style="margin:0 0 0.6rem 0;font-size:1.05rem;">${action === 'delete' ? '削除用パスワードの入力' : '編集用パスワードの入力'}</h3>
+  <p style="margin:0 0 0.8rem 0;color:#555;font-size:0.95rem;">${action === 'delete' ? 'このアイテムを削除するための管理者パスワードを入力してください。' : 'このアイテムを編集するための管理者パスワードを入力してください。'}</p>
+        <input id="adminPassInput" type="password" placeholder="パスワード" style="width:100%;padding:0.5rem;margin-bottom:0.6rem;font-size:1rem;" />
+        <div style="display:flex;gap:0.6rem;justify-content:flex-end;">
+          <button id="adminPassCancel" style="padding:0.5rem 0.8rem;border-radius:6px;border:1px solid #ccc;background:#fff;">キャンセル</button>
+          <button id="adminPassOk" style="padding:0.5rem 0.8rem;border-radius:6px;border:0;background:#0071e3;color:#fff;">OK</button>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(overlay);
+
+    const cleanup = () => { try { overlay.remove(); } catch (e){} };
+
+    overlay.querySelector('#adminPassCancel').addEventListener('click', () => { cleanup(); });
+    overlay.addEventListener('click', (ev) => { if (ev.target === overlay) cleanup(); });
+
+    overlay.querySelector('#adminPassOk').addEventListener('click', async () => {
+      const pw = overlay.querySelector('#adminPassInput').value || '';
+      try {
+        // 認証チェック（存在する場合）
+        const ok = await kosamuraAPI.checkAdminPassword(pw);
+        if (ok) {
+          localStorage.setItem('admin_auth', 'ok');
+          if (action === 'delete') {
+            alert('認証に成功しました。削除処理は未実装です。');
+            // 将来的にはここで削除処理を呼ぶ
+          } else {
+            alert('認証に成功しました。編集フォームは後で表示されます（未実装）。');
+            // 将来的にはここで編集画面を表示する
+          }
+          cleanup();
+        } else {
+          alert('パスワードが間違っています。');
+        }
+      } catch (err) {
+        console.error('checkAdminPassword error', err);
+        alert('認証に失敗しました。');
+      }
+    });
+  }
+
   // テーブル全体のクリックイベントハンドラー
   function handleTableClick(e) {
     const target = e.target;
@@ -352,6 +417,23 @@ function showAdPopup(fileUrl) {
         showAdPopup(fileUrl);
       }
       return;
+    }
+
+    // 編集 / 削除アイコンの処理（アイコン内の<i>などがクリックされても対応）
+    const btn = target.closest && target.closest('button');
+    if (btn) {
+      if (btn.classList.contains('btn-edit')) {
+        e.preventDefault();
+        const id = btn.dataset.id;
+        showAdminPasswordPrompt(id, 'edit');
+        return;
+      }
+      if (btn.classList.contains('btn-delete')) {
+        e.preventDefault();
+        const id = btn.dataset.id;
+        showAdminPasswordPrompt(id, 'delete');
+        return;
+      }
     }
     
     // いいねボタンの処理
@@ -380,7 +462,6 @@ function showAdPopup(fileUrl) {
       const id = target.dataset.id, prev = localStorage.getItem('vote_' + id), tr = target.closest('tr');
       const likeBtn = tr.querySelector('.btn-like');
       let count = parseInt(target.textContent.replace(/\D/g,''),10);
-      
       if (prev==='bad') {
         target.classList.remove('active'); localStorage.removeItem('vote_' + id); kosamuraAPI.unbad(Number(id));
         target.textContent = `${--count}`;
@@ -430,7 +511,7 @@ function showAdPopup(fileUrl) {
   // データ取得（パフォーマンス改善版）
   async function fetchData() {
     const tbody = document.getElementById('resultBody');
-    tbody.innerHTML = '<tr id="loadingRow"><td colspan="11" style="text-align:center;color:#666"><div class="loading-placeholder"><div class="loading-spinner"></div><p>読み込み中…（表は横スクロール対応）</p></div></td></tr>';
+  tbody.innerHTML = '<tr id="loadingRow"><td colspan="13" style="text-align:center;color:#666"><div class="loading-placeholder"><div class="loading-spinner"></div><p>読み込み中…（表は横スクロール対応）</p></div></td></tr>';
     
     // タイムアウト設定（30秒）
     const timeoutPromise = new Promise((_, reject) => {
@@ -444,9 +525,9 @@ function showAdPopup(fileUrl) {
     } catch (error) {
       console.error('データ取得エラー:', error);
       if (error.message.includes('タイムアウト')) {
-        tbody.innerHTML = '<tr><td colspan="11" style="text-align:center;color:orange;"><div style="margin: 20px 0;"><p>データの取得に時間がかかっています</p><button onclick="retryFetch()" style="padding: 8px 16px; background: #3b82f6; color: white; border: none; border-radius: 6px; cursor: pointer;">再試行</button></div></td></tr>';
+  tbody.innerHTML = '<tr><td colspan="13" style="text-align:center;color:orange;"><div style="margin: 20px 0;"><p>データの取得に時間がかかっています</p><button onclick="retryFetch()" style="padding: 8px 16px; background: #3b82f6; color: white; border: none; border-radius: 6px; cursor: pointer;">再試行</button></div></td></tr>';
       } else {
-        tbody.innerHTML = '<tr><td colspan="11" style="text-align:center;color:red;">データの取得に失敗しました: ' + error.message + '</td></tr>';
+  tbody.innerHTML = '<tr><td colspan="13" style="text-align:center;color:red;">データの取得に失敗しました: ' + error.message + '</td></tr>';
       }
     }
   }
@@ -477,7 +558,7 @@ function showAdPopup(fileUrl) {
     const tbody = document.getElementById('resultBody');
     tbody.innerHTML = '';
     if (!data || data.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="11" style="text-align:center;color:#666">データがありません</td></tr>';
+  tbody.innerHTML = '<tr><td colspan="13" style="text-align:center;color:#666">データがありません</td></tr>';
       return;
     }
     
@@ -502,13 +583,22 @@ function showAdPopup(fileUrl) {
         <td class="content-cell">${String(item.contentType || '')}</td>
         <td class="format-cell">${String(item.format || '')}</td>
         <td class="comment-cell" data-comment="${safe}"><div class="comment-text">${safe}</div></td>
-        <td class="link-cell"><a href="#" class="view-link" data-url="${String(item.url || '')}">見る</a></td>
-        <td class="col-date date-cell">${rel}</td>
+  <td class="link-cell"><a href="#" class="view-link" data-url="${String(item.url || '')}">見る</a></td>
+  <td class="col-date date-cell">${rel}</td>
         <td class="col-eval eval-cell">
           <button class="btn-like${vt==='good'?' active':''}" data-id="${item.id}">${item.likes || 0}</button>
           <button class="btn-bad${vt==='bad'?' active':''}" data-id="${item.id}">${item.bad || 0}</button>
         </td>`;
-      fragment.appendChild(tr);
+      // 追加: 編集 / 削除アイコンを表の一番右に追加
+      const editTd = document.createElement('td');
+      editTd.className = 'edit-icon-cell';
+      editTd.innerHTML = `<button class="btn-edit icon-btn" data-id="${item.id}" title="編集" aria-label="編集"><i class="fa-solid fa-pen-to-square"></i></button>`;
+      const delTd = document.createElement('td');
+      delTd.className = 'delete-icon-cell';
+      delTd.innerHTML = `<button class="btn-delete icon-btn" data-id="${item.id}" title="削除" aria-label="削除"><i class="fa-solid fa-trash"></i></button>`;
+  tr.appendChild(editTd);
+  tr.appendChild(delTd);
+  fragment.appendChild(tr);
     });
     
     // 一括でDOMに追加
@@ -543,7 +633,7 @@ function showAdPopup(fileUrl) {
     if (hasActiveFilters && visibleCount === 0) {
       const tbody = document.getElementById('resultBody');
       const noResultsRow = document.createElement('tr');
-      noResultsRow.innerHTML = '<td colspan="11" style="text-align:center;color:#666">一致するものはありませんでした。</td>';
+  noResultsRow.innerHTML = '<td colspan="13" style="text-align:center;color:#666">一致するものはありませんでした。</td>';
       noResultsRow.id = 'noResultsRow';
       tbody.appendChild(noResultsRow);
     } else {

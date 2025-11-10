@@ -2,12 +2,41 @@
 class KosamuraAPI {
   constructor(baseURL = null) {
     // ベースURLを動的に決定
+    // 優先順位:
+    // 1) コンストラクタ引数 (baseURL)
+    // 2) window.KOSAMURA_API_BASE_URL（HTML側で設定可能）
+    // 3) meta[name="kosamura-api-base"] の content 属性
+    // 4) フォールバックでハードコードされたデフォルトURL
     if (baseURL) {
       this.baseURL = baseURL;
-    } else {
-      // GASのURLをデフォルトとして設定
-      this.baseURL = 'https://script.google.com/macros/s/AKfycbwEAhdiJOtbf44ifY-BoAFhLI7eQl_uIJKm9NDTexoWZD7U8l-7wsrT9ufRCZ9d8lZf/exec';
+      return;
     }
+
+    // 2) window global
+    try {
+      if (typeof window !== 'undefined' && window.KOSAMURA_API_BASE_URL) {
+        this.baseURL = window.KOSAMURA_API_BASE_URL;
+        return;
+      }
+    } catch (e) {
+      // ignore
+    }
+
+    // 3) meta tag
+    try {
+      if (typeof document !== 'undefined') {
+        const m = document.querySelector('meta[name="kosamura-api-base"]');
+        if (m && m.content) {
+          this.baseURL = m.content;
+          return;
+        }
+      }
+    } catch (e) {
+      // ignore
+    }
+
+    // 4) フォールバック（既存の直書きURL）
+    this.baseURL = 'https://script.google.com/macros/s/AKfycbwEAhdiJOtbf44ifY-BoAFhLI7eQl_uIJKm9NDTexoWZD7U8l-7wsrT9ufRCZ9d8lZf/exec';
   }
 
   // データ取得（GAS運用時と同じ）
@@ -37,7 +66,7 @@ class KosamuraAPI {
   }
 
   // ファイルアップロード（GAS運用時と同じ）
-  async uploadFileAndRecord(grade, year, type, subject, stream, contentType, fileFormat, comment, filename, base64, deviceInfo, fileSizeMB) {
+  async uploadFileAndRecord(grade, year, type, subject, stream, contentType, fileFormat, comment, adminPassword, filename, base64, deviceInfo, fileSizeMB) {
     try {
       // GASのdoPost関数が期待する形式でURLパラメータを作成
       const params = new URLSearchParams();
@@ -50,6 +79,7 @@ class KosamuraAPI {
       params.append('contentType', contentType);
       params.append('fileFormat', fileFormat);
       params.append('comment', comment);
+      params.append('adminPassword', adminPassword || '');
       params.append('fileSizeMB', fileSizeMB);
       params.append('deviceInfo', JSON.stringify(deviceInfo));
       params.append('filename', filename);
@@ -395,7 +425,7 @@ window.google = {
       
       uploadFileAndRecord: function(grade, year, type, subject, stream, contentType, fileFormat, comment, filename, base64, deviceInfo, fileSizeMB) {
         return new Promise((resolve, reject) => {
-          kosamuraAPI.uploadFileAndRecord(grade, year, type, subject, stream, contentType, fileFormat, comment, filename, base64, deviceInfo, fileSizeMB)
+      kosamuraAPI.uploadFileAndRecord(grade, year, type, subject, stream, contentType, fileFormat, comment, adminPassword, filename, base64, deviceInfo, fileSizeMB)
             .then(url => resolve(url))
             .catch(error => reject(error));
         });
