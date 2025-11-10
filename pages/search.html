@@ -188,13 +188,12 @@
             <th></th>
             <th class="col-date"></th>
             <th class="col-eval"></th>
-            <th class="col-action" style="width:48px;text-align:center">編集</th>
-            <th class="col-action" style="width:48px;text-align:center">削除</th>
+            <th class="col-action" style="width:44px;text-align:center">編集</th>
           </tr>
         </thead>
         <tbody id="resultBody">
           <tr id="loadingRow">
-                         <td colspan="13" style="text-align:center;color:#666">
+                         <td colspan="12" style="text-align:center;color:#666">
                <div class="loading-placeholder">
                  <div class="loading-spinner"></div>
                  <p>読み込み中…（表は横スクロール対応）</p>
@@ -219,13 +218,18 @@
   background: transparent;
   border: none;
   cursor: pointer;
-  padding: 6px;
-  font-size: 1rem;
+  padding: 2px 3px;
+  margin: 0 1px; /* アイコン間の間隔をさらに狭める */
+  font-size: 0.9rem;
   color: #333;
   border-radius: 6px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 .icon-btn:hover { background: rgba(0,0,0,0.05); }
-.edit-icon-cell, .delete-icon-cell { text-align: center; }
+.action-cell { text-align: center; padding: 0; width: 44px; }
+.action-cell .icon-btn { vertical-align: middle; }
 </style>
 
 <script>
@@ -511,7 +515,7 @@ function showAdPopup(fileUrl) {
   // データ取得（パフォーマンス改善版）
   async function fetchData() {
     const tbody = document.getElementById('resultBody');
-  tbody.innerHTML = '<tr id="loadingRow"><td colspan="13" style="text-align:center;color:#666"><div class="loading-placeholder"><div class="loading-spinner"></div><p>読み込み中…（表は横スクロール対応）</p></div></td></tr>';
+  tbody.innerHTML = '<tr id="loadingRow"><td colspan="12" style="text-align:center;color:#666"><div class="loading-placeholder"><div class="loading-spinner"></div><p>読み込み中…（表は横スクロール対応）</p></div></td></tr>';
     
     // タイムアウト設定（30秒）
     const timeoutPromise = new Promise((_, reject) => {
@@ -525,9 +529,9 @@ function showAdPopup(fileUrl) {
     } catch (error) {
       console.error('データ取得エラー:', error);
       if (error.message.includes('タイムアウト')) {
-  tbody.innerHTML = '<tr><td colspan="13" style="text-align:center;color:orange;"><div style="margin: 20px 0;"><p>データの取得に時間がかかっています</p><button onclick="retryFetch()" style="padding: 8px 16px; background: #3b82f6; color: white; border: none; border-radius: 6px; cursor: pointer;">再試行</button></div></td></tr>';
+  tbody.innerHTML = '<tr><td colspan="12" style="text-align:center;color:orange;"><div style="margin: 20px 0;"><p>データの取得に時間がかかっています</p><button onclick="retryFetch()" style="padding: 8px 16px; background: #3b82f6; color: white; border: none; border-radius: 6px; cursor: pointer;">再試行</button></div></td></tr>';
       } else {
-  tbody.innerHTML = '<tr><td colspan="13" style="text-align:center;color:red;">データの取得に失敗しました: ' + error.message + '</td></tr>';
+  tbody.innerHTML = '<tr><td colspan="12" style="text-align:center;color:red;">データの取得に失敗しました: ' + error.message + '</td></tr>';
       }
     }
   }
@@ -558,7 +562,7 @@ function showAdPopup(fileUrl) {
     const tbody = document.getElementById('resultBody');
     tbody.innerHTML = '';
     if (!data || data.length === 0) {
-  tbody.innerHTML = '<tr><td colspan="13" style="text-align:center;color:#666">データがありません</td></tr>';
+  tbody.innerHTML = '<tr><td colspan="12" style="text-align:center;color:#666">データがありません</td></tr>';
       return;
     }
     
@@ -589,16 +593,15 @@ function showAdPopup(fileUrl) {
           <button class="btn-like${vt==='good'?' active':''}" data-id="${item.id}">${item.likes || 0}</button>
           <button class="btn-bad${vt==='bad'?' active':''}" data-id="${item.id}">${item.bad || 0}</button>
         </td>`;
-      // 追加: 編集 / 削除アイコンを表の一番右に追加
-      const editTd = document.createElement('td');
-      editTd.className = 'edit-icon-cell';
-      editTd.innerHTML = `<button class="btn-edit icon-btn" data-id="${item.id}" title="編集" aria-label="編集"><i class="fa-solid fa-pen-to-square"></i></button>`;
-      const delTd = document.createElement('td');
-      delTd.className = 'delete-icon-cell';
-      delTd.innerHTML = `<button class="btn-delete icon-btn" data-id="${item.id}" title="削除" aria-label="削除"><i class="fa-solid fa-trash"></i></button>`;
-  tr.appendChild(editTd);
-  tr.appendChild(delTd);
-  fragment.appendChild(tr);
+      // 追加: 編集 / 削除アイコンを1つのアクションセルにまとめて右端に配置（アイコンを密着させる）
+      const actionTd = document.createElement('td');
+      actionTd.className = 'action-cell';
+      actionTd.innerHTML = `
+        <button class="btn-edit icon-btn" data-id="${item.id}" title="編集" aria-label="編集"><i class="fa-solid fa-pen-to-square"></i></button>
+        <button class="btn-delete icon-btn" data-id="${item.id}" title="削除" aria-label="削除"><i class="fa-solid fa-trash"></i></button>
+      `;
+      tr.appendChild(actionTd);
+      fragment.appendChild(tr);
     });
     
     // 一括でDOMに追加
@@ -633,7 +636,7 @@ function showAdPopup(fileUrl) {
     if (hasActiveFilters && visibleCount === 0) {
       const tbody = document.getElementById('resultBody');
       const noResultsRow = document.createElement('tr');
-  noResultsRow.innerHTML = '<td colspan="13" style="text-align:center;color:#666">一致するものはありませんでした。</td>';
+  noResultsRow.innerHTML = '<td colspan="12" style="text-align:center;color:#666">一致するものはありませんでした。</td>';
       noResultsRow.id = 'noResultsRow';
       tbody.appendChild(noResultsRow);
     } else {
@@ -697,8 +700,22 @@ function showAdPopup(fileUrl) {
         box.style.webkitBoxOrient = 'vertical';
         
         if (commentMode === 'compact') {
-          box.style.webkitLineClamp = '1';
-          box.style.maxHeight = '1.4em';
+          // compact モード: 通常は1行表示だが、もともと1行のテキストの場合は
+          // 切れてしまわないように改行可 (折り返し) にして全文表示する。
+          const rawText = td.dataset.comment || '';
+          if (rawText.split('\n').length === 1) {
+            // 単一行のコメント -> 折り返しで全文表示
+            box.style.webkitLineClamp = 'none';
+            box.style.maxHeight = 'none';
+            box.style.overflow = 'visible';
+            box.style.display = 'block';
+          } else {
+            // 複数行を想定 -> 1行に切る
+            box.style.webkitLineClamp = '1';
+            box.style.maxHeight = '1.4em';
+            box.style.overflow = 'hidden';
+            box.style.display = '-webkit-box';
+          }
         } else if (commentMode === 'lines3') {
           box.style.webkitLineClamp = '3';
           box.style.maxHeight = 'calc(3 * 1.4em)';
