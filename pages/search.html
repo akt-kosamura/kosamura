@@ -182,17 +182,16 @@
             <th>科目</th>
             <th>文理区分</th>
             <th>内容</th>
-            <th class="col-format">ファイル形式</th>
+            <th class="col-format">形式</th>
             <th class="col-comment">コメント</th>
-            <th>リンク</th>
-            <th class="col-date">アップロード日</th>
-            <th class="col-eval">評価</th>
-            <th>操作</th>
+            <th></th>
+            <th class="col-date"></th>
+            <th class="col-eval"></th>
           </tr>
         </thead>
         <tbody id="resultBody">
           <tr id="loadingRow">
-                         <td colspan="12" style="text-align:center;color:#666">
+                         <td colspan="11" style="text-align:center;color:#666">
                <div class="loading-placeholder">
                  <div class="loading-spinner"></div>
                  <p>読み込み中…（表は横スクロール対応）</p>
@@ -396,22 +395,6 @@ function showAdPopup(fileUrl) {
       }
       return;
     }
-    
-    // 編集ボタンの処理
-    if (target.classList.contains('btn-edit')) {
-      e.preventDefault();
-      const id = target.dataset.id;
-      showPasswordModal(id, 'edit');
-      return;
-    }
-    
-    // 削除ボタンの処理
-    if (target.classList.contains('btn-delete')) {
-      e.preventDefault();
-      const id = target.dataset.id;
-      showPasswordModal(id, 'delete');
-      return;
-    }
   }
   
   // 後方互換性のため残す
@@ -419,479 +402,12 @@ function showAdPopup(fileUrl) {
     attachHandlersOptimized();
   }
 
-  // パスワード確認モーダルを表示
-  function showPasswordModal(id, action) {
-    const modal = document.createElement('div');
-    modal.id = 'password-modal';
-    modal.style.cssText = `
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.7);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      z-index: 10000;
-    `;
-    
-    const modalContent = document.createElement('div');
-    modalContent.style.cssText = `
-      background: #fff;
-      padding: 2em;
-      border-radius: 8px;
-      max-width: 400px;
-      width: 90%;
-      text-align: center;
-    `;
-    
-    const title = document.createElement('h3');
-    title.textContent = action === 'edit' ? '編集パスワードを入力' : '削除パスワードを入力';
-    title.style.marginBottom = '1.5em';
-    
-    const passwordInput = document.createElement('input');
-    passwordInput.type = 'text';
-    passwordInput.id = 'password-input';
-    passwordInput.placeholder = 'パスワードを入力';
-    passwordInput.style.cssText = `
-      width: 100%;
-      padding: 0.8em;
-      margin-bottom: 1.5em;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-      font-size: 1em;
-      box-sizing: border-box;
-    `;
-    
-    const buttonContainer = document.createElement('div');
-    buttonContainer.style.cssText = 'display: flex; gap: 1em; justify-content: center;';
-    
-    const submitBtn = document.createElement('button');
-    submitBtn.textContent = '確認';
-    submitBtn.style.cssText = `
-      padding: 0.8em 2em;
-      background: #0071e3;
-      color: #fff;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 1em;
-    `;
-    
-    const cancelBtn = document.createElement('button');
-    cancelBtn.textContent = 'キャンセル';
-    cancelBtn.style.cssText = `
-      padding: 0.8em 2em;
-      background: #ccc;
-      color: #333;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 1em;
-    `;
-    
-    const errorMsg = document.createElement('div');
-    errorMsg.id = 'password-error';
-    errorMsg.style.cssText = 'color: #dc3545; margin-top: 1em; display: none;';
-    
-    submitBtn.addEventListener('click', async () => {
-      const password = passwordInput.value.trim();
-      if (!password) {
-        errorMsg.textContent = 'パスワードを入力してください';
-        errorMsg.style.display = 'block';
-        return;
-      }
-      
-      try {
-        const isValid = await kosamuraAPI.verifyPassword(Number(id), password);
-        if (isValid) {
-          modal.remove();
-          if (action === 'edit') {
-            showEditModal(id, password);
-          } else {
-            if (confirm('本当に削除しますか？この操作は取り消せません。')) {
-              await kosamuraAPI.deletePostWithPassword(Number(id), password);
-              alert('削除しました');
-              fetchData();
-            }
-          }
-        } else {
-          errorMsg.textContent = 'パスワードが正しくありません';
-          errorMsg.style.display = 'block';
-        }
-      } catch (error) {
-        errorMsg.textContent = 'エラーが発生しました: ' + error.message;
-        errorMsg.style.display = 'block';
-      }
-    });
-    
-    cancelBtn.addEventListener('click', () => {
-      modal.remove();
-    });
-    
-    passwordInput.addEventListener('keypress', (e) => {
-      if (e.key === 'Enter') {
-        submitBtn.click();
-      }
-    });
-    
-    buttonContainer.appendChild(submitBtn);
-    buttonContainer.appendChild(cancelBtn);
-    
-    modalContent.appendChild(title);
-    modalContent.appendChild(passwordInput);
-    modalContent.appendChild(buttonContainer);
-    modalContent.appendChild(errorMsg);
-    
-    modal.appendChild(modalContent);
-    document.body.appendChild(modal);
-    
-    passwordInput.focus();
-    
-    modal.addEventListener('click', (e) => {
-      if (e.target === modal) {
-        modal.remove();
-      }
-    });
-  }
-
-  // 編集モーダルを表示
-  async function showEditModal(id, password) {
-    // 現在のデータを取得
-    const allData = await kosamuraAPI.getData();
-    const currentItem = allData.find(item => item.id === Number(id));
-    
-    if (!currentItem) {
-      alert('データが見つかりませんでした');
-      return;
-    }
-    
-    const modal = document.createElement('div');
-    modal.id = 'edit-modal';
-    modal.style.cssText = `
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.7);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      z-index: 10000;
-      overflow-y: auto;
-      padding: 2em;
-    `;
-    
-    const modalContent = document.createElement('div');
-    modalContent.style.cssText = `
-      background: #fff;
-      padding: 2em;
-      border-radius: 8px;
-      max-width: 600px;
-      width: 90%;
-      max-height: 90vh;
-      overflow-y: auto;
-    `;
-    
-    const title = document.createElement('h3');
-    title.textContent = '投稿を編集';
-    title.style.marginBottom = '1.5em';
-    
-    const form = document.createElement('form');
-    form.id = 'edit-form';
-    
-    // ファイルアップロード
-    const fileGroup = document.createElement('div');
-    fileGroup.style.marginBottom = '1.5em';
-    const fileLabel = document.createElement('label');
-    fileLabel.textContent = 'ファイル（アップロードし直してリンク更新）';
-    fileLabel.style.cssText = 'display: block; margin-bottom: 0.5em; font-weight: bold;';
-    const fileInput = document.createElement('input');
-    fileInput.type = 'file';
-    fileInput.id = 'edit-file';
-    fileInput.accept = '.pdf,image/*';
-    fileInput.style.cssText = 'width: 100%; padding: 0.5em; border: 1px solid #ccc; border-radius: 4px;';
-    fileGroup.appendChild(fileLabel);
-    fileGroup.appendChild(fileInput);
-    
-    // 学年
-    const gradeGroup = document.createElement('div');
-    gradeGroup.style.marginBottom = '1.5em';
-    const gradeLabel = document.createElement('label');
-    gradeLabel.textContent = '学年';
-    gradeLabel.style.cssText = 'display: block; margin-bottom: 0.5em; font-weight: bold;';
-    const gradeSelect = document.createElement('select');
-    gradeSelect.id = 'edit-grade';
-    gradeSelect.style.cssText = 'width: 100%; padding: 0.5em; border: 1px solid #ccc; border-radius: 4px;';
-    ['高1', '高2', '高3'].forEach(g => {
-      const option = document.createElement('option');
-      option.value = g;
-      option.textContent = g;
-      if (g === currentItem.grade) option.selected = true;
-      gradeSelect.appendChild(option);
-    });
-    gradeGroup.appendChild(gradeLabel);
-    gradeGroup.appendChild(gradeSelect);
-    
-    // 年度
-    const yearGroup = document.createElement('div');
-    yearGroup.style.marginBottom = '1.5em';
-    const yearLabel = document.createElement('label');
-    yearLabel.textContent = '年度';
-    yearLabel.style.cssText = 'display: block; margin-bottom: 0.5em; font-weight: bold;';
-    const yearSelect = document.createElement('select');
-    yearSelect.id = 'edit-year';
-    yearSelect.style.cssText = 'width: 100%; padding: 0.5em; border: 1px solid #ccc; border-radius: 4px;';
-    ['2020（R2）', '2021（R3）', '2022（R4）', '2023（R5）', '2024（R6）', '2025（R7）', '不明'].forEach(y => {
-      const option = document.createElement('option');
-      option.value = y;
-      option.textContent = y;
-      if (y === currentItem.year) option.selected = true;
-      yearSelect.appendChild(option);
-    });
-    yearGroup.appendChild(yearLabel);
-    yearGroup.appendChild(yearSelect);
-    
-    // 種類
-    const typeGroup = document.createElement('div');
-    typeGroup.style.marginBottom = '1.5em';
-    const typeLabel = document.createElement('label');
-    typeLabel.textContent = '種類';
-    typeLabel.style.cssText = 'display: block; margin-bottom: 0.5em; font-weight: bold;';
-    const typeSelect = document.createElement('select');
-    typeSelect.id = 'edit-type';
-    typeSelect.style.cssText = 'width: 100%; padding: 0.5em; border: 1px solid #ccc; border-radius: 4px;';
-    ['前期中間', '前期期末', '後期中間', '後期期末', '考査以外'].forEach(t => {
-      const option = document.createElement('option');
-      option.value = t;
-      option.textContent = t;
-      if (t === currentItem.type) option.selected = true;
-      typeSelect.appendChild(option);
-    });
-    typeGroup.appendChild(typeLabel);
-    typeGroup.appendChild(typeSelect);
-    
-    // 科目
-    const subjectGroup = document.createElement('div');
-    subjectGroup.style.marginBottom = '1.5em';
-    const subjectLabel = document.createElement('label');
-    subjectLabel.textContent = '科目';
-    subjectLabel.style.cssText = 'display: block; margin-bottom: 0.5em; font-weight: bold;';
-    const subjectSelect = document.createElement('select');
-    subjectSelect.id = 'edit-subject';
-    subjectSelect.style.cssText = 'width: 100%; padding: 0.5em; border: 1px solid #ccc; border-radius: 4px;';
-    const subjects = ['現国・論国', '言文・古探', '数学Ⅰ・Ⅱ・Ⅲ', '数学Ａ・Ｂ・Ｃ', '英語コミュ', '論理表現', '化学・化学基礎', '生物・生物基礎', '物理・物理基礎', '地学・地学基礎', '歴史総合', '地理', '日本史', '世界史', '公共', '情報', '保健体育', '家庭科', '国語', '数学', '理科', '英語', '地歴', 'その他'];
-    subjects.forEach(s => {
-      const option = document.createElement('option');
-      option.value = s;
-      option.textContent = s;
-      if (s === currentItem.subject) option.selected = true;
-      subjectSelect.appendChild(option);
-    });
-    subjectGroup.appendChild(subjectLabel);
-    subjectGroup.appendChild(subjectSelect);
-    
-    // 文理区分
-    const streamGroup = document.createElement('div');
-    streamGroup.style.marginBottom = '1.5em';
-    const streamLabel = document.createElement('label');
-    streamLabel.textContent = '文理区分';
-    streamLabel.style.cssText = 'display: block; margin-bottom: 0.5em; font-weight: bold;';
-    const streamSelect = document.createElement('select');
-    streamSelect.id = 'edit-stream';
-    streamSelect.style.cssText = 'width: 100%; padding: 0.5em; border: 1px solid #ccc; border-radius: 4px;';
-    ['区分なし', '理系のみ', '文系のみ', '理数科のみ'].forEach(s => {
-      const option = document.createElement('option');
-      option.value = s;
-      option.textContent = s;
-      if (s === currentItem.stream) option.selected = true;
-      streamSelect.appendChild(option);
-    });
-    streamGroup.appendChild(streamLabel);
-    streamGroup.appendChild(streamSelect);
-    
-    // 内容
-    const contentTypeGroup = document.createElement('div');
-    contentTypeGroup.style.marginBottom = '1.5em';
-    const contentTypeLabel = document.createElement('label');
-    contentTypeLabel.textContent = '内容';
-    contentTypeLabel.style.cssText = 'display: block; margin-bottom: 0.5em; font-weight: bold;';
-    const contentTypeSelect = document.createElement('select');
-    contentTypeSelect.id = 'edit-contentType';
-    contentTypeSelect.style.cssText = 'width: 100%; padding: 0.5em; border: 1px solid #ccc; border-radius: 4px;';
-    ['セット', '問題', '解答', '解説'].forEach(c => {
-      const option = document.createElement('option');
-      option.value = c;
-      option.textContent = c;
-      if (c === currentItem.contentType) option.selected = true;
-      contentTypeSelect.appendChild(option);
-    });
-    contentTypeGroup.appendChild(contentTypeLabel);
-    contentTypeGroup.appendChild(contentTypeSelect);
-    
-    // コメント
-    const commentGroup = document.createElement('div');
-    commentGroup.style.marginBottom = '1.5em';
-    const commentLabel = document.createElement('label');
-    commentLabel.textContent = 'コメント';
-    commentLabel.style.cssText = 'display: block; margin-bottom: 0.5em; font-weight: bold;';
-    const commentTextarea = document.createElement('textarea');
-    commentTextarea.id = 'edit-comment';
-    commentTextarea.value = currentItem.comment || '';
-    commentTextarea.style.cssText = 'width: 100%; padding: 0.5em; border: 1px solid #ccc; border-radius: 4px; min-height: 100px;';
-    commentGroup.appendChild(commentLabel);
-    commentGroup.appendChild(commentTextarea);
-    
-    // 評価リセット
-    const resetEvalGroup = document.createElement('div');
-    resetEvalGroup.style.marginBottom = '1.5em';
-    const resetEvalLabel = document.createElement('label');
-    resetEvalLabel.style.cssText = 'display: flex; align-items: center; gap: 0.5em; cursor: pointer;';
-    const resetEvalCheckbox = document.createElement('input');
-    resetEvalCheckbox.type = 'checkbox';
-    resetEvalCheckbox.id = 'edit-resetEval';
-    resetEvalLabel.appendChild(resetEvalCheckbox);
-    resetEvalLabel.appendChild(document.createTextNode('評価をリセット'));
-    resetEvalGroup.appendChild(resetEvalLabel);
-    
-    // ボタン
-    const buttonContainer = document.createElement('div');
-    buttonContainer.style.cssText = 'display: flex; gap: 1em; justify-content: center; margin-top: 2em;';
-    
-    const submitBtn = document.createElement('button');
-    submitBtn.type = 'button';
-    submitBtn.textContent = '保存';
-    submitBtn.style.cssText = `
-      padding: 0.8em 2em;
-      background: #0071e3;
-      color: #fff;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 1em;
-    `;
-    
-    const cancelBtn = document.createElement('button');
-    cancelBtn.type = 'button';
-    cancelBtn.textContent = 'キャンセル';
-    cancelBtn.style.cssText = `
-      padding: 0.8em 2em;
-      background: #ccc;
-      color: #333;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 1em;
-    `;
-    
-    const errorMsg = document.createElement('div');
-    errorMsg.id = 'edit-error';
-    errorMsg.style.cssText = 'color: #dc3545; margin-top: 1em; display: none;';
-    
-    submitBtn.addEventListener('click', async () => {
-      try {
-        const file = fileInput.files[0];
-        const grade = gradeSelect.value;
-        const year = yearSelect.value;
-        const type = typeSelect.value;
-        const subject = subjectSelect.value;
-        const stream = streamSelect.value;
-        const contentType = contentTypeSelect.value;
-        const comment = commentTextarea.value;
-        const resetEval = resetEvalCheckbox.checked;
-        
-        await kosamuraAPI.updatePostWithPassword(
-          Number(id),
-          password,
-          {
-            file: file,
-            grade,
-            year,
-            type,
-            subject,
-            stream,
-            contentType,
-            comment,
-            resetEval
-          }
-        );
-        
-        alert('更新しました');
-        modal.remove();
-        fetchData();
-      } catch (error) {
-        errorMsg.textContent = 'エラーが発生しました: ' + error.message;
-        errorMsg.style.display = 'block';
-      }
-    });
-    
-    cancelBtn.addEventListener('click', () => {
-      modal.remove();
-    });
-    
-    form.appendChild(fileGroup);
-    form.appendChild(gradeGroup);
-    form.appendChild(yearGroup);
-    form.appendChild(typeGroup);
-    form.appendChild(subjectGroup);
-    form.appendChild(streamGroup);
-    form.appendChild(contentTypeGroup);
-    form.appendChild(commentGroup);
-    form.appendChild(resetEvalGroup);
-    
-    buttonContainer.appendChild(submitBtn);
-    buttonContainer.appendChild(cancelBtn);
-    
-    modalContent.appendChild(title);
-    modalContent.appendChild(form);
-    modalContent.appendChild(buttonContainer);
-    modalContent.appendChild(errorMsg);
-    
-    modal.appendChild(modalContent);
-    document.body.appendChild(modal);
-    
-    modal.addEventListener('click', (e) => {
-      if (e.target === modal) {
-        modal.remove();
-      }
-    });
-  }
-
   // 相対時間表示関数
   function formatRelativeTime(dateStr) {
     try {
-      if (!dateStr || dateStr === '' || dateStr === 'undefined' || dateStr === 'null') {
-        return '不明';
-      }
-      
-      // 日付文字列をパース（yyyy/mm/dd hh:mm:ss形式に対応）
-      let date;
-      if (typeof dateStr === 'string' && dateStr.includes('/')) {
-        // yyyy/mm/dd hh:mm:ss形式の場合
-        date = new Date(dateStr.replace(/\//g, '-'));
-      } else if (typeof dateStr === 'number') {
-        // タイムスタンプの場合
-        date = new Date(dateStr);
-      } else {
-        // その他の形式
-        date = new Date(dateStr);
-      }
-      
-      // 無効な日付の場合は元の文字列を返す
-      if (isNaN(date.getTime())) {
-        return dateStr;
-      }
-      
+      const date = new Date(dateStr);
       const now = new Date();
       const diffMs = now.getTime() - date.getTime();
-      
-      // 未来の日付の場合は「未来」と表示
-      if (diffMs < 0) {
-        return '未来';
-      }
-      
       const diffSec = Math.floor(diffMs / 1000);
       const diffMin = Math.floor(diffSec / 60);
       const diffHour = Math.floor(diffMin / 60);
@@ -907,15 +423,14 @@ function showAdPopup(fileUrl) {
         return `${diffSec}秒前`;
       }
     } catch (error) {
-      console.error('formatRelativeTime error:', error, 'dateStr:', dateStr);
-      return dateStr || '不明';
+      return dateStr;
     }
   }
 
   // データ取得（パフォーマンス改善版）
   async function fetchData() {
     const tbody = document.getElementById('resultBody');
-    tbody.innerHTML = '<tr id="loadingRow"><td colspan="12" style="text-align:center;color:#666"><div class="loading-placeholder"><div class="loading-spinner"></div><p>読み込み中…（表は横スクロール対応）</p></div></td></tr>';
+    tbody.innerHTML = '<tr id="loadingRow"><td colspan="11" style="text-align:center;color:#666"><div class="loading-placeholder"><div class="loading-spinner"></div><p>読み込み中…（表は横スクロール対応）</p></div></td></tr>';
     
     // タイムアウト設定（30秒）
     const timeoutPromise = new Promise((_, reject) => {
@@ -929,9 +444,9 @@ function showAdPopup(fileUrl) {
     } catch (error) {
       console.error('データ取得エラー:', error);
       if (error.message.includes('タイムアウト')) {
-        tbody.innerHTML = '<tr><td colspan="12" style="text-align:center;color:orange;"><div style="margin: 20px 0;"><p>データの取得に時間がかかっています</p><button onclick="retryFetch()" style="padding: 8px 16px; background: #3b82f6; color: white; border: none; border-radius: 6px; cursor: pointer;">再試行</button></div></td></tr>';
+        tbody.innerHTML = '<tr><td colspan="11" style="text-align:center;color:orange;"><div style="margin: 20px 0;"><p>データの取得に時間がかかっています</p><button onclick="retryFetch()" style="padding: 8px 16px; background: #3b82f6; color: white; border: none; border-radius: 6px; cursor: pointer;">再試行</button></div></td></tr>';
       } else {
-        tbody.innerHTML = '<tr><td colspan="12" style="text-align:center;color:red;">データの取得に失敗しました: ' + error.message + '</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="11" style="text-align:center;color:red;">データの取得に失敗しました: ' + error.message + '</td></tr>';
       }
     }
   }
@@ -962,7 +477,7 @@ function showAdPopup(fileUrl) {
     const tbody = document.getElementById('resultBody');
     tbody.innerHTML = '';
     if (!data || data.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="12" style="text-align:center;color:#666">データがありません</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="11" style="text-align:center;color:#666">データがありません</td></tr>';
       return;
     }
     
@@ -978,26 +493,6 @@ function showAdPopup(fileUrl) {
       tr.dataset.date = String(item.date || '');
       const safe = String(item.comment || '').replace(/</g,'&lt;').replace(/>/g,'&gt;');
       const rel = formatRelativeTime(item.date);
-      
-      // いいねとバッドの数を正しく取得（数値として扱う）
-      const likesValue = Number(item.likes) || 0;
-      const badValue = Number(item.bad) || 0;
-      
-      // デバッグ用（最初の1件のみ）
-      if (data.indexOf(item) === 0) {
-        console.log('データサンプル:', {
-          id: item.id,
-          date: item.date,
-          dateType: typeof item.date,
-          likes: item.likes,
-          likesType: typeof item.likes,
-          likesValue: likesValue,
-          bad: item.bad,
-          badType: typeof item.bad,
-          badValue: badValue
-        });
-      }
-      
       tr.innerHTML = `
         <td class="grade-cell">${String(item.grade || '')}</td>
         <td class="year-cell">${String(item.year || '')}</td>
@@ -1005,17 +500,13 @@ function showAdPopup(fileUrl) {
         <td class="subject-cell">${String(item.subject || '')}</td>
         <td class="stream-cell">${String(item.stream || '')}</td>
         <td class="content-cell">${String(item.contentType || '')}</td>
-        <td class="format-cell">${String(item.fileFormat || item.format || '')}</td>
+        <td class="format-cell">${String(item.format || '')}</td>
         <td class="comment-cell" data-comment="${safe}"><div class="comment-text">${safe}</div></td>
         <td class="link-cell"><a href="#" class="view-link" data-url="${String(item.url || '')}">見る</a></td>
         <td class="col-date date-cell">${rel}</td>
         <td class="col-eval eval-cell">
-          <button class="btn-like${vt==='good'?' active':''}" data-id="${item.id}">${likesValue}</button>
-          <button class="btn-bad${vt==='bad'?' active':''}" data-id="${item.id}">${badValue}</button>
-        </td>
-        <td class="action-cell">
-          <button class="btn-edit" data-id="${item.id}">編集</button>
-          <button class="btn-delete" data-id="${item.id}">削除</button>
+          <button class="btn-like${vt==='good'?' active':''}" data-id="${item.id}">${item.likes || 0}</button>
+          <button class="btn-bad${vt==='bad'?' active':''}" data-id="${item.id}">${item.bad || 0}</button>
         </td>`;
       fragment.appendChild(tr);
     });
@@ -1052,7 +543,7 @@ function showAdPopup(fileUrl) {
     if (hasActiveFilters && visibleCount === 0) {
       const tbody = document.getElementById('resultBody');
       const noResultsRow = document.createElement('tr');
-      noResultsRow.innerHTML = '<td colspan="12" style="text-align:center;color:#666">一致するものはありませんでした。</td>';
+      noResultsRow.innerHTML = '<td colspan="11" style="text-align:center;color:#666">一致するものはありませんでした。</td>';
       noResultsRow.id = 'noResultsRow';
       tbody.appendChild(noResultsRow);
     } else {

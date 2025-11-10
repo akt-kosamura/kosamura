@@ -330,7 +330,7 @@ main {
 .table-card {
   width: 100%; 
   border-collapse: collapse;
-  min-width: 1450px;
+  min-width: 1300px;
 }
 
 .table-card th, .table-card td {
@@ -418,51 +418,6 @@ main {
   width: 100px;
   min-width: 100px;
   max-width: 120px;
-}
-
-/* 操作列 - 編集・削除ボタン */
-.table-card th:last-child,
-.table-card td.action-cell {
-  width: 140px;
-  min-width: 140px;
-  max-width: 160px;
-  text-align: center;
-  white-space: nowrap;
-}
-
-/* 編集・削除ボタンのスタイル */
-.btn-edit, .btn-delete {
-  padding: 0.4em 0.8em;
-  margin: 0 0.2em;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 0.85rem;
-  font-weight: 500;
-  transition: all var(--transition);
-  white-space: nowrap;
-}
-
-.btn-edit {
-  background: #0071e3;
-  color: #fff;
-}
-
-.btn-edit:hover {
-  background: #005bb5;
-  transform: translateY(-1px);
-  box-shadow: 0 2px 4px rgba(0, 113, 227, 0.2);
-}
-
-.btn-delete {
-  background: #dc3545;
-  color: #fff;
-}
-
-.btn-delete:hover {
-  background: #c82333;
-  transform: translateY(-1px);
-  box-shadow: 0 2px 4px rgba(220, 53, 69, 0.2);
 }
 
 th.hidden-col, td.hidden-col { display: none; }
@@ -738,7 +693,7 @@ th.hidden-col, td.hidden-col { display: none; }
   }
   
   .table-card {
-    min-width: 950px;
+    min-width: 800px;
   }
   
   .table-card th, .table-card td {

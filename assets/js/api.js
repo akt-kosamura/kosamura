@@ -37,87 +37,48 @@ class KosamuraAPI {
   }
 
   // ファイルアップロード（GAS運用時と同じ）
-  async uploadFileAndRecord(grade, year, type, subject, stream, contentType, fileFormat, comment, filename, base64, deviceInfo, fileSizeMB, deletePassword = '') {
+  async uploadFileAndRecord(grade, year, type, subject, stream, contentType, fileFormat, comment, filename, base64, deviceInfo, fileSizeMB) {
     try {
-      // クライアントで入力されたパスワードをそのまま送信（空文字可）。運用ではハッシュ化を推奨。
-      const trimmedPassword = String(deletePassword || '').trim();
-      // デバッグ出力ではパスワードの中身は出力しない（長さのみ表示）
-      console.log('=== uploadFileAndRecord パラメータ確認 ===');
-      console.log('deletePassword length:', trimmedPassword ? trimmedPassword.length : 0);
- 
-       // サーバー側のフォームパーサ（multipart/form-data）に合わせて
-       // FormData を使って全てのフィールドを送信します。
-       // これにより deletePassword が確実に届き、コメントと同様に処理されます。
-       const formData = new FormData();
-       formData.append('function', 'uploadFileAndRecord');
-       formData.append('grade', grade);
-       formData.append('year', year);
-       formData.append('type', type);
-       formData.append('subject', subject);
-       formData.append('stream', stream);
-       formData.append('contentType', contentType);
-       formData.append('fileFormat', fileFormat);
-       formData.append('comment', comment);
-       formData.append('fileSizeMB', String(fileSizeMB));
-       formData.append('deviceInfo', JSON.stringify(deviceInfo));
-       formData.append('filename', filename);
-       // パスワードを送信（空文字でも送信）
-       formData.append('deletePassword', trimmedPassword);
-       // ファイル本体は fileBase64 フィールドで送る（サーバー側の parseFormData で扱いやすくする）
-       formData.append('fileBase64', base64);
-
-       // デバッグ用：フォームに含まれるパスワード長を確認
-       try {
-         console.log('FormData deletePassword length:', (formData.get('deletePassword') || '').length);
-       } catch (err) {
-         // 一部環境では FormData.get が存在しない場合があるが fetch に送れば問題ない
-         console.log('FormData prepared');
-       }
-
-       const response = await fetch(this.baseURL, {
-         method: 'POST',
-         body: formData
-       });
-       
-       console.log('レスポンスステータス:', response.status, response.statusText);
-       
-       if (!response.ok) {
-         const errorText = await response.text();
-         // 「please tell me who you are」エラーの場合、より分かりやすいメッセージを表示
-         if (errorText.includes('please tell me who you are') || errorText.includes('Please tell me who you are')) {
-           throw new Error('Google Apps Scriptの認証設定が必要です。Webアプリケーションを「誰でもアクセス可能」に設定してください。');
-         }
-         throw new Error(`アップロードに失敗しました: ${errorText}`);
-       }
-       
-       // レスポンスがJSONでない場合（HTMLエラーページなど）をチェック
-       const responseContentType = response.headers.get('content-type');
-       if (!responseContentType || !responseContentType.includes('application/json')) {
-         const errorText = await response.text();
-         if (errorText.includes('please tell me who you are') || errorText.includes('Please tell me who you are')) {
-           throw new Error('Google Apps Scriptの認証設定が必要です。Webアプリケーションを「誰でもアクセス可能」に設定してください。');
-         }
-         throw new Error(`アップロードに失敗しました: サーバーから予期しない形式のレスポンスが返されました`);
-       }
-       
-       const result = await response.json();
-       
-       console.log('レスポンス結果:', result);
-       
-       // GASの戻り値形式に合わせる（直接URL文字列を返す）
-       if (result.error) {
-         console.error('アップロードエラー:', result.error);
-         throw new Error(result.error);
-       }
-       
-       console.log('アップロード成功。ファイルURL:', result.url || result);
-       console.log('=== uploadFileAndRecord 完了 ===');
-       
-       // resultが直接URL文字列の場合と、result.urlの場合の両方に対応
-       return result.url || result || '';
+      // GASのdoPost関数が期待する形式でURLパラメータを作成
+      const params = new URLSearchParams();
+      params.append('function', 'uploadFileAndRecord');
+      params.append('grade', grade);
+      params.append('year', year);
+      params.append('type', type);
+      params.append('subject', subject);
+      params.append('stream', stream);
+      params.append('contentType', contentType);
+      params.append('fileFormat', fileFormat);
+      params.append('comment', comment);
+      params.append('fileSizeMB', fileSizeMB);
+      params.append('deviceInfo', JSON.stringify(deviceInfo));
+      params.append('filename', filename);
+      
+      // Base64エンコードされたファイルデータをリクエストボディとして送信
+      const response = await fetch(`${this.baseURL}?${params.toString()}`, {
+        method: 'POST',
+        body: base64,
+        headers: {
+          'Content-Type': 'text/plain'
+        }
+      });
+      
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`アップロードに失敗しました: ${errorText}`);
+      }
+      
+      const result = await response.json();
+      
+      // GASの戻り値形式に合わせる（直接URL文字列を返す）
+      if (result.error) {
+        throw new Error(result.error);
+      }
+      
+      // resultが直接URL文字列の場合と、result.urlの場合の両方に対応
+      return result.url || result || '';
     } catch (error) {
       console.error('uploadFileAndRecord error:', error);
-      console.error('エラー詳細:', error.message, error.stack);
       throw error;
     }
   }
@@ -386,84 +347,6 @@ class KosamuraAPI {
     }
   }
 
-  // パスワード検証
-  async verifyPassword(id, password) {
-    try {
-      // パスワードをトリムして確実に送信
-      const trimmedPassword = String(password || '').trim();
-      const formData = new FormData();
-      formData.append('id', id);
-      formData.append('password', trimmedPassword);
-
-      const response = await fetch(`${this.baseURL}?function=verifyPassword`, {
-        method: 'POST',
-        body: formData
-      });
-      if (!response.ok) throw new Error('パスワード検証に失敗しました');
-      const result = await response.json();
-      return result.result === true || result === true;
-    } catch (error) {
-      console.error('verifyPassword error:', error);
-      return false;
-    }
-  }
-
-  // パスワード付き投稿削除
-  async deletePostWithPassword(id, password) {
-    try {
-      // パスワードをトリムして確実に送信
-      const trimmedPassword = String(password || '').trim();
-      const formData = new FormData();
-      formData.append('id', id);
-      formData.append('password', trimmedPassword);
-
-      const response = await fetch(`${this.baseURL}?function=deletePostWithPassword`, {
-        method: 'POST',
-        body: formData
-      });
-      if (!response.ok) throw new Error('削除に失敗しました');
-      return await response.json();
-    } catch (error) {
-      console.error('deletePostWithPassword error:', error);
-      throw error;
-    }
-  }
-
-  // パスワード付き投稿更新
-  async updatePostWithPassword(id, password, updateData) {
-    try {
-      // パスワードをトリムして確実に送信
-      const trimmedPassword = String(password || '').trim();
-      const formData = new FormData();
-      formData.append('id', id);
-      formData.append('password', trimmedPassword);
-      formData.append('updateData', JSON.stringify(updateData));
-      
-      // ファイルがある場合は追加
-      if (updateData.file) {
-        // ファイルをBase64に変換
-        const base64 = await new Promise((resolve, reject) => {
-          const reader = new FileReader();
-          reader.onload = () => resolve(reader.result.split(',')[1]);
-          reader.onerror = reject;
-          reader.readAsDataURL(updateData.file);
-        });
-        formData.append('fileBase64', base64);
-        formData.append('filename', updateData.file.name);
-      }
-
-      const response = await fetch(`${this.baseURL}?function=updatePostWithPassword`, {
-        method: 'POST',
-        body: formData
-      });
-      if (!response.ok) throw new Error('更新に失敗しました');
-      return await response.json();
-    } catch (error) {
-      console.error('updatePostWithPassword error:', error);
-      throw error;
-    }
-  }
-
   // 認証データ取得（新規追加）
   async getAuthData() {
     try {
@@ -510,9 +393,9 @@ window.google = {
         });
       },
       
-      uploadFileAndRecord: function(grade, year, type, subject, stream, contentType, fileFormat, comment, filename, base64, deviceInfo, fileSizeMB, deletePassword = '') {
+      uploadFileAndRecord: function(grade, year, type, subject, stream, contentType, fileFormat, comment, filename, base64, deviceInfo, fileSizeMB) {
         return new Promise((resolve, reject) => {
-          kosamuraAPI.uploadFileAndRecord(grade, year, type, subject, stream, contentType, fileFormat, comment, filename, base64, deviceInfo, fileSizeMB, deletePassword)
+          kosamuraAPI.uploadFileAndRecord(grade, year, type, subject, stream, contentType, fileFormat, comment, filename, base64, deviceInfo, fileSizeMB)
             .then(url => resolve(url))
             .catch(error => reject(error));
         });
@@ -595,4 +478,4 @@ window.google = {
       }
     }
   }
-};
+}; 
