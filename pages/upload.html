@@ -23,6 +23,24 @@
   <link rel="stylesheet" href="../assets/css/pages/upload.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 
+  <style>
+    /* Card label background to ensure text is always readable */
+    .card-label {
+      /* no opaque background per request; plain white text */
+      background: transparent;
+      color: #fff;
+      padding: 0;
+      border-radius: 0;
+      display: inline-block;
+      font-weight: 700;
+    }
+    /* preserve 3D for nicer transforms if needed */
+    .card-slot, .double-slot { backface-visibility: hidden; -webkit-backface-visibility: hidden; }
+    /* modal text should be white so it's readable on dark backgrounds (buttons keep their own colors) */
+    .preview-content { color: #fff; }
+    .preview-content .upload-btn { color: initial; }
+  </style>
+
 </head>
 <body>
   <header>
@@ -44,8 +62,9 @@
       </nav>
     </div>
   </header>
-  <main id="main-content" style="display: none;">
+    <main id="main-content" style="display: none;">
     <h1>PDFまたは写真をアップロード</h1>
+    <!-- debug button removed -->
     <div class="subtitle">複数のファイルは順番を編集できます。</div>
     
     <!-- 写真撮影時の注意ボタン -->
@@ -185,7 +204,7 @@
           <button type="submit" class="upload-btn" id="uploadButton" style="margin-top:1.2em;">アップロード</button>
           <div id="uploadInfo" style="margin-top:1em; margin-bottom:0.7em; color:#0071e3; font-size:0.98em; line-height:1.6; text-align:center;">
             アップロードには時間がかかる場合もあります。改善中です。<br>
-            アップロード後にフリーモードの時間が24時間追加されます。
+            アップロード後にフリーモード１時間追加＆ゲームで報酬を獲得できます。
           </div>
           <div id="message" class="success-msg" style="display:none;"></div>
           <div id="afterUploadBtns" style="display:none; text-align:center; margin-top:1.5em; margin-bottom:1em;">
@@ -202,10 +221,427 @@
       <img id="previewImage" src="" alt="プレビュー">
     </div>
   </div>
+  <!-- ルーレットモーダル（円形ホイールタイプ） -->
+    <div id="cardGameModal" class="preview-modal" style="display:none; align-items:center; justify-content:center;">
+    <div class="preview-content" style="min-width:320px; max-width:95vw; text-align:center; padding:18px;">
+      <h3 id="cardGameTitle">カードを選んで報酬を獲得</h3>
+      <div id="cardGameStatus" style="font-size:1rem; margin-bottom:8px; min-height:28px;">獲得中の報酬: <span id="accumulatedDisplay">0時間 / 0枚</span></div>
+      <div id="cardsContainer" style="display:flex; gap:12px; justify-content:center; margin:12px 0;">
+        <div class="card-slot" data-index="0" style="width:120px; height:160px; background:#223; border-radius:8px; display:flex; align-items:center; justify-content:center; color:#fff; font-weight:700; cursor:pointer;">?</div>
+        <div class="card-slot" data-index="1" style="width:120px; height:160px; background:#223; border-radius:8px; display:flex; align-items:center; justify-content:center; color:#fff; font-weight:700; cursor:pointer;">?</div>
+        <div class="card-slot" data-index="2" style="width:120px; height:160px; background:#223; border-radius:8px; display:flex; align-items:center; justify-content:center; color:#fff; font-weight:700; cursor:pointer;">?</div>
+      </div>
+      <div id="cardMessage" style="min-height:48px; margin-bottom:8px;">カードを1枚選んでください。</div>
+      <div style="display:flex; gap:0.6rem; justify-content:center;">
+        <button id="endEarlyBtn" class="upload-btn" style="background:#bbb; color:#111; display:none;">ゲームを閉じる（報酬なし）</button>
+      </div>
+      <div id="doubleUpArea" style="margin-top:12px; display:none;">
+        <div id="doublePrompt" style="margin-bottom:8px;">ダブルアップチャレンジを行いますか？（最大3回）</div>
+        <div id="doublePrompt" style="margin-bottom:8px;">成功→フリーモード１時間＋ゲーム報酬２倍　失敗→フリーモード１時間のみ</div>
+        <div style="display:flex; gap:0.6rem; justify-content:center;">
+          <button id="startDoubleBtn" class="upload-btn" style="background:#ffb703; color:#111;">挑戦する</button>
+          <button id="skipDoubleBtn" class="upload-btn" style="background:#bbb;">しない（報酬を確定）</button>
+        </div>
+        <div id="doubleMessage" style="margin-top:8px; min-height:36px;"></div>
+      </div>
+    </div>
+  </div>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
   <script src="../assets/js/api.js"></script>
   <script>
+    // --- チケット管理とルーレットロジック ---
+    function getTicketCount() {
+      return parseInt(localStorage.getItem('viewTickets') || '0');
+    }
+    function setTicketCount(n) {
+      localStorage.setItem('viewTickets', String(Math.max(0, Math.floor(n))));
+    }
+
+    // Restore the three card slots inside the modal (used when resetting the game)
+    function restoreCardSlots() {
+      const container = document.getElementById('cardsContainer');
+      if (!container) return;
+      container.innerHTML = '';
+      for (let i = 0; i < 3; i++) {
+        const div = document.createElement('div');
+        div.className = 'card-slot';
+        div.style.width = '120px';
+        div.style.height = '160px';
+        div.style.background = '#223';
+        div.style.borderRadius = '8px';
+        div.style.display = 'flex';
+        div.style.alignItems = 'center';
+        div.style.justifyContent = 'center';
+        div.style.color = '#fff';
+        div.style.fontWeight = '700';
+        div.style.cursor = 'pointer';
+        div.textContent = '?';
+        div.dataset.index = i;
+        container.appendChild(div);
+      }
+    }
+
+    function showCardGameModal() {
+  const modal = document.getElementById('cardGameModal');
+  const cards = Array.from(modal.querySelectorAll('.card-slot'));
+  const msg = document.getElementById('cardMessage');
+  const accDisplay = document.getElementById('accumulatedDisplay');
+  const doubleArea = document.getElementById('doubleUpArea');
+      const startDoubleBtn = document.getElementById('startDoubleBtn');
+      const skipDoubleBtn = document.getElementById('skipDoubleBtn');
+      const doubleMessage = document.getElementById('doubleMessage');
+
+      // reward pool
+      const rewardPool = [
+        {type:'free', hours:1, label:'フリー1時間'},
+        {type:'free', hours:2, label:'フリー2時間'},
+        {type:'free', hours:3, label:'フリー3時間'},
+        {type:'ticket', count:1, label:'チケット1枚'},
+        {type:'ticket', count:2, label:'チケット2枚'},
+        {type:'ticket', count:3, label:'チケット3枚'}
+      ];
+
+  let accumulated = {hours:0, tickets:0};
+  let inRound = false;
+  let ended = false;
+  let preDouble = null;
+  let doubleAttempts = 0;
+  let roundCount = 0;
+  let revealLock = false; // prevent clicking while showing contents
+  // capture original local state so we can revert if double-up fails
+  // upload flow already added +1h before opening the modal; capture the current value (post-upload)
+  const originalFreeModeEnd = parseInt(localStorage.getItem('freeModeEnd') || '0');
+  const originalTickets = getTicketCount();
+  const endEarlyBtn = document.getElementById('endEarlyBtn');
+  let rewardsApplied = false;
+  let awaitingCloseConfirm = false;
+
+      function updateAccumDisplay() {
+        accDisplay.textContent = `${accumulated.hours}時間 / ${accumulated.tickets}枚`;
+      }
+
+      function shuffleArray(a){
+        for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}
+      }
+
+      function prepareRound(){
+        if (ended) return;
+        roundCount++;
+        // determine number of 'end' cards
+        let numEnd = 0;
+        if (roundCount === 1) {
+          numEnd = 0; // first round must not have '終了'
+        } else if (roundCount % 3 === 0) {
+          numEnd = 2; // every 3rd round has 2 '終了'
+        } else {
+          numEnd = (Math.random() < 0.5) ? 0 : 1; // otherwise 0 or 1 randomly
+        }
+
+        // build picks array with numEnd 'end' and remaining reward cards
+        const picks = [];
+        for (let i=0;i<numEnd;i++) picks.push({type:'end', label:'終了'});
+        // add distinct reward cards for remaining slots
+        const need = 3 - picks.length;
+        const pool = rewardPool.slice();
+        shuffleArray(pool);
+        for (let i=0;i<need;i++) picks.push(pool[i]);
+
+        // show contents first, then hide and visually shuffle the face-down cards
+        revealLock = true;
+        // assign picks to dataset and display contents openly for a short preview
+        cards.forEach((c,idx)=>{
+          c.dataset.reveal = JSON.stringify(picks[idx]);
+          const info = picks[idx];
+          if (info.type === 'end') { c.textContent = '終了'; c.style.background = '#6c757d'; }
+          else if (info.type === 'free') { c.textContent = info.hours + 'h'; c.style.background = '#43aa8b'; }
+          else if (info.type === 'ticket') { c.textContent = info.count + '枚'; c.style.background = '#f3722c'; }
+          c.style.color = '#fff';
+          c.style.cursor = 'default';
+          c.dataset.revealed = 'false';
+        });
+        msg.textContent = '頑張ってください';
+        updateAccumDisplay();
+
+        // after short preview, hide contents and then visually shuffle the face-down cards
+        setTimeout(()=>{
+          // hide contents (face-down)
+          cards.forEach((c,idx)=>{
+            c.textContent = '?';
+            c.style.color = '#fff';
+            c.style.background = '#223';
+            c.style.cursor = 'default';
+            c.dataset.revealed = 'false';
+          });
+          // prepare dataset mapping so we can animate slots independently
+          // visual shuffle animation for slots
+          const visualShuffle = (slots, picksArr, swaps, cb) => {
+            let swapCount = 0;
+            const doSwap = () => {
+              if (swapCount >= swaps) {
+                // finalize: randomly assign picks to slots and hide them
+                shuffleArray(picksArr);
+                slots.forEach((s, i)=>{
+                  s.dataset.reveal = JSON.stringify(picksArr[i]);
+                  s.textContent = '?';
+                  s.style.color = '#fff';
+                  s.style.background = '#223';
+                  s.style.cursor = 'pointer';
+                  s.dataset.revealed = 'false';
+                });
+                msg.textContent = 'カードを1枚選んでください。';
+                revealLock = false;
+                inRound = true;
+                if (cb) cb();
+                return;
+              }
+              // pick two indices to animate a quick swap effect
+              let a = Math.floor(Math.random()*slots.length);
+              let b; do { b = Math.floor(Math.random()*slots.length); } while (b === a);
+              const sa = slots[a], sb = slots[b];
+              sa.style.transition = 'transform 160ms ease';
+              sb.style.transition = 'transform 160ms ease';
+              sa.style.transform = 'translateX(20px)';
+              sb.style.transform = 'translateX(-20px)';
+              setTimeout(()=>{
+                sa.style.transform = '';
+                sb.style.transform = '';
+                swapCount++;
+                setTimeout(doSwap, 120);
+              }, 160);
+            };
+            doSwap();
+          };
+
+          const swaps = 6 + Math.floor(Math.random()*4);
+          visualShuffle(cards, picks, swaps);
+        }, 1400);
+      }
+
+      function revealCard(index){
+        if (revealLock) return; // still showing contents
+        if (!inRound) return;
+        const slot = cards[index];
+        if (!slot || slot.dataset.revealed === 'true') return;
+        const info = JSON.parse(slot.dataset.reveal || '{}');
+        slot.dataset.revealed = 'true';
+        slot.style.cursor = 'default';
+        // animated slow reveal: fade-out, change content, then fade-in
+        revealLock = true;
+        slot.style.transition = 'opacity 420ms ease, transform 420ms ease';
+        slot.style.opacity = '0';
+        slot.style.transform = 'scale(0.98)';
+        setTimeout(()=>{
+          // show content with readable label background
+          if (info.type === 'end'){
+            slot.style.background = '#6c757d';
+            slot.textContent = '終了';
+            slot.style.color = '#fff';
+            msg.textContent = 'ゲーム終了です。';
+            inRound = false;
+            ended = true;
+            // show double-up area
+            preDouble = {hours: accumulated.hours, tickets: accumulated.tickets};
+            doubleAttempts = 0;
+            doubleArea.style.display = '';
+            // Do NOT show the end/close button when 終了 is drawn (hide it)
+            if (endEarlyBtn) endEarlyBtn.style.display = 'none';
+            // keep the three card slots visible until user presses the button (no-op)
+            updateAccumDisplay();
+            revealLock = false;
+          } else {
+            if (info.type === 'free'){
+              accumulated.hours += (info.hours||0);
+              slot.style.background = '#43aa8b';
+              slot.textContent = `${info.hours}h`;
+              slot.style.color = '#fff';
+              msg.textContent = `おめでとう！ ${info.label} を獲得しました。続けて引きます。`;
+            } else if (info.type === 'ticket'){
+              accumulated.tickets += (info.count||0);
+              slot.style.background = '#f3722c';
+              slot.textContent = `${info.count}枚`;
+              slot.style.color = '#fff';
+              msg.textContent = `おめでとう！ ${info.label} を獲得しました。続けて引きます。`;
+            }
+            updateAccumDisplay();
+            // after short delay, prepare next round automatically
+            inRound = false;
+            revealLock = false;
+            // show reward longer before next round
+            setTimeout(()=>{ if(!ended) prepareRound(); }, 2000);
+          }
+          // reveal animation back in
+          slot.style.opacity = '1';
+          slot.style.transform = '';
+        }, 460);
+      }
+
+      // double-up logic
+      function startDoubleUp() {
+        doubleMessage.textContent = '';
+        startDoubleBtn.disabled = true;
+        skipDoubleBtn.disabled = true;
+        performDoubleAttempt();
+      }
+
+      // perform double attempt with shuffle animation and two card slots
+      function performDoubleAttempt(){
+        if (doubleAttempts >= 3) { doubleMessage.textContent = 'ダブルアップの上限に達しました。'; startDoubleBtn.disabled=true; skipDoubleBtn.disabled=false; return; }
+        const choices = [{res:'success', label:'成功'},{res:'fail', label:'失敗'}];
+        shuffleArray(choices);
+        // prepare double card slots
+        doubleMessage.textContent = `ダブルアップ試行 ${doubleAttempts+1} 回目：カードを1枚選んでください。`;
+        let doubleCards = document.getElementById('doubleCards');
+        if (!doubleCards) {
+          doubleCards = document.createElement('div');
+          doubleCards.id = 'doubleCards';
+          doubleCards.style.display = 'flex';
+          doubleCards.style.gap = '12px';
+          doubleCards.style.justifyContent = 'center';
+          doubleCards.style.marginTop = '8px';
+          doubleArea.appendChild(doubleCards);
+        }
+  doubleCards.innerHTML = '';
+        // create two face-down slots
+        for (let i=0;i<2;i++){
+          const d = document.createElement('div');
+          d.className = 'double-slot';
+          d.style.width = '120px';
+          d.style.height = '160px';
+          d.style.background = '#223';
+          d.style.borderRadius = '8px';
+          d.style.display = 'flex';
+          d.style.alignItems = 'center';
+          d.style.justifyContent = 'center';
+          d.style.color = '#fff';
+          d.style.fontWeight = '700';
+          d.style.cursor = 'default';
+          d.textContent = '?';
+          d.style.color = '#fff';
+          d.dataset.index = i;
+          doubleCards.appendChild(d);
+        }
+
+        // shuffle animation: swap positions a few times
+        let swaps = 6 + Math.floor(Math.random()*4); // 6-9 swaps
+        let swapCount = 0;
+        const slots = Array.from(doubleCards.children);
+        const doSwap = () => {
+          if (swapCount >= swaps) {
+            // finish shuffling, map choices to slots
+            // map choices randomly to slots
+            shuffleArray(choices);
+            slots.forEach((slot, idx)=>{
+              slot.dataset.choice = JSON.stringify(choices[idx]);
+              slot.style.cursor = 'pointer';
+              slot.onclick = ()=>{
+                // on pick, reveal both with a small flip animation
+                slots.forEach(s=>{ s.onclick = null; s.style.cursor='default'; });
+                revealDoubleResult(idx);
+              };
+            });
+            return;
+          }
+          // visual swap: toggle translateX for simple effect
+          slots.forEach((s,idx)=>{
+            s.style.transition = 'transform 160ms ease';
+            s.style.transform = `translateX(${idx===0?20:-20}px)`;
+          });
+          setTimeout(()=>{
+            // reset
+            slots.forEach(s=>{ s.style.transform = ''; });
+            swapCount++;
+            setTimeout(doSwap, 120);
+          }, 160);
+        };
+        doSwap();
+      }
+
+      function revealDoubleResult(chosenIdx){
+          const doubleCards = document.getElementById('doubleCards');
+          if (!doubleCards) return;
+          const slots = Array.from(doubleCards.children);
+          // animate a slow reveal for both slots
+          slots.forEach(s=>{ s.style.transition = 'opacity 420ms ease, transform 420ms ease'; s.style.opacity = '0'; s.style.transform = 'scale(0.98)'; });
+          setTimeout(()=>{
+            slots.forEach((s, i)=>{
+              const info = JSON.parse(s.dataset.choice || '{}');
+              if (info.res === 'success') { s.style.background = '#28a745'; s.textContent = '成功'; s.style.color = '#fff'; }
+              else { s.style.background = '#6c757d'; s.textContent = '失敗'; s.style.color = '#fff'; }
+              s.style.opacity = '1';
+              s.style.transform = '';
+            });
+
+            // apply result after reveal
+            const chosen = JSON.parse(slots[chosenIdx].dataset.choice || '{}');
+            if (chosen.res === 'success'){
+              accumulated.hours *= 2;
+              accumulated.tickets *= 2;
+              doubleAttempts++;
+              doubleMessage.innerHTML = `成功！報酬が2倍になりました。現在: ${accumulated.hours}時間 / ${accumulated.tickets}枚`;
+              if (doubleAttempts < 3){ if (startDoubleBtn) startDoubleBtn.style.display = ''; startDoubleBtn.disabled = false; skipDoubleBtn.disabled = false; }
+              else { if (startDoubleBtn) startDoubleBtn.disabled = true; skipDoubleBtn.disabled = false; doubleMessage.innerHTML += '<br>ダブルアップ上限に達しました。'; }
+              updateAccumDisplay();
+            } else {
+              // failure: clear all rewards (including initial)
+              accumulated.hours = 0;
+              accumulated.tickets = 0;
+              // revert localStorage free-mode and tickets to originals captured when modal opened
+              localStorage.setItem('freeModeEnd', originalFreeModeEnd.toString());
+              setTicketCount(originalTickets);
+              doubleMessage.innerHTML = '失敗しました。すべての報酬は取り消されました。';
+              // remove the double-up start button per request
+              if (startDoubleBtn) startDoubleBtn.style.display = 'none';
+              skipDoubleBtn.style.display = 'none';
+              // show only the 終了 button per spec
+              endEarlyBtn.style.display = '';
+              rewardsApplied = false;
+              awaitingCloseConfirm = false;
+              updateAccumDisplay();
+            }
+          }, 320);
+      }
+
+      // attach card click events (animated reveal will honor revealLock)
+      cards.forEach((c, idx)=>{
+        c.onclick = ()=>{ if (!ended && !revealLock) revealCard(idx); };
+      });
+
+      function applyRewards(){
+        if (rewardsApplied) return;
+        // apply accumulated rewards to localStorage
+        const now = Date.now();
+        let freeModeEnd = parseInt(localStorage.getItem('freeModeEnd') || '0');
+        let newEnd = Math.max(now, freeModeEnd) + (accumulated.hours||0) * 60 * 60 * 1000;
+        localStorage.setItem('freeModeEnd', newEnd.toString());
+        setTicketCount(getTicketCount() + (accumulated.tickets||0));
+        updateFreeModeStatus();
+        rewardsApplied = true;
+      }
+
+      startDoubleBtn.onclick = ()=>{ startDoubleUp(); };
+      skipDoubleBtn.onclick = ()=>{
+        // user skips double-up: apply rewards and close the game
+        if (!rewardsApplied) applyRewards();
+        modal.style.display = 'none';
+      };
+
+      if (endEarlyBtn) endEarlyBtn.onclick = ()=>{
+        // when user presses 終了, simply close the modal/game
+        modal.style.display = 'none';
+      };
+
+      // open modal and start first round
+  modal.style.display = 'flex';
+  accumulated = {hours:0, tickets:0};
+  ended = false;
+  doubleArea.style.display = 'none';
+      updateAccumDisplay();
+      prepareRound();
+
+      // debug button removed
+    }
+
     // Generate a random alphanumeric string (6 chars)
     function generateRandomAdminPassword(len = 6) {
       const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -707,12 +1143,14 @@
             message.style.background = '#e0ffe0';
             message.style.color = '#166616';
             message.style.border = '1px solid #a0dca0';
-            // フリーモード加算
+            // フリーモード加算：まずは投稿で1時間付与
             let now = Date.now();
             let freeModeEnd = parseInt(localStorage.getItem('freeModeEnd') || '0');
-            let newEnd = Math.max(now, freeModeEnd) + 24*60*60*1000;
+            let newEnd = Math.max(now, freeModeEnd) + 1*60*60*1000; // 1時間
             localStorage.setItem('freeModeEnd', newEnd.toString());
             updateFreeModeStatus();
+            // カードゲームを表示して追加報酬を付与
+            try { showCardGameModal(); } catch(e){ console.error('card game show error', e); }
             // ボタン表示
             const afterBtns = document.getElementById('afterUploadBtns');
             const fileViewLink = document.getElementById('fileViewLink');
@@ -759,6 +1197,13 @@
           uploadButton.textContent = 'アップロード';
         }
         if (uploadInfo) uploadInfo.style.display = 'block';
+    // reset card game UI so next upload starts fresh
+    try { restoreCardSlots();
+      const modal = document.getElementById('cardGameModal'); if (modal) modal.style.display = 'none';
+      const doubleArea = document.getElementById('doubleUpArea'); if (doubleArea) doubleArea.style.display = 'none';
+  // close button removed from modal
+      const endBtn = document.getElementById('endEarlyBtn'); if (endBtn) endBtn.style.display = 'none';
+    } catch(e){console.error('reset card game error',e);} 
       });
       
       // 写真撮影時の注意ポップアップ機能
@@ -889,24 +1334,31 @@
     function updateFreeModeStatus() {
       const status = document.getElementById('freeModeStatus');
       if (!status) return;
-      if (isInFreeMode()) {
-        const freeModeEnd = parseInt(localStorage.getItem('freeModeEnd'));
-        const remaining = freeModeEnd - new Date().getTime();
-        if (remaining <= 0) {
-          localStorage.removeItem('freeModeEnd');
-          status.textContent = '問題アップロードで広告フリー';
-          status.className = 'free-mode-status ad';
-          return;
-        }
+      const tickets = parseInt(localStorage.getItem('viewTickets') || '0');
+      const freeModeEndRaw = parseInt(localStorage.getItem('freeModeEnd') || '0');
+      const now = new Date().getTime();
+      const remaining = Math.max(0, freeModeEndRaw - now);
+
+      if (remaining <= 0 && tickets <= 0) {
+        status.innerHTML = '問題アップロードで待ち時間ゼロ';
+        status.className = 'free-mode-status ad';
+        return;
+      }
+
+      const iconColor = '#28a745';
+      const clockHtml = `<i class="fa-solid fa-clock" style="margin:0 6px; color:${iconColor}"></i>`;
+      const ticketHtml = `<i class="fa-solid fa-ticket" style="margin-left:8px; color:${iconColor}"></i> ${tickets}`;
+
+      let timeText = '0時間';
+      if (remaining > 0) {
         const hours = Math.floor(remaining / (60 * 60 * 1000));
         const minutes = Math.floor((remaining % (60 * 60 * 1000)) / (60 * 1000));
         const seconds = Math.floor((remaining % (60 * 1000)) / 1000);
-        status.textContent = `フリーモード ${hours}時間${minutes}分${seconds}秒`;
-        status.className = 'free-mode-status free';
-      } else {
-        status.textContent = '問題アップロードで広告フリー';
-        status.className = 'free-mode-status ad';
+        timeText = `${hours}時間${minutes}分${seconds}秒`;
       }
+
+  status.innerHTML = `フリー ${clockHtml} <span style="margin-left:1px;">${timeText}</span> <span style="margin-left:8px;">${ticketHtml}</span>`;
+      status.className = 'free-mode-status free';
     }
     // フリーモード表示を即座に更新
     updateFreeModeStatus();

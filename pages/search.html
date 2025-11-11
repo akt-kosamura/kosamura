@@ -243,24 +243,34 @@
   function updateFreeModeStatus() {
     const status = document.getElementById('freeModeStatus');
     if (!status) return;
-    if (isInFreeMode()) {
-      const freeModeEnd = parseInt(localStorage.getItem('freeModeEnd'));
-      const remaining = freeModeEnd - new Date().getTime();
-      if (remaining <= 0) {
-        localStorage.removeItem('freeModeEnd');
-        status.textContent = '問題アップロードで広告フリー';
-        status.className = 'free-mode-status ad';
-        return;
-      }
+    const tickets = parseInt(localStorage.getItem('viewTickets') || '0');
+    const freeModeEndRaw = parseInt(localStorage.getItem('freeModeEnd') || '0');
+    const now = new Date().getTime();
+    const remaining = Math.max(0, freeModeEndRaw - now);
+
+    // If both time and tickets are zero -> show simple gray message without icons
+    if (remaining <= 0 && tickets <= 0) {
+      status.innerHTML = '問題アップロードで待ち時間ゼロ';
+      status.className = 'free-mode-status ad';
+      return;
+    }
+
+    // Otherwise show green background and: 「フリー」 時計アイコン 時間 チケットアイコン チケット数
+    const iconColor = '#28a745';
+    const clockHtml = `<i class="fa-solid fa-clock" style="margin:0 6px; color:${iconColor}"></i>`;
+    const ticketHtml = `<i class="fa-solid fa-ticket" style="margin-left:8px; color:${iconColor}"></i> ${tickets}`;
+
+    // Show remaining time if we have free-mode time, otherwise show 0時間
+    let timeText = '0時間';
+    if (remaining > 0) {
       const hours = Math.floor(remaining / (60 * 60 * 1000));
       const minutes = Math.floor((remaining % (60 * 60 * 1000)) / (60 * 1000));
       const seconds = Math.floor((remaining % (60 * 1000)) / 1000);
-      status.textContent = `フリーモード ${hours}時間${minutes}分${seconds}秒`;
-      status.className = 'free-mode-status free';
-    } else {
-      status.textContent = '問題アップロードで広告フリー';
-      status.className = 'free-mode-status ad';
+      timeText = `${hours}時間${minutes}分${seconds}秒`;
     }
+
+  status.innerHTML = `フリー ${clockHtml} <span style="margin-left:1px;">${timeText}</span> <span style="margin-left:8px;">${ticketHtml}</span>`;
+    status.className = 'free-mode-status free';
   }
   // --- フィルター用グローバル変数を追加 ---
   const filter = {
@@ -280,8 +290,8 @@ function showAdPopup(fileUrl) {
   overlay.innerHTML = `
     <div class="popup-content">
       <button class="popup-close">&times;</button>
-      <h2>カウンドダウン後に開けます</h2>
-      <div class="countdown-text" id="countdownText">60</div>
+      <h2>カウントダウン後に開けます</h2>
+      <div class="countdown-text" id="countdownText">150</div>
       <p id="statusText">問題アップロードで待ち時間ゼロ！</p>
       <div class="ad-video">
         <video controls autoplay style="width: 100%; border-radius: 1rem; background: #000;">
@@ -292,7 +302,7 @@ function showAdPopup(fileUrl) {
     </div>`;
   document.body.appendChild(overlay);
 
-  let countdown = 60;
+  let countdown = 150;
   const countdownEl = overlay.querySelector('#countdownText');
   const statusEl    = overlay.querySelector('#statusText');
   const timer = setInterval(() => {
@@ -610,8 +620,18 @@ function showAdPopup(fileUrl) {
         // フリーモードなら直接開く
         window.open(fileUrl, '_blank', 'noopener,noreferrer');
       } else {
-        // 通常モードはポップアップ
-        showAdPopup(fileUrl);
+        // 通常モード：チケットがあれば消費して広告無しで開く、無ければ広告ポップアップ
+        const tickets = parseInt(localStorage.getItem('viewTickets') || '0');
+        if (tickets > 0) {
+          // consume one ticket and open
+          localStorage.setItem('viewTickets', String(Math.max(0, tickets - 1)));
+          // update header display if present
+          try { if (typeof updateFreeModeStatus === 'function') updateFreeModeStatus(); } catch(e){}
+          window.open(fileUrl, '_blank', 'noopener,noreferrer');
+        } else {
+          // show ad popup if no tickets
+          showAdPopup(fileUrl);
+        }
       }
       return;
     }
