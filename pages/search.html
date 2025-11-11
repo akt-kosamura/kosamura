@@ -23,6 +23,7 @@
   <link rel="stylesheet" href="../assets/css/common.css" />
   <link rel="stylesheet" href="../assets/css/pages/search.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <!-- falling-paper animation removed from this page (moved to ph-index.html) -->
 </head>
 <body>
   <header>
@@ -358,14 +359,14 @@ function showAdPopup(fileUrl) {
   // 管理者パスワード入力モーダル表示
     // action: 'edit' or 'delete'（将来的に拡張）
     async function showAdminPasswordPrompt(itemId, action = 'edit') {
-    // Overlay
+    // Overlay for password input
     const overlay = document.createElement('div');
     overlay.className = 'popup-overlay';
     overlay.style = 'position:fixed;left:0;top:0;right:0;bottom:0;display:flex;align-items:center;justify-content:center;z-index:3000;background:rgba(0,0,0,0.5);';
     overlay.innerHTML = `
-      <div style="background:#fff;padding:1.2rem;border-radius:10px;max-width:420px;width:90%;box-shadow:0 6px 30px rgba(0,0,0,0.25);">
-  <h3 style="margin:0 0 0.6rem 0;font-size:1.05rem;">${action === 'delete' ? '削除用パスワードの入力' : '編集用パスワードの入力'}</h3>
-  <p style="margin:0 0 0.8rem 0;color:#555;font-size:0.95rem;">${action === 'delete' ? 'このアイテムを削除するための管理者パスワードを入力してください。' : 'このアイテムを編集するための管理者パスワードを入力してください。'}</p>
+      <div style="background:#fff;padding:1.2rem;border-radius:10px;max-width:480px;width:94%;box-shadow:0 6px 30px rgba(0,0,0,0.25);">
+        <h3 style="margin:0 0 0.6rem 0;font-size:1.05rem;">${action === 'delete' ? '削除用パスワードの入力' : '編集用パスワードの入力'}</h3>
+        <p style="margin:0 0 0.8rem 0;color:#555;font-size:0.95rem;">${action === 'delete' ? 'このアイテムを削除するための管理者パスワードを入力してください。' : 'このアイテムを編集するための管理者パスワードを入力してください。'}</p>
         <input id="adminPassInput" type="password" placeholder="パスワード" style="width:100%;padding:0.5rem;margin-bottom:0.6rem;font-size:1rem;" />
         <div style="display:flex;gap:0.6rem;justify-content:flex-end;">
           <button id="adminPassCancel" style="padding:0.5rem 0.8rem;border-radius:6px;border:1px solid #ccc;background:#fff;">キャンセル</button>
@@ -375,6 +376,16 @@ function showAdPopup(fileUrl) {
     `;
     document.body.appendChild(overlay);
 
+    // フォーカスとキーボード操作（EnterでOK、Escで閉じる）
+    setTimeout(() => {
+      const pwInputEl = overlay.querySelector('#adminPassInput');
+      if (pwInputEl) pwInputEl.focus();
+      pwInputEl && pwInputEl.addEventListener('keydown', (ev) => {
+        if (ev.key === 'Enter') overlay.querySelector('#adminPassOk').click();
+        if (ev.key === 'Escape') cleanup();
+      });
+    }, 20);
+
     const cleanup = () => { try { overlay.remove(); } catch (e){} };
 
     overlay.querySelector('#adminPassCancel').addEventListener('click', () => { cleanup(); });
@@ -383,20 +394,202 @@ function showAdPopup(fileUrl) {
     overlay.querySelector('#adminPassOk').addEventListener('click', async () => {
       const pw = overlay.querySelector('#adminPassInput').value || '';
       try {
-        // 認証チェック（存在する場合）
-        const ok = await kosamuraAPI.checkAdminPassword(pw);
-        if (ok) {
-          localStorage.setItem('admin_auth', 'ok');
-          if (action === 'delete') {
-            alert('認証に成功しました。削除処理は未実装です。');
-            // 将来的にはここで削除処理を呼ぶ
-          } else {
-            alert('認証に成功しました。編集フォームは後で表示されます（未実装）。');
-            // 将来的にはここで編集画面を表示する
-          }
-          cleanup();
-        } else {
+        // find the row for this item
+        const btn = document.querySelector(`button.btn-edit[data-id="${itemId}"], button.btn-delete[data-id="${itemId}"]`);
+        const tr = btn ? btn.closest('tr') : null;
+        const storedPw = tr ? (tr.dataset.adminPassword || '') : '';
+        // compare with per-row password (plain-text)
+        if (storedPw !== pw) {
           alert('パスワードが間違っています。');
+          return;
+        }
+
+        // 認証成功
+        cleanup();
+
+        if (action === 'delete') {
+          // confirm deletion
+          if (!confirm('本当にこの投稿を削除しますか？')) return;
+          try {
+            await kosamuraAPI.deletePost(Number(itemId));
+            if (tr) tr.remove();
+            alert('削除しました');
+          } catch (err) {
+            console.error('deletePost error', err);
+            alert('削除に失敗しました');
+          }
+          return;
+        }
+
+        // action === 'edit' -> open an edit modal with multiple fields
+        if (action === 'edit') {
+          // Prepare edit overlay
+          const editOverlay = document.createElement('div');
+          editOverlay.className = 'popup-overlay';
+          editOverlay.style = 'position:fixed;left:0;top:0;right:0;bottom:0;display:flex;align-items:center;justify-content:center;z-index:3100;background:rgba(0,0,0,0.45);';
+          const currentComment = (tr && tr.querySelector('.comment-cell')) ? (tr.querySelector('.comment-cell').dataset.comment || tr.querySelector('.comment-cell').innerText) : '';
+          const curGrade = tr ? (tr.querySelector('.grade-cell') ? tr.querySelector('.grade-cell').textContent : '') : '';
+          const curYear = tr ? (tr.querySelector('.year-cell') ? tr.querySelector('.year-cell').textContent : '') : '';
+          const curType = tr ? (tr.querySelector('.type-cell') ? tr.querySelector('.type-cell').textContent : '') : '';
+          const curSubject = tr ? (tr.querySelector('.subject-cell') ? tr.querySelector('.subject-cell').textContent : '') : '';
+          const curContent = tr ? (tr.querySelector('.content-cell') ? tr.querySelector('.content-cell').textContent : '') : '';
+          const curLikes = tr ? (tr.querySelector('.btn-like') ? parseInt(tr.querySelector('.btn-like').textContent||'0',10) : 0) : 0;
+          const curBad = tr ? (tr.querySelector('.btn-bad') ? parseInt(tr.querySelector('.btn-bad').textContent||'0',10) : 0) : 0;
+          editOverlay.innerHTML = `
+            <div style="background:#fff;padding:1rem;border-radius:10px;max-width:760px;width:96%;box-shadow:0 6px 30px rgba(0,0,0,0.25);">
+              <h3 style="margin:0 0 0.6rem 0;font-size:1.05rem;">投稿を編集</h3>
+              <div style="display:flex;flex-direction:column;gap:0.6rem;margin-bottom:0.6rem;">
+                <label style="font-weight:600;">学年</label>
+                <select id="editGrade" style="padding:0.5rem;">
+                  <option value="">(選択)</option>
+                  <option>高1</option><option>高2</option><option>高3</option>
+                </select>
+
+                <label style="font-weight:600;">年度</label>
+                <select id="editYear" style="padding:0.5rem;">
+                  <option value="">(選択)</option>
+                  <option>2020（R2）</option><option>2021（R3）</option><option>2022（R4）</option><option>2023（R5）</option><option>2024（R6）</option><option>2025（R7）</option><option>不明</option>
+                </select>
+
+                <label style="font-weight:600;">種類</label>
+                <select id="editType" style="padding:0.5rem;">
+                  <option value="">(選択)</option>
+                  <option>前期中間</option><option>前期期末</option><option>後期中間</option><option>後期期末</option><option>考査以外</option>
+                </select>
+
+                <label style="font-weight:600;">科目</label>
+                <select id="editSubject" style="padding:0.5rem;">
+                  <option value="">(選択)</option>
+                  <option>現国・論国</option><option>言文・古探</option><option>数学Ⅰ・Ⅱ・Ⅲ</option><option>数学Ａ・Ｂ・Ｃ</option><option>英語コミュ</option><option>論理表現</option><option>化学・化学基礎</option><option>生物・生物基礎</option><option>物理・物理基礎</option><option>地学・地学基礎</option><option>歴史総合</option><option>地理</option><option>日本史</option><option>世界史</option><option>公共</option><option>情報</option><option>保健体育</option><option>家庭科</option><option>国語</option><option>数学</option><option>理科</option><option>英語</option><option>地歴</option><option>その他</option>
+                </select>
+
+                <label style="font-weight:600;">内容</label>
+                <select id="editContent" style="padding:0.5rem;">
+                  <option value="">(選択)</option>
+                  <option>セット</option><option>問題</option><option>解答</option><option>解説</option>
+                </select>
+              </div>
+              <label style="font-weight:600;">コメント</label>
+              <textarea id="editComment" style="width:100%;height:120px;padding:0.6rem;margin-bottom:0.6rem;font-size:1rem;">${String(currentComment).replace(/</g,'&lt;').replace(/>/g,'&gt;')}</textarea>
+              <div style="display:flex;gap:0.6rem;align-items:center;justify-content:flex-end;">
+                <label style="display:flex;align-items:center;gap:0.4rem;margin-right:auto;">
+                  <input type="checkbox" id="editResetEval"> 評価をリセット
+                </label>
+                <button id="editCancel" style="padding:0.5rem 0.8rem;border-radius:6px;border:1px solid #ccc;background:#fff;">キャンセル</button>
+                <button id="editSave" style="padding:0.5rem 0.8rem;border-radius:6px;border:0;background:#0071e3;color:#fff;">更新</button>
+              </div>
+            </div>
+          `;
+          document.body.appendChild(editOverlay);
+
+          const removeEditOverlay = () => { try { window._hasUnsavedSearchEdit = false; editOverlay.remove(); } catch(e){} };
+          // Do NOT close the edit form when clicking outside (user requested).
+          // Bind cancel button to remove overlay and clear unsaved flag.
+          editOverlay.querySelector('#editCancel').addEventListener('click', removeEditOverlay);
+
+          // Ensure a single global beforeunload handler is installed to warn on reload when there are unsaved edits
+          if (!window._beforeUnloadHandlerInstalled) {
+            window._beforeUnloadHandlerInstalled = true;
+            window._hasUnsavedSearchEdit = false;
+            window.addEventListener('beforeunload', function(e) {
+              if (window._hasUnsavedSearchEdit) {
+                // 標準のメッセージはブラウザにより無視される場合がありますが、戻り値を設定して警告を促します
+                e.preventDefault();
+                e.returnValue = '未保存の変更があります。ページを離れますか？';
+                return e.returnValue;
+              }
+            });
+          }
+
+          // Track unsaved changes inside this edit form. Do not close on outside click.
+          window._hasUnsavedSearchEdit = false;
+          const markUnsaved = () => { window._hasUnsavedSearchEdit = true; };
+          ['#editGrade','#editYear','#editType','#editSubject','#editContent','#editComment','#editResetEval'].forEach(sel => {
+            try {
+              const el = editOverlay.querySelector(sel);
+              if (!el) return;
+              const evName = (el.tagName && el.tagName.toLowerCase() === 'textarea') ? 'input' : 'change';
+              el.addEventListener(evName, markUnsaved);
+            } catch(e) {}
+          });
+
+          // 初期値を select に設定し、キーボード操作を追加（Enterで保存、Escで閉じる）
+          setTimeout(() => {
+            try {
+              const sGrade = editOverlay.querySelector('#editGrade'); if (sGrade) sGrade.value = curGrade || '';
+              const sYear = editOverlay.querySelector('#editYear'); if (sYear) sYear.value = curYear || '';
+              const sType = editOverlay.querySelector('#editType'); if (sType) sType.value = curType || '';
+              const sSubject = editOverlay.querySelector('#editSubject'); if (sSubject) sSubject.value = curSubject || '';
+              const sContent = editOverlay.querySelector('#editContent'); if (sContent) sContent.value = curContent || '';
+              const commentEl = editOverlay.querySelector('#editComment'); if (commentEl) commentEl.focus();
+            } catch(e){/* ignore */}
+            // キーボード操作：Enterで確定（ただしコメントの textarea 内は除外）、Escで閉じる
+            editOverlay.addEventListener('keydown', (ev) => {
+              if (ev.key === 'Escape') removeEditOverlay();
+              if (ev.key === 'Enter' && document.activeElement && document.activeElement.tagName !== 'TEXTAREA') {
+                ev.preventDefault();
+                editOverlay.querySelector('#editSave').click();
+              }
+            }, true);
+          }, 20);
+
+          // Save updates
+          editOverlay.querySelector('#editSave').addEventListener('click', async () => {
+            const newGrade = editOverlay.querySelector('#editGrade').value || '';
+            const newYear = editOverlay.querySelector('#editYear').value || '';
+            const newType = editOverlay.querySelector('#editType').value || '';
+            const newSubject = editOverlay.querySelector('#editSubject').value || '';
+            const newContent = editOverlay.querySelector('#editContent').value || '';
+            const newComment = editOverlay.querySelector('#editComment').value || '';
+            const resetEvalChecked = !!editOverlay.querySelector('#editResetEval').checked;
+            const likeBtn = tr ? tr.querySelector('.btn-like') : null;
+            const badBtn = tr ? tr.querySelector('.btn-bad') : null;
+            let likes = likeBtn ? parseInt(likeBtn.textContent||'0',10) : 0;
+            let bad = badBtn ? parseInt(badBtn.textContent||'0',10) : 0;
+            if (resetEvalChecked) { likes = 0; bad = 0; }
+            try {
+              const postData = {
+                id: Number(itemId),
+                grade: newGrade,
+                year: newYear,
+                type: newType,
+                subject: newSubject,
+                stream: tr ? tr.dataset.stream : '',
+                contentType: newContent,
+                format: tr ? (tr.querySelector('.format-cell') ? tr.querySelector('.format-cell').textContent : '') : '',
+                comment: newComment,
+                url: tr ? (tr.querySelector('.link-cell a') ? tr.querySelector('.link-cell a').dataset.url : '') : '',
+                likes: likes,
+                bad: bad,
+                adminPassword: tr ? tr.dataset.adminPassword : ''
+              };
+              await kosamuraAPI.updatePost(postData);
+              // update DOM
+              if (tr) {
+                if (tr.querySelector('.grade-cell')) tr.querySelector('.grade-cell').textContent = newGrade;
+                if (tr.querySelector('.year-cell')) tr.querySelector('.year-cell').textContent = newYear;
+                if (tr.querySelector('.type-cell')) tr.querySelector('.type-cell').textContent = newType;
+                if (tr.querySelector('.subject-cell')) tr.querySelector('.subject-cell').textContent = newSubject;
+                if (tr.querySelector('.content-cell')) tr.querySelector('.content-cell').textContent = newContent;
+                // update likes/bad if they were reset or changed
+                const likeBtn = tr.querySelector('.btn-like');
+                const badBtn = tr.querySelector('.btn-bad');
+                if (likeBtn) { likeBtn.textContent = String(likes); if (likes === 0) likeBtn.classList.remove('active'); }
+                if (badBtn) { badBtn.textContent = String(bad); if (bad === 0) badBtn.classList.remove('active'); }
+                const td = tr.querySelector('.comment-cell');
+                if (td) {
+                  td.dataset.comment = String(newComment).replace(/</g,'&lt;').replace(/>/g,'&gt;');
+                  const box = td.querySelector('.comment-text');
+                  if (box) box.innerHTML = td.dataset.comment;
+                }
+              }
+              alert('更新しました');
+              removeEditOverlay();
+            } catch (err) {
+              console.error('updatePost error', err);
+              alert('更新に失敗しました');
+            }
+          });
         }
       } catch (err) {
         console.error('checkAdminPassword error', err);
@@ -572,9 +765,12 @@ function showAdPopup(fileUrl) {
     data.forEach(item => {
       const vt = localStorage.getItem('vote_' + item.id);
       const tr = document.createElement('tr');
+      // store useful dataset values per-row (including admin password and id)
+      tr.dataset.id = String(item.id || '');
       ['grade','year','type','subject','stream'].forEach(k => {
         tr.dataset[k] = String(item[k] || '');
       });
+      tr.dataset.adminPassword = String(item.adminPassword || '');
       tr.dataset.date = String(item.date || '');
       const safe = String(item.comment || '').replace(/</g,'&lt;').replace(/>/g,'&gt;');
       const rel = formatRelativeTime(item.date);
@@ -802,3 +998,5 @@ function showAdPopup(fileUrl) {
 <script src="../assets/js/auth.js"></script>
 </body>
 </html>
+
+<!-- falling-paper animation removed from this page (moved to ph-index.html) -->

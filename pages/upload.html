@@ -169,10 +169,16 @@
               </td>
             </tr>
             <tr>
-              <td>管理者パスワード</td>
+              <td>編集パスワード</td>
               <td>
-                <input id="adminPassword" type="password" placeholder="管理者パスワード（任意・プレーンテキストで保存されます）" style="width:100%; padding:0.4em; font-size:0.95rem;" />
-                <div class="desc">編集や管理を行う際に使用するパスワードを入力してください（任意）。</div>
+                <div style="display:flex; align-items:center; gap:1.6em;">
+                  <input id="adminPassword" type="text" placeholder="編集パスワード" style="width:220px; padding:0.4em; font-size:0.95rem;" />
+                  <label style="display:flex; align-items:center; gap:0.5em; font-size:0.95rem;">
+                    <input id="autoAdminPassword" type="checkbox" checked />
+                    <span>パスワードを自動指定</span>
+                  </label>
+                </div>
+                <div class="desc">編集や削除を行う際に使用するパスワードを指定してください。</div>
               </td>
             </tr>
           </table>
@@ -199,6 +205,53 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
   <script src="../assets/js/api.js"></script>
+  <script>
+    // Generate a random alphanumeric string (6 chars)
+    function generateRandomAdminPassword(len = 6) {
+      const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+      let s = '';
+      for (let i = 0; i < len; i++) s += chars.charAt(Math.floor(Math.random() * chars.length));
+      return s;
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+      try {
+        const adminInput = document.getElementById('adminPassword');
+        const autoChk = document.getElementById('autoAdminPassword');
+        if (!adminInput || !autoChk) return;
+
+        // initialize with random password and disable input when auto is checked
+        function applyAutoState(isAuto) {
+          if (isAuto) {
+            // if enabling auto, generate a fresh password
+            adminInput.value = generateRandomAdminPassword(6);
+            // show as plain text and make readonly (so it still submits if needed)
+            adminInput.type = 'text';
+            adminInput.readOnly = true;
+            adminInput.style.background = '#f3f3f3';
+            adminInput.style.color = '#222';
+            adminInput.style.width = '220px';
+          } else {
+            // manual mode: clear input, mask input, allow editing but keep compact width
+            adminInput.value = '';
+            adminInput.type = 'password';
+            adminInput.readOnly = false;
+            adminInput.style.background = '';
+            adminInput.style.color = '';
+            adminInput.style.width = '220px';
+            adminInput.focus();
+          }
+        }
+
+        // default: checked -> auto
+        applyAutoState(autoChk.checked);
+
+        autoChk.addEventListener('change', function() {
+          applyAutoState(autoChk.checked);
+        });
+      } catch (e) { console.error('admin password init error', e); }
+    });
+  </script>
   <script>
     'use strict';
     const fileAddBtn   = document.getElementById('fileAddBtn'); // This will be removed
