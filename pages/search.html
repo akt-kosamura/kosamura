@@ -128,6 +128,16 @@
                 <option>理数科のみ</option>
               </select>
             </div>
+
+            <div class="filter-group">
+              <label for="contentType">内容</label>
+              <select id="contentType">
+                <option value="">指定しない</option>
+                <option>問題＆解答/解説</option>
+                <option>問題のみ</option>
+                <option>解答/解説のみ</option>
+              </select>
+            </div>
           </div>
 
           <div class="filter-buttons">
@@ -476,7 +486,9 @@ function showAdPopup(fileUrl) {
                 <label style="font-weight:600;">内容</label>
                 <select id="editContent" style="padding:0.5rem;">
                   <option value="">(選択)</option>
-                  <option>セット</option><option>問題</option><option>解答</option><option>解説</option>
+                  <option>問題＆解答/解説</option>
+                  <option>問題のみ</option>
+                  <option>解答/解説のみ</option>
                 </select>
               </div>
               <label style="font-weight:600;">コメント</label>
@@ -837,10 +849,30 @@ function showAdPopup(fileUrl) {
   // フィルタ適用
   function applyFilters() {
     let visibleCount = 0;
+    const matchesContentType = (f, r) => {
+      if (!f) return true;
+      if (!r) return false;
+      // exact match for '問題のみ'
+      if (f === '問題のみ') return r === '問題のみ';
+      // user selected '問題＆解答/解説' -> match common server variants or rows containing both 問題 and (解答|解説)
+      if (f === '問題＆解答/解説') {
+        if (r === '問題＆解説' || r === '問題・解答' || r === '問題・解答') return true;
+        return r.includes('問題') && (r.includes('解答') || r.includes('解説'));
+      }
+      // user selected '解答/解説のみ' -> match rows that contain 解答 or 解説
+      if (f === '解答/解説のみ') {
+        return r.includes('解答') || r.includes('解説');
+      }
+      // fallback: strict equality
+      return r === f;
+    };
+
     document.querySelectorAll('#resultBody tr').forEach(tr => {
       if (!tr.dataset) return;
-      const ok = ['grade','year','type','subject','stream']
+      const basicOk = ['grade','year','type','subject','stream']
         .every(k => !filter[k] || tr.dataset[k] === filter[k]);
+      const contentOk = matchesContentType(filter.contentType || '', tr.dataset.contentType || '');
+      const ok = basicOk && contentOk;
       tr.style.display = ok ? '' : 'none';
       if (ok) visibleCount++;
     });
@@ -979,12 +1011,15 @@ function showAdPopup(fileUrl) {
   document.addEventListener('DOMContentLoaded', () => {
     updateFreeModeStatus();
     setInterval(updateFreeModeStatus, 1000);
-    ['grade','year','type','subject','stream'].forEach(id => {
-      document.getElementById(id).onchange = e => { filter[id] = e.target.value; applyFilters(); };
+    ['grade','year','type','subject','stream','contentType'].forEach(id => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.onchange = e => { filter[id] = e.target.value; applyFilters(); };
     });
     document.getElementById('btnClearFilters').onclick = () => {
-      ['grade','year','type','subject','stream'].forEach(k => {
+      ['grade','year','type','subject','stream','contentType'].forEach(k => {
         const el = document.getElementById(k);
+        if (!el) return;
         el.value = ''; filter[k] = '';
       });
       applyFilters();
