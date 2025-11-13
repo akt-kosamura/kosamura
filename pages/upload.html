@@ -53,6 +53,7 @@
       <nav>
         <ul>
           <li><a href="../index.html"><i class="fa-solid fa-home"></i> ホーム</a></li>
+          <li><a href="table.html"><i class="fa-solid fa-list-check"></i> 考査一覧</a></li>
           <li><a href="upload.html" class="active"><i class="fa-solid fa-upload"></i> アップロード</a></li>
           <li><a href="search.html"><i class="fa-solid fa-database"></i> 問題データベース</a></li>
           <li><a href="share.html"><i class="fa-solid fa-share-nodes"></i> 共有・拡散</a></li>
@@ -76,54 +77,8 @@
     </div>
     
     <div class="card" id="step1Card">
-      <div class="card-title" id="step1Title"><span class="step-label">Step1 ファイル追加・編集</span></div>
+      <div class="card-title" id="step1Title"><span class="step-label">Step1 情報入力</span></div>
       <div class="card-content" id="step1Content">
-        <form id="fileForm">
-          <!-- 注意書きは「情報入力へ」ボタンの下に移動 -->
-          <div class="file-input-wrapper" id="fileDropArea">
-            <input type="file" id="fileInput" accept=".pdf,image/*" multiple style="display:none;">
-            <div id="customFileBtn" class="custom-file-btn">
-              <span class="file-svg" aria-hidden="true">
-                <svg viewBox="0 0 48 48" width="56" height="56" fill="#f7faff" stroke="#0071e3" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display:block;margin:0 auto;">
-                  <rect x="10" y="6" width="28" height="36" rx="4"/>
-                  <polyline points="18,16 30,16" />
-                  <polyline points="18,24 30,24" />
-                  <polyline points="18,32 26,32" />
-                </svg>
-              </span>
-              <span id="fileBtnLabel" class="file-btn-label">ここにファイルをドラッグ＆ドロップ<br>またはクリックで選択・撮影</span>
-            </div>
-            <small>対応形式：PDF / 画像</small>
-          </div>
-          <div id="fileListInfo" style="margin-bottom: 0.7em; font-size: 0.97em; color: #555; line-height: 1.7; text-align:center;">
-            <div>画像はサムネイルクリックで拡大プレビュー・左端をドラッグで順番変更可能</div>
-            <div>現在のファイル名やタグ情報は一切アップロードされないのでご安心ください。</div>
-          </div>
-          <ul id="fileList" style="min-height: 4.5em; transition: min-height 0.3s;"></ul>
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.2em; gap: 1em; flex-wrap: wrap;">
-            <button type="button" id="reverseOrderBtn" style="padding: 0.5em 1.2em; border-radius: 8px; border: 1px solid #0071e3; background: #fff; color: #0071e3; font-weight: bold; cursor: pointer;">順序を逆にする</button>
-            <label style="display: flex; align-items: center; gap: 0.5em; font-size: 1em; position: relative;">
-              <input type="checkbox" id="colorUploadCheckbox"> 画像をカラーでアップロード(非推奨)
-              <span id="colorHelp" style="cursor:pointer; color:#0071e3; font-weight:bold; font-size:1.1em; user-select:none;">？</span>
-              <span id="colorHelpPopup" style="display:none; position:absolute; right:2.2em; top:50%; transform:translateY(-50%); background:#eee; color:#444; border:1px solid #bbb; border-radius:6px; padding:0.4em 0.7em; font-size:0.90em; box-shadow:0 2px 8px rgba(0,0,0,0.10); z-index:100; min-width:120px; text-align:left; white-space:normal;">カラーでのアップロードはファイルサイズが大きくなるため時間がかかります</span>
-            </label>
-          </div>
-          <button type="button" id="toStep2Btn" class="upload-btn">情報入力へ</button>
-        </form>
-        <div style="background:#fff7d1; color:#bfa100; font-size:0.98em; border-radius:10px; padding:1.5em 1em; margin-top:1.5em; margin-bottom:0.05em; box-shadow:0 2px 8px rgba(191,161,0,0.06); line-height:1.7;">
-          <ul style="list-style:none; margin:0; padding:0;">
-            <li style="text-indent:-1.2em; padding-left:1.2em; margin-bottom:0.3em;">・お手数をおかけしますが、あらかじめ同じ内容が既にアップされていないか検索をお願いします。（自動検索機能は開発中です）</li>
-            <li style="text-indent:-1.2em; padding-left:1.2em; margin-bottom:0.3em;">・問題・解説・解答のいずれかだけでもOK！次のステップで内容選択の項目があります。</li>
-          </ul>
-        </div>
-      </div>
-    </div>
-    <div class="card" id="step2Card" style="margin-top:2.5rem;">
-      <div class="card-title" id="step2Title">
-        <span class="step-label">Step2 情報入力</span>
-        <button type="button" class="back-btn" id="backToStep1Btn">ファイル編集に戻る</button>
-      </div>
-      <div class="card-content closed" id="step2Content">
         <form id="metaForm">
           <table class="form-table">
             <tr>
@@ -201,6 +156,8 @@
               </td>
             </tr>
           </table>
+          <!-- Step1からファイル追加へ進むボタン（重複チェックを行う） -->
+          <button type="button" id="goToFilesBtn" class="upload-btn" style="margin-top:1.2em; margin-right:0.6em;">ファイルを追加へ</button>
           <button type="submit" class="upload-btn" id="uploadButton" style="margin-top:1.2em;">アップロード</button>
           <div id="uploadInfo" style="margin-top:1em; margin-bottom:0.7em; color:#0071e3; font-size:0.98em; line-height:1.6; text-align:center;">
             アップロードには時間がかかる場合もあります。改善中です。<br>
@@ -212,6 +169,60 @@
             <button type="button" class="continue-btn" id="continueBtn" style="display:inline-block;">続けてアップロード</button>
           </div>
         </form>
+        <div style="background:#fff7d1; color:#bfa100; font-size:0.98em; border-radius:10px; padding:1.5em 1em; margin-top:1.5em; margin-bottom:0.05em; box-shadow:0 2px 8px rgba(191,161,0,0.06); line-height:1.7;">
+          <ul style="list-style:none; margin:0; padding:0;">
+            <li style="text-indent:-1.2em; padding-left:1.2em; margin-bottom:0.3em;">・お手数をおかけしますが、あらかじめ同じ内容が既にアップされていないか検索をお願いします。（自動検索機能は開発中です）</li>
+            <li style="text-indent:-1.2em; padding-left:1.2em; margin-bottom:0.3em;">・問題・解説・解答のいずれかだけでもOK！次のステップで内容選択の項目があります。</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="card" id="step2Card" style="margin-top:2.5rem;">
+      <div class="card-title" id="step2Title">
+        <span class="step-label">Step2 ファイル追加・編集</span>
+        <button type="button" class="back-btn" id="backToStep1Btn">ファイル編集に戻る</button>
+      </div>
+      <div class="card-content closed" id="step2Content">
+        <form id="fileForm">
+          <!-- 注意書きは「情報入力へ」ボタンの下に移動 -->
+          <div class="file-input-wrapper" id="fileDropArea">
+            <input type="file" id="fileInput" accept=".pdf,image/*" multiple style="display:none;">
+            <div id="customFileBtn" class="custom-file-btn">
+              <span class="file-svg" aria-hidden="true">
+                <svg viewBox="0 0 48 48" width="56" height="56" fill="#f7faff" stroke="#0071e3" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display:block;margin:0 auto;">
+                  <rect x="10" y="6" width="28" height="36" rx="4"/>
+                  <polyline points="18,16 30,16" />
+                  <polyline points="18,24 30,24" />
+                  <polyline points="18,32 26,32" />
+                </svg>
+              </span>
+              <span id="fileBtnLabel" class="file-btn-label">ここにファイルをドラッグ＆ドロップ<br>またはクリックで選択・撮影</span>
+            </div>
+            <small>対応形式：PDF / 画像</small>
+          </div>
+          <div id="fileListInfo" style="margin-bottom: 0.7em; font-size: 0.97em; color: #555; line-height: 1.7; text-align:center;">
+            <div>画像はサムネイルクリックで拡大プレビュー・左端をドラッグで順番変更可能</div>
+            <div>現在のファイル名やタグ情報は一切アップロードされないのでご安心ください。</div>
+          </div>
+          <ul id="fileList" style="min-height: 4.5em; transition: min-height 0.3s;"></ul>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.2em; gap: 1em; flex-wrap: wrap;">
+            <button type="button" id="reverseOrderBtn" style="padding: 0.5em 1.2em; border-radius: 8px; border: 1px solid #0071e3; background: #fff; color: #0071e3; font-weight: bold; cursor: pointer;">順序を逆にする</button>
+            <label style="display: flex; align-items: center; gap: 0.5em; font-size: 1em; position: relative;">
+              <input type="checkbox" id="colorUploadCheckbox"> 画像をカラーでアップロード(非推奨)
+              <span id="colorHelp" style="cursor:pointer; color:#0071e3; font-weight:bold; font-size:1.1em; user-select:none;">？</span>
+              <span id="colorHelpPopup" style="display:none; position:absolute; right:2.2em; top:50%; transform:translateY(-50%); background:#eee; color:#444; border:1px solid #bbb; border-radius:6px; padding:0.4em 0.7em; font-size:0.90em; box-shadow:0 2px 8px rgba(0,0,0,0.10); z-index:100; min-width:120px; text-align:left; white-space:normal;">カラーでのアップロードはファイルサイズが大きくなるため時間がかかります</span>
+            </label>
+          </div>
+          <button type="button" id="toStep2Btn" class="upload-btn">情報入力へ</button>
+          <!-- upload trigger (実際のアップロードは metaForm の submit ハンドラが行います) -->
+          <button type="button" id="startUploadBtn" class="upload-btn" style="margin-left:0.6em;">アップロード</button>
+        </form>
+        <div style="background:#fff7d1; color:#bfa100; font-size:0.98em; border-radius:10px; padding:1.5em 1em; margin-top:1.5em; margin-bottom:0.05em; box-shadow:0 2px 8px rgba(191,161,0,0.06); line-height:1.7;">
+          <ul style="list-style:none; margin:0; padding:0;">
+            <li style="text-indent:-1.2em; padding-left:1.2em; margin-bottom:0.3em;">・お手数をおかけしますが、あらかじめ同じ内容が既にアップされていないか検索をお願いします。（自動検索機能は開発中です）</li>
+            <li style="text-indent:-1.2em; padding-left:1.2em; margin-bottom:0.3em;">・問題・解説・解答のいずれかだけでもOK！次のステップで内容選択の項目があります。</li>
+          </ul>
+        </div>
       </div>
     </div>
   </main>
@@ -905,17 +916,147 @@
           window.scrollBy({top: -headerHeight, left: 0, behavior: 'smooth'});
         }
       });
-      // Step1→Step2
+      // Step1→Step2 (既存ファイル側の「情報入力へ」ボタン) - ファイル側から情報側へ戻る動作
       toStep2Btn.addEventListener('click', () => {
-        // ファイルがなくても必ずStep2を開く
-        closeCard(step1Card);
-        openCard(step2Card);
-        backToStep1Btn.style.display = '';
-        step2Card.scrollIntoView({behavior:'smooth', block:'start'});
+  // ファイル側から情報入力へ
+  closeCard(step2Card);
+  openCard(step1Card);
+  backToStep1Btn.style.display = 'none';
+  step1Card.scrollIntoView({behavior:'smooth', block:'start'});
         const header = document.querySelector('header');
         const headerHeight = header ? header.offsetHeight : 80;
         window.scrollBy({top: -headerHeight, left: 0, behavior: 'smooth'});
       });
+
+      // meta (Step1) からファイル追加 (Step2) へ進むボタン（重複チェックを行ってから遷移）
+      const goToFilesBtn = document.getElementById('goToFilesBtn');
+      async function normalizeContentTypeLabel(s) {
+        if (!s) return '';
+        s = String(s).trim();
+        if (/問題/.test(s) && (/解答|解説/.test(s))) return '問題＆解答/解説';
+        if (/問題のみ|問題$/.test(s) || (s === '問題')) return '問題のみ';
+        if (/解答|解説/.test(s)) return '解答/解説のみ';
+        if (s === '問題＆解説' || s === '問題・解答' || s === '問題・解答') return '問題＆解答/解説';
+        return s;
+      }
+
+      async function checkDuplicatesAndPrompt() {
+  const grade = metaForm.querySelector('input[name="grade"]:checked')?.value || '';
+        const year = document.getElementById('year').value || '';
+        const typeVal = document.getElementById('type').value || '';
+        const subject = document.getElementById('subject').value || '';
+  const stream = metaForm.querySelector('input[name="stream"]:checked')?.value || '';
+  const userContent = metaForm.querySelector('input[name="contentType"]:checked')?.value || '';
+
+        // only run check when type is not '考査以外'
+        if (!typeVal || typeVal === '考査以外') return {ok:true, chosenContent: userContent};
+
+        let data = [];
+        try {
+          data = await kosamuraAPI.getData();
+        } catch (e) {
+          console.error('getData error', e);
+          // ネットワークエラー等の場合は安全側で進める
+          return {ok:true, chosenContent: userContent};
+        }
+
+        // find rows matching the five keys exactly
+        const matched = data.filter(item => {
+          try {
+            return String(item.grade||'') === String(grade) && String(item.year||'') === String(year) && String(item.type||'') === String(typeVal) && String(item.subject||'') === String(subject) && String(item.stream||'') === String(stream);
+          } catch(e){ return false; }
+        });
+
+        if (!matched.length) return {ok:true, chosenContent: userContent};
+
+        // collect normalized existing content types
+        const existing = new Set();
+        for (const m of matched) {
+          existing.add(await normalizeContentTypeLabel(m.contentType || ''));
+        }
+
+        const hasAll = existing.has('問題＆解答/解説') || existing.has('問題＆解答/解説');
+        const hasQ = existing.has('問題のみ');
+        const hasA = existing.has('解答/解説のみ');
+
+        // Case 1: full duplication exists
+        if (hasAll || (hasQ && hasA)) {
+          const cont = confirm('問題、解答ともにすでに収蔵されていますが、続行しますか？\n特別な場合にのみ続行してください。');
+          return {ok: cont, chosenContent: userContent};
+        }
+
+        // Case 2: only one side exists
+        if ((hasQ && !hasA) || (hasA && !hasQ)) {
+          // If user is uploading the same side as existing, or user selected combined
+          if (userContent === '問題のみ' && hasQ || userContent === '解答/解説のみ' && hasA || userContent === '問題＆解答/解説') {
+            // show dialog allowing user to change content selection
+            return await new Promise(resolve => {
+              // build overlay
+              const overlay = document.createElement('div');
+              overlay.className = 'popup-overlay';
+              overlay.style = 'position:fixed;left:0;top:0;right:0;bottom:0;display:flex;align-items:center;justify-content:center;z-index:4000;background:rgba(0,0,0,0.45);';
+              overlay.innerHTML = `
+                <div style="background:#fff;padding:1rem;border-radius:10px;max-width:520px;width:94%;box-shadow:0 10px 40px rgba(0,0,0,0.25);">
+                  <h3 style="margin:0 0 0.6rem 0;font-size:1.05rem;">同一の出題が既に登録されています</h3>
+                  <p style="color:#444;margin:0 0 0.6rem 0;">同一条件のデータが既に存在します。内容を変更しますか？</p>
+                  <div style="display:flex;flex-direction:column;gap:0.4rem;margin-bottom:0.6rem;">
+                    <label><input type="radio" name="dupContentChoice" value="問題＆解答/解説"> 問題＆解答/解説</label>
+                    <label><input type="radio" name="dupContentChoice" value="問題のみ"> 問題のみ</label>
+                    <label><input type="radio" name="dupContentChoice" value="解答/解説のみ"> 解答/解説のみ</label>
+                  </div>
+                  <div style="display:flex;justify-content:flex-end;gap:0.6rem;"><button id="dupCancel" style="padding:0.5rem 0.8rem;border-radius:6px;border:1px solid #ccc;background:#fff;">キャンセル</button><button id="dupOk" style="padding:0.5rem 0.8rem;border-radius:6px;border:0;background:#0071e3;color:#fff;">続行</button></div>
+                </div>`;
+              document.body.appendChild(overlay);
+              // set initial radio to current selection
+              try { overlay.querySelector(`input[value="${userContent}"]`).checked = true; } catch(e){}
+              overlay.querySelector('#dupCancel').addEventListener('click', () => { overlay.remove(); resolve({ok:false, chosenContent:userContent}); });
+              overlay.querySelector('#dupOk').addEventListener('click', () => {
+                const sel = overlay.querySelector('input[name="dupContentChoice"]:checked');
+                const chosen = sel ? sel.value : userContent;
+                overlay.remove();
+                resolve({ok:true, chosenContent: chosen});
+              });
+            });
+          }
+        }
+
+        // default: allow
+        return {ok:true, chosenContent: userContent};
+      }
+
+      if (goToFilesBtn) {
+        goToFilesBtn.addEventListener('click', async () => {
+          try {
+            const res = await checkDuplicatesAndPrompt();
+            if (!res.ok) return;
+            // if chosenContent changed, set it
+            if (res.chosenContent) {
+              const inputs = metaForm.querySelectorAll('input[name="contentType"]');
+              inputs.forEach(i => { i.checked = (i.value === res.chosenContent); });
+            }
+            // proceed to file step
+            closeCard(step1Card);
+            openCard(step2Card);
+            backToStep1Btn.style.display = '';
+            step2Card.scrollIntoView({behavior:'smooth', block:'start'});
+            const header = document.querySelector('header');
+            const headerHeight = header ? header.offsetHeight : 80;
+            window.scrollBy({top: -headerHeight, left: 0, behavior: 'smooth'});
+          } catch (err) {
+            console.error('duplicate check error', err);
+            alert('重複チェックに失敗しました。ネットワークを確認して再度お試しください。');
+          }
+        });
+      }
+
+      // ファイル側のアップロードボタンは metaForm の submit をトリガーする
+      const startUploadBtnEl = document.getElementById('startUploadBtn');
+      if (startUploadBtnEl) {
+        startUploadBtnEl.addEventListener('click', () => {
+          if (typeof metaForm.requestSubmit === 'function') metaForm.requestSubmit();
+          else metaForm.dispatchEvent(new Event('submit', {cancelable:true}));
+        });
+      }
       // Step2→Step1
       backToStep1Btn.addEventListener('click', () => {
         closeCard(step2Card);
@@ -926,10 +1067,10 @@
         const headerHeight = header ? header.offsetHeight : 80;
         window.scrollBy({top: -headerHeight, left: 0, behavior: 'smooth'});
       });
-      // 初期状態
-      openCard(step1Card);
-      closeCard(step2Card);
-      backToStep1Btn.style.display = 'none';
+  // 初期状態：Step1 情報入力 を開く
+  openCard(step1Card);
+  closeCard(step2Card);
+  backToStep1Btn.style.display = 'none';
 
       // Step1ファイル編集画面のファイルリスト下部に「順序を逆にする」ボタンと「画像をカラーでアップロード」チェックボックスを追加
       const reverseOrderBtn = document.getElementById('reverseOrderBtn');
@@ -1486,6 +1627,32 @@
     </div>
   </div>
   
+  <script>
+    (function(){
+      function prefillFromQuery(){
+        try {
+          const params = new URLSearchParams(location.search);
+          if (!params.toString()) return;
+          const grade = params.get('grade');
+          if (grade) {
+            const r = document.querySelector(`#metaForm input[name="grade"][value="${grade}"]`);
+            if (r) r.checked = true;
+          }
+          const year = params.get('year'); if (year) { const el = document.getElementById('year'); if (el) el.value = year; }
+          const type = params.get('type'); if (type) { const el = document.getElementById('type'); if (el) el.value = type; }
+          const subject = params.get('subject'); if (subject) { const el = document.getElementById('subject'); if (el) el.value = subject; }
+          const stream = params.get('stream'); if (stream) { const sr = document.querySelector(`#metaForm input[name="stream"][value="${stream}"]`); if (sr) sr.checked = true; }
+          const contentType = params.get('contentType'); if (contentType) { const cr = document.querySelector(`#metaForm input[name="contentType"][value="${contentType}"]`); if (cr) cr.checked = true; }
+          const comment = params.get('comment'); if (comment) { const el = document.getElementById('comment'); if (el) el.value = comment; }
+          // ensure Step1 visible and Step2 is closed so user can review meta before adding files
+          try { document.getElementById('step1Content').style.display = 'block'; const s2 = document.getElementById('step2Content'); if (s2) s2.classList.add('closed'); } catch(e){}
+          // small scroll to meta form
+          setTimeout(()=>{ const mf = document.getElementById('metaForm'); if (mf) mf.scrollIntoView({behavior:'smooth'}); }, 200);
+        } catch (e) { console.error('prefillFromQuery error', e); }
+      }
+      if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', prefillFromQuery); else prefillFromQuery();
+    })();
+  </script>
   <script src="../assets/js/api.js"></script>
   <script src="../assets/js/auth.js"></script>
 </body>

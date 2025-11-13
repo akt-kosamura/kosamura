@@ -36,6 +36,7 @@
       <nav>
         <ul>
           <li><a href="../index.html"><i class="fa-solid fa-home"></i> ホーム</a></li>
+          <li><a href="table.html"><i class="fa-solid fa-list-check"></i> 考査一覧</a></li>
           <li><a href="upload.html"><i class="fa-solid fa-upload"></i> アップロード</a></li>
           <li><a href="search.html" class="active"><i class="fa-solid fa-database"></i> 問題データベース</a></li>
           <li><a href="share.html"><i class="fa-solid fa-share-nodes"></i> 共有・拡散</a></li>
@@ -347,11 +348,9 @@ function showAdPopup(fileUrl) {
     clearInterval(timer);
     document.body.removeChild(overlay);
   };
+  // Do NOT close the popup when clicking outside; only the close button should close it.
   overlay.onclick = e => {
-    if (e.target === overlay) {
-      clearInterval(timer);
-      document.body.removeChild(overlay);
-    }
+    // intentionally empty to prevent outside clicks from closing the video popup
   };
 }
   // 動画読み込み完了時の処理

@@ -14,6 +14,10 @@ body {
   background: #f8f9fa;
 }
 
+/* page-level variant for darker content background used on collection pages */
+.page-dark {
+  background: var(--page-dark-bg);
+}
 /* ===== 共通変数 ===== */
 :root {
   --primary-color: #0071e3;
@@ -39,6 +43,11 @@ body {
   --border-radius: 8px;
   --box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   --transition: all 0.3s ease;
+  /* table / page shared tonal settings */
+  --table-header-bg: #4b5563;
+  --table-left-col-bg: #4b5563;
+  --page-dark-bg: #dfe6ec;
+  --hover-strong: #e6f4ff;
 }
 
 /* ===== ヘッダー共通スタイル ===== */
@@ -70,6 +79,10 @@ header {
   flex-wrap: wrap;
   justify-content: flex-start;
 }
+
+/* year header hover for table pages */
+.year-header { transition: background 0.18s ease; }
+.year-header:hover { background: #e8eef6; cursor: pointer; }
 
 .site-title {
   font-size: 1.5rem;
@@ -331,6 +344,24 @@ tr:hover {
   background: var(--gray-50);
 }
 
+/* stronger hover states for interactive table cells */
+table.collection td:hover { background: var(--hover-strong); cursor: pointer; }
+
+/* darker table header and left-most column styling (shared) */
+table.collection th {
+  background: var(--table-header-bg);
+  color: #ffffff;
+}
+/* left-most column stays visible during horizontal scroll */
+table.collection th:first-child,
+table.collection td:first-child {
+  position: sticky;
+  left: 0;
+  z-index: 4;
+  background: var(--table-left-col-bg);
+  color: #ffffff;
+}
+
 /* ===== ユーティリティクラス ===== */
 .text-center { text-align: center; }
 .text-left { text-align: left; }
@@ -398,6 +429,14 @@ tr:hover {
     gap: 4px;
   }
   
+
+/* popup common styles (shared with search/table) */
+.popup-overlay { position: fixed; left:0; top:0; right:0; bottom:0; display:flex; align-items:center; justify-content:center; z-index:5000; background: rgba(0,0,0,0.45); }
+.popup-content { background:#fff; padding:1rem; border-radius:10px; max-width:720px; width:94%; box-shadow:0 10px 40px rgba(0,0,0,0.25); }
+.popup-content .popup-close { float:right; border:0; background:transparent; font-size:1.4rem; }
+.popup-content h2 { margin:0 0 0.6rem 0; font-size:1.05rem; }
+.countdown-text { font-size:1.6rem; text-align:center; }
+.ad-video { background:#000; border-radius:8px; overflow:hidden; padding:0.4rem; margin-bottom:0.6rem; }
   nav ul {
     flex-direction: column;
     align-items: stretch;
@@ -432,6 +471,45 @@ tr:hover {
 .fade-in {
   animation: fadeIn 0.5s ease-out;
 }
+
+/* Ensure popup styles apply on all viewports (desktop + mobile) */
+.popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.45);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 6000;
+  padding: 20px;
+  box-sizing: border-box;
+}
+.popup-content {
+  background: #fff;
+  border-radius: 12px;
+  padding: 1rem 1.2rem;
+  width: 100%;
+  max-width: 900px;
+  max-height: 90vh;
+  overflow: auto;
+  position: relative;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.25);
+}
+.popup-content .popup-close {
+  position: absolute;
+  top: 8px;
+  right: 12px;
+  border: 0;
+  background: transparent;
+  font-size: 1.4rem;
+  cursor: pointer;
+}
+.popup-content h2, .popup-content h3 { margin: 0 0 0.6rem 0; font-size: 1.05rem; }
+.countdown-text { font-size: 1.6rem; text-align: center; }
+.ad-video { background: #000; border-radius: 8px; overflow: hidden; padding: 0.4rem; margin-bottom: 0.6rem; }
 
 /* ===== ローディング ===== */
 .loading {
