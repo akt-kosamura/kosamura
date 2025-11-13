@@ -8,7 +8,7 @@
   <link rel="stylesheet" href="../assets/css/common.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
   <style>
-  body { font-family: system-ui, -apple-system, "Hiragino Kaku Gothic ProN", "Noto Sans JP", "Segoe UI", Roboto, "Yu Gothic", "Meiryo", sans-serif; padding-top: 64px; padding-left: 32px; padding-right: 32px; padding-bottom: 1rem; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; padding-top: 64px; padding-left: 32px; padding-right: 32px; padding-bottom: 1rem; }
     h1 { text-align: center; font-size: 2rem; margin-top: 6rem; margin-bottom: 1rem; background: linear-gradient(90deg, #0071e3, #5ac8fa); background-clip: text; -webkit-background-clip: text; color: transparent; }
   .year-block { border:1px solid #e6e6e6; border-radius:8px; margin-bottom:1rem; overflow:hidden; background:#fff; box-shadow:0 2px 10px rgba(0,0,0,0.03); }
     .year-header { background:#f2f4f7; padding:0.6rem 1rem; cursor:pointer; display:flex; justify-content:space-between; align-items:center; }
@@ -403,6 +403,11 @@
             const rwrap = document.createElement('div'); rwrap.style = 'display:flex;gap:6px;align-items:center;';
             const like = document.createElement('button'); like.className = 'rating-btn btn-like'; like.dataset.id = fileObj.id; like.innerHTML = `<i class="fa-regular fa-thumbs-up"></i> ${fileObj.likes||0}`;
             const bad = document.createElement('button'); bad.className = 'rating-btn btn-bad'; bad.dataset.id = fileObj.id; bad.innerHTML = `<i class="fa-regular fa-thumbs-down"></i> ${fileObj.bad||0}`;
+            // check localStorage for existing votes and apply active class
+            const voteKey = 'vote_' + fileObj.id;
+            const existingVote = localStorage.getItem(voteKey);
+            if (existingVote === 'good') like.classList.add('active');
+            if (existingVote === 'bad') bad.classList.add('active');
             like.addEventListener('click', (ev)=>{
               ev.stopPropagation();
               const id = like.dataset.id; if (!id) return;
@@ -411,7 +416,11 @@
               if (prev === 'good') {
                 like.classList.remove('active'); localStorage.removeItem(key); c = Math.max(0, c - 1); like.innerHTML = `<i class="fa-regular fa-thumbs-up"></i> ${c}`;
                 (async ()=>{
-                  try { if (api && typeof api.unlike === 'function') await api.unlike(Number(id)); }
+                  try { 
+                    const result = await api.unlike(Number(id));
+                    const newCount = parseInt(result) || c;
+                    like.innerHTML = `<i class="fa-regular fa-thumbs-up"></i> ${newCount}`;
+                  }
                   catch(e){
                     // rollback optimistic change
                     like.classList.add('active'); localStorage.setItem(key, 'good'); c = c + 1; like.innerHTML = `<i class="fa-regular fa-thumbs-up"></i> ${c}`;
@@ -423,12 +432,17 @@
                 if (prev === 'bad') {
                   const bc = parseInt(bad.textContent.replace(/[^0-9]/g,''),10) || 0;
                   bad.innerHTML = `<i class="fa-regular fa-thumbs-down"></i> ${Math.max(0, bc - 1)}`;
+                  bad.classList.remove('active');
                   localStorage.removeItem(key);
                   (async ()=>{
-                    try { if (api && typeof api.unbad === 'function') await api.unbad(Number(id)); }
+                    try { 
+                      const result = await api.unbad(Number(id));
+                      const newCount = parseInt(result) || Math.max(0, bc - 1);
+                      bad.innerHTML = `<i class="fa-regular fa-thumbs-down"></i> ${newCount}`;
+                    }
                     catch(e){
                       // rollback
-                      bad.classList.add('active'); localStorage.setItem(key, 'bad'); c = c + 1; bad.innerHTML = `<i class="fa-regular fa-thumbs-down"></i> ${c}`;
+                      bad.classList.add('active'); localStorage.setItem(key, 'bad'); bad.innerHTML = `<i class="fa-regular fa-thumbs-down"></i> ${bc}`;
                       console.error('unbad failed', e);
                       alert('評価の送信に失敗しました。再試行してください。');
                     }
@@ -436,7 +450,11 @@
                 }
                 localStorage.setItem(key, 'good'); like.classList.add('active'); c = c + 1; like.innerHTML = `<i class="fa-regular fa-thumbs-up"></i> ${c}`;
                 (async ()=>{
-                  try { if (api && typeof api.like === 'function') await api.like(Number(id)); }
+                  try { 
+                    const result = await api.like(Number(id));
+                    const newCount = parseInt(result) || c;
+                    like.innerHTML = `<i class="fa-regular fa-thumbs-up"></i> ${newCount}`;
+                  }
                   catch(e){
                     // rollback
                     like.classList.remove('active'); localStorage.removeItem(key); c = Math.max(0, c - 1); like.innerHTML = `<i class="fa-regular fa-thumbs-up"></i> ${c}`;
@@ -454,10 +472,14 @@
               if (prev === 'bad') {
                 bad.classList.remove('active'); localStorage.removeItem(key); c = Math.max(0, c - 1); bad.innerHTML = `<i class="fa-regular fa-thumbs-down"></i> ${c}`;
                 (async ()=>{
-                  try { if (api && typeof api.unbad === 'function') await api.unbad(Number(id)); }
+                  try { 
+                    const result = await api.unbad(Number(id));
+                    const newCount = parseInt(result) || c;
+                    bad.innerHTML = `<i class="fa-regular fa-thumbs-down"></i> ${newCount}`;
+                  }
                   catch(e){
                     // rollback
-                    localStorage.setItem(key, 'good'); like.classList.add('active'); const lc = parseInt(like.textContent.replace(/[^0-9]/g,''),10) || 0; like.innerHTML = `<i class="fa-regular fa-thumbs-up"></i> ${Math.max(0, lc + 1)}`;
+                    bad.classList.add('active'); localStorage.setItem(key, 'bad'); bad.innerHTML = `<i class="fa-regular fa-thumbs-down"></i> ${Math.max(0, c + 1)}`;
                     console.error('unbad failed', e);
                     alert('評価の送信に失敗しました。再試行してください。');
                   }
@@ -465,10 +487,15 @@
               } else {
                 if (prev === 'good') {
                   const lc = parseInt(like.textContent.replace(/[^0-9]/g,''),10) || 0;
+                  like.classList.remove('active');
                   like.innerHTML = `<i class="fa-regular fa-thumbs-up"></i> ${Math.max(0, lc - 1)}`;
                   localStorage.removeItem(key);
                   (async ()=>{
-                    try { if (api && typeof api.unlike === 'function') await api.unlike(Number(id)); }
+                    try { 
+                      const result = await api.unlike(Number(id));
+                      const newCount = parseInt(result) || Math.max(0, lc - 1);
+                      like.innerHTML = `<i class="fa-regular fa-thumbs-up"></i> ${newCount}`;
+                    }
                     catch(e){
                       // rollback
                       localStorage.setItem(key, 'bad'); bad.classList.add('active'); const bc = parseInt(bad.textContent.replace(/[^0-9]/g,''),10) || 0; bad.innerHTML = `<i class="fa-regular fa-thumbs-down"></i> ${Math.max(0, bc + 1)}`;
@@ -479,7 +506,11 @@
                 }
                 localStorage.setItem(key, 'bad'); bad.classList.add('active'); c = c + 1; bad.innerHTML = `<i class="fa-regular fa-thumbs-down"></i> ${c}`;
                 (async ()=>{
-                  try { if (api && typeof api.bad === 'function') await api.bad(Number(id)); }
+                  try { 
+                    const result = await api.bad(Number(id));
+                    const newCount = parseInt(result) || c;
+                    bad.innerHTML = `<i class="fa-regular fa-thumbs-down"></i> ${newCount}`;
+                  }
                   catch(e){
                     // rollback
                     bad.classList.remove('active'); localStorage.removeItem(key); c = Math.max(0, c - 1); bad.innerHTML = `<i class="fa-regular fa-thumbs-down"></i> ${c}`;
@@ -589,6 +620,24 @@
         overlay.querySelector('.popup-close').addEventListener('click', closeOverlay);
         overlay.querySelector('.close-view').addEventListener('click', closeOverlay);
 
+        // apply active class to buttons based on existing votes in localStorage
+        overlay.querySelectorAll('.btn-like').forEach(b => {
+          const id = b.dataset.id;
+          if (id) {
+            const voteKey = 'vote_' + id;
+            const existingVote = localStorage.getItem(voteKey);
+            if (existingVote === 'good') b.classList.add('active');
+          }
+        });
+        overlay.querySelectorAll('.btn-bad').forEach(b => {
+          const id = b.dataset.id;
+          if (id) {
+            const voteKey = 'vote_' + id;
+            const existingVote = localStorage.getItem(voteKey);
+            if (existingVote === 'bad') b.classList.add('active');
+          }
+        });
+
         // viewing: close this overlay and open countdown popup for selected file
         overlay.querySelectorAll('.view-file-btn').forEach(btn => {
           btn.addEventListener('click', (ev) => {
@@ -609,25 +658,38 @@
             const prev = localStorage.getItem(key);
             let count = parseInt(b.textContent.replace(/\D/g,''), 10) || 0;
             const correspondingBad = b.parentElement.querySelector('.btn-bad');
-              if (prev === 'good') {
+            if (prev === 'good') {
               b.classList.remove('active'); localStorage.removeItem(key);
               count = Math.max(0, count - 1); b.innerHTML = `<i class="fa-regular fa-thumbs-up"></i> ${count}`;
               (async () => {
-                try { await api.unlike(Number(id)); } catch(err) { console.error(err); alert('評価の送信に失敗しました'); }
+                try { 
+                  const result = await api.unlike(Number(id));
+                  const newCount = parseInt(result) || count;
+                  b.innerHTML = `<i class="fa-regular fa-thumbs-up"></i> ${newCount}`;
+                } catch(err) { console.error(err); alert('評価の送信に失敗しました'); }
               })();
             } else {
               if (prev === 'bad') {
                 const badCount = parseInt(correspondingBad.textContent.replace(/[^0-9]/g,''),10) || 0;
+                correspondingBad.classList.remove('active');
                 correspondingBad.innerHTML = `<i class="fa-regular fa-thumbs-down"></i> ${Math.max(0, badCount - 1)}`;
                 localStorage.removeItem(key);
                 (async () => {
-                  try { await api.unbad(Number(id)); } catch(err) { console.error(err); alert('評価の送信に失敗しました'); }
+                  try { 
+                    const result = await api.unbad(Number(id));
+                    const newCount = parseInt(result) || Math.max(0, badCount - 1);
+                    correspondingBad.innerHTML = `<i class="fa-regular fa-thumbs-down"></i> ${newCount}`;
+                  } catch(err) { console.error(err); alert('評価の送信に失敗しました'); }
                 })();
               }
               localStorage.setItem(key, 'good');
               b.classList.add('active'); count = count + 1; b.innerHTML = `<i class="fa-regular fa-thumbs-up"></i> ${count}`;
               (async () => {
-                try { await api.like(Number(id)); } catch(err) { console.error(err); alert('評価の送信に失敗しました'); }
+                try { 
+                  const result = await api.like(Number(id));
+                  const newCount = parseInt(result) || count;
+                  b.innerHTML = `<i class="fa-regular fa-thumbs-up"></i> ${newCount}`;
+                } catch(err) { console.error(err); alert('評価の送信に失敗しました'); }
               })();
             }
           });
@@ -639,26 +701,39 @@
             const key = 'vote_' + id;
             const prev = localStorage.getItem(key);
             let count = parseInt(b.textContent.replace(/[^0-9]/g,''), 10) || 0;
-            const correspondingBad = b.parentElement.querySelector('.btn-bad');
-            if (prev === 'good') {
+            const correspondingLike = b.parentElement.querySelector('.btn-like');
+            if (prev === 'bad') {
               b.classList.remove('active'); localStorage.removeItem(key);
-              count = Math.max(0, count - 1); b.innerHTML = `<i class="fa-regular fa-thumbs-up"></i> ${count}`;
+              count = Math.max(0, count - 1); b.innerHTML = `<i class="fa-regular fa-thumbs-down"></i> ${count}`;
               (async () => {
-                try { await api.unlike(Number(id)); } catch(err) { console.error(err); alert('評価の送信に失敗しました'); }
+                try { 
+                  const result = await api.unbad(Number(id));
+                  const newCount = parseInt(result) || count;
+                  b.innerHTML = `<i class="fa-regular fa-thumbs-down"></i> ${newCount}`;
+                } catch(err) { console.error(err); alert('評価の送信に失敗しました'); }
               })();
             } else {
-              if (prev === 'bad') {
-                const badCount = parseInt(correspondingBad.textContent.replace(/[^0-9]/g,''),10) || 0;
-                correspondingBad.innerHTML = `<i class="fa-regular fa-thumbs-down"></i> ${Math.max(0, badCount - 1)}`;
+              if (prev === 'good') {
+                const likeCount = parseInt(correspondingLike.textContent.replace(/[^0-9]/g,''),10) || 0;
+                correspondingLike.classList.remove('active');
+                correspondingLike.innerHTML = `<i class="fa-regular fa-thumbs-up"></i> ${Math.max(0, likeCount - 1)}`;
                 localStorage.removeItem(key);
                 (async () => {
-                  try { await api.unbad(Number(id)); } catch(err) { console.error(err); alert('評価の送信に失敗しました'); }
+                  try { 
+                    const result = await api.unlike(Number(id));
+                    const newCount = parseInt(result) || Math.max(0, likeCount - 1);
+                    correspondingLike.innerHTML = `<i class="fa-regular fa-thumbs-up"></i> ${newCount}`;
+                  } catch(err) { console.error(err); alert('評価の送信に失敗しました'); }
                 })();
               }
-              localStorage.setItem(key, 'good');
-              b.classList.add('active'); count = count + 1; b.innerHTML = `<i class="fa-regular fa-thumbs-up"></i> ${count}`;
+              localStorage.setItem(key, 'bad');
+              b.classList.add('active'); count = count + 1; b.innerHTML = `<i class="fa-regular fa-thumbs-down"></i> ${count}`;
               (async () => {
-                try { await api.like(Number(id)); } catch(err) { console.error(err); alert('評価の送信に失敗しました'); }
+                try { 
+                  const result = await api.bad(Number(id));
+                  const newCount = parseInt(result) || count;
+                  b.innerHTML = `<i class="fa-regular fa-thumbs-down"></i> ${newCount}`;
+                } catch(err) { console.error(err); alert('評価の送信に失敗しました'); }
               })();
             }
           });

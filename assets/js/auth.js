@@ -130,8 +130,8 @@ class AuthManager {
     
     // 特定のページでのみ認証画面を表示
     const currentPage = window.location.pathname;
-    if (currentPage.includes('upload.html') || currentPage.includes('search.html')) {
-      // upload.htmlとsearch.htmlのみで認証画面を表示
+    if (currentPage.includes('upload.html') || currentPage.includes('search.html') || currentPage.includes('table.html')) {
+      // upload.html、search.html、table.htmlのみで認証画面を表示
       // share.html、index.html、ph-index.htmlなどは認証不要
     if (this.checkAuthStatus()) {
       // スキップ等で認証済み扱いの場合もメモリに反映
