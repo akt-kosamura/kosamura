@@ -39,6 +39,24 @@
     /* modal text should be white so it's readable on dark backgrounds (buttons keep their own colors) */
     .preview-content { color: #fff; }
     .preview-content .upload-btn { color: initial; }
+    /* goToFiles button loading/queried states */
+    .go-to-files.loading {
+      opacity: 0.85;
+      pointer-events: none;
+    }
+    .go-to-files .spinner {
+      display: inline-block;
+      width: 14px;
+      height: 14px;
+      border: 2px solid rgba(255,255,255,0.25);
+      border-top-color: rgba(255,255,255,0.9);
+      border-radius: 50%;
+      margin-right: 0.5em;
+      vertical-align: middle;
+      animation: spin 900ms linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .go-to-files.queried { box-shadow: inset 0 0 0 2px rgba(0,113,227,0.08); }
   </style>
 
 </head>
@@ -158,16 +176,6 @@
           </table>
           <!-- Step1からファイル追加へ進むボタン（重複チェックを行う） -->
           <button type="button" id="goToFilesBtn" class="upload-btn" style="margin-top:1.2em; margin-right:0.6em;">ファイルを追加へ</button>
-          <button type="submit" class="upload-btn" id="uploadButton" style="margin-top:1.2em;">アップロード</button>
-          <div id="uploadInfo" style="margin-top:1em; margin-bottom:0.7em; color:#0071e3; font-size:0.98em; line-height:1.6; text-align:center;">
-            アップロードには時間がかかる場合もあります。改善中です。<br>
-            アップロード後にフリーモード１時間追加＆ゲームで報酬を獲得できます。
-          </div>
-          <div id="message" class="success-msg" style="display:none;"></div>
-          <div id="afterUploadBtns" style="display:none; text-align:center; margin-top:1.5em; margin-bottom:1em;">
-            <a id="fileViewLink" class="file-link" href="#" target="_blank" style="display:inline-block; margin-right:1.5em;">ファイルを確認</a>
-            <button type="button" class="continue-btn" id="continueBtn" style="display:inline-block;">続けてアップロード</button>
-          </div>
         </form>
         <div style="background:#fff7d1; color:#bfa100; font-size:0.98em; border-radius:10px; padding:1.5em 1em; margin-top:1.5em; margin-bottom:0.05em; box-shadow:0 2px 8px rgba(191,161,0,0.06); line-height:1.7;">
           <ul style="list-style:none; margin:0; padding:0;">
@@ -180,7 +188,7 @@
     <div class="card" id="step2Card" style="margin-top:2.5rem;">
       <div class="card-title" id="step2Title">
         <span class="step-label">Step2 ファイル追加・編集</span>
-        <button type="button" class="back-btn" id="backToStep1Btn">ファイル編集に戻る</button>
+        <button type="button" class="back-btn" id="backToStep1Btn">情報入力に戻る</button>
       </div>
       <div class="card-content closed" id="step2Content">
         <form id="fileForm">
@@ -213,9 +221,17 @@
               <span id="colorHelpPopup" style="display:none; position:absolute; right:2.2em; top:50%; transform:translateY(-50%); background:#eee; color:#444; border:1px solid #bbb; border-radius:6px; padding:0.4em 0.7em; font-size:0.90em; box-shadow:0 2px 8px rgba(0,0,0,0.10); z-index:100; min-width:120px; text-align:left; white-space:normal;">カラーでのアップロードはファイルサイズが大きくなるため時間がかかります</span>
             </label>
           </div>
-          <button type="button" id="toStep2Btn" class="upload-btn">情報入力へ</button>
           <!-- upload trigger (実際のアップロードは metaForm の submit ハンドラが行います) -->
           <button type="button" id="startUploadBtn" class="upload-btn" style="margin-left:0.6em;">アップロード</button>
+          <div id="uploadInfo" style="margin-top:1em; margin-bottom:0.7em; color:#0071e3; font-size:0.98em; line-height:1.6; text-align:center;">
+            アップロードには時間がかかる場合もあります。改善中です。<br>
+            アップロード後にフリーモード１時間追加＆ゲームで報酬を獲得できます。
+          </div>
+          <div id="message" class="success-msg" style="display:none;"></div>
+          <div id="afterUploadBtns" style="display:none; text-align:center; margin-top:1.5em; margin-bottom:1em;">
+            <a id="fileViewLink" class="file-link" href="#" target="_blank" style="display:inline-block; margin-right:1.5em;">ファイルを確認</a>
+            <button type="button" class="continue-btn" id="continueBtn" style="display:inline-block;">続けてアップロード</button>
+          </div>
         </form>
         <div style="background:#fff7d1; color:#bfa100; font-size:0.98em; border-radius:10px; padding:1.5em 1em; margin-top:1.5em; margin-bottom:0.05em; box-shadow:0 2px 8px rgba(191,161,0,0.06); line-height:1.7;">
           <ul style="list-style:none; margin:0; padding:0;">
@@ -305,12 +321,14 @@
 
       // reward pool
       const rewardPool = [
-        {type:'free', hours:1, label:'フリー1時間'},
-        {type:'free', hours:2, label:'フリー2時間'},
-        {type:'free', hours:3, label:'フリー3時間'},
-        {type:'ticket', count:1, label:'チケット1枚'},
-        {type:'ticket', count:2, label:'チケット2枚'},
-        {type:'ticket', count:3, label:'チケット3枚'}
+        {type:'free', hours:2, label:'フリー2時間', icon:'<i class="fa-solid fa-clock"></i>'},
+        {type:'free', hours:4, label:'フリー4時間', icon:'<i class="fa-solid fa-clock"></i>'},
+        {type:'free', hours:6, label:'フリー6時間', icon:'<i class="fa-solid fa-clock"></i>'},
+        {type:'ticket', count:1, label:'チケット1枚', icon:'<i class="fa-solid fa-ticket"></i>'},
+        {type:'ticket', count:2, label:'チケット2枚', icon:'<i class="fa-solid fa-ticket"></i>'},
+        {type:'ticket', count:3, label:'チケット3枚', icon:'<i class="fa-solid fa-ticket"></i>'},
+        {type:'special', special:'free12', label:'フリー12時間', icon:'<i class="fa-solid fa-clock" style="color:#ffc107;"></i>', gold:true},
+        {type:'special', special:'ticket6', label:'チケット6枚', icon:'<i class="fa-solid fa-ticket" style="color:#ffc107;"></i>', gold:true}
       ];
 
   let accumulated = {hours:0, tickets:0};
@@ -356,7 +374,19 @@
         const need = 3 - picks.length;
         const pool = rewardPool.slice();
         shuffleArray(pool);
-        for (let i=0;i<need;i++) picks.push(pool[i]);
+        
+        // pick from pool, with 1/20 chance of special reward instead
+        for (let i=0;i<need;i++) {
+          if (Math.random() < 0.05) {
+            // 1/20 chance: select special reward
+            const specials = [{type:'special', special:'free12', label:'フリー12時間', icon:'<i class="fa-solid fa-clock" style="color:#ffc107;"></i>', gold:true},
+                             {type:'special', special:'ticket6', label:'チケット6枚', icon:'<i class="fa-solid fa-ticket" style="color:#ffc107;"></i>', gold:true}];
+            picks.push(specials[Math.floor(Math.random()*specials.length)]);
+          } else {
+            // 19/20 chance: regular reward
+            picks.push(pool[i]);
+          }
+        }
 
         // show contents first, then hide and visually shuffle the face-down cards
         revealLock = true;
@@ -364,10 +394,27 @@
         cards.forEach((c,idx)=>{
           c.dataset.reveal = JSON.stringify(picks[idx]);
           const info = picks[idx];
-          if (info.type === 'end') { c.textContent = '終了'; c.style.background = '#6c757d'; }
-          else if (info.type === 'free') { c.textContent = info.hours + 'h'; c.style.background = '#43aa8b'; }
-          else if (info.type === 'ticket') { c.textContent = info.count + '枚'; c.style.background = '#f3722c'; }
-          c.style.color = '#fff';
+          if (info.type === 'end') { 
+            c.textContent = '終了'; 
+            c.style.background = '#6c757d'; 
+            c.style.color = '#fff';
+          }
+          else if (info.type === 'free') { 
+            c.innerHTML = `${info.icon} ${info.hours}h`; 
+            c.style.background = '#43aa8b'; 
+            c.style.color = '#fff';
+          }
+          else if (info.type === 'ticket') { 
+            c.innerHTML = `${info.icon} ${info.count}枚`; 
+            c.style.background = '#f3722c'; 
+            c.style.color = '#fff';
+          }
+          else if (info.type === 'special') {
+            c.innerHTML = `${info.icon} ${info.special === 'free12' ? '12h' : '6枚'}`;
+            c.style.background = '#ffc107';
+            c.style.color = '#333';
+            c.style.textShadow = '0 0 2px rgba(255,255,255,0.5)';
+          }
           c.style.cursor = 'default';
           c.dataset.revealed = 'false';
         });
@@ -464,15 +511,26 @@
             if (info.type === 'free'){
               accumulated.hours += (info.hours||0);
               slot.style.background = '#43aa8b';
-              slot.textContent = `${info.hours}h`;
+              slot.innerHTML = `${info.icon} ${info.hours}h`;
               slot.style.color = '#fff';
               msg.textContent = `おめでとう！ ${info.label} を獲得しました。続けて引きます。`;
             } else if (info.type === 'ticket'){
               accumulated.tickets += (info.count||0);
               slot.style.background = '#f3722c';
-              slot.textContent = `${info.count}枚`;
+              slot.innerHTML = `${info.icon} ${info.count}枚`;
               slot.style.color = '#fff';
               msg.textContent = `おめでとう！ ${info.label} を獲得しました。続けて引きます。`;
+            } else if (info.type === 'special'){
+              if (info.special === 'free12') {
+                accumulated.hours += 12;
+              } else if (info.special === 'ticket6') {
+                accumulated.tickets += 6;
+              }
+              slot.innerHTML = `${info.icon} ${info.special === 'free12' ? '12h' : '6枚'}`;
+              slot.style.background = '#ffc107';
+              slot.style.color = '#333';
+              slot.style.textShadow = '0 0 2px rgba(255,255,255,0.5)';
+              msg.textContent = `🌟 超レア！ ${info.label} を獲得しました！ 🌟`;
             }
             updateAccumDisplay();
             // after short delay, prepare next round automatically
@@ -497,11 +555,17 @@
 
       // perform double attempt with shuffle animation and two card slots
       function performDoubleAttempt(){
-        if (doubleAttempts >= 3) { doubleMessage.textContent = 'ダブルアップの上限に達しました。'; startDoubleBtn.disabled=true; skipDoubleBtn.disabled=false; return; }
+        if (doubleAttempts >= 10) { 
+          doubleMessage.textContent = 'ダブルアップの上限に達しました。'; 
+          startDoubleBtn.disabled=true; 
+          skipDoubleBtn.disabled=false; 
+          return; 
+        }
         const choices = [{res:'success', label:'成功'},{res:'fail', label:'失敗'}];
         shuffleArray(choices);
         // prepare double card slots
-        doubleMessage.textContent = `ダブルアップ試行 ${doubleAttempts+1} 回目：カードを1枚選んでください。`;
+        const odds = Math.pow(2, doubleAttempts + 1);
+        doubleMessage.innerHTML = `ダブルアップ試行 ${doubleAttempts+1} 回目：カードを1枚選んでください。<br><small style="color:#666;">今回成功したら1/${odds}突破！目指せ1/1024！</small>`;
         let doubleCards = document.getElementById('doubleCards');
         if (!doubleCards) {
           doubleCards = document.createElement('div');
@@ -589,9 +653,18 @@
               accumulated.hours *= 2;
               accumulated.tickets *= 2;
               doubleAttempts++;
+              const nextOdds = Math.pow(2, doubleAttempts + 1);
               doubleMessage.innerHTML = `成功！報酬が2倍になりました。現在: ${accumulated.hours}時間 / ${accumulated.tickets}枚`;
-              if (doubleAttempts < 3){ if (startDoubleBtn) startDoubleBtn.style.display = ''; startDoubleBtn.disabled = false; skipDoubleBtn.disabled = false; }
-              else { if (startDoubleBtn) startDoubleBtn.disabled = true; skipDoubleBtn.disabled = false; doubleMessage.innerHTML += '<br>ダブルアップ上限に達しました。'; }
+              if (doubleAttempts < 10){ 
+                if (startDoubleBtn) startDoubleBtn.style.display = ''; 
+                startDoubleBtn.disabled = false; 
+                skipDoubleBtn.disabled = false; 
+              }
+              else { 
+                if (startDoubleBtn) startDoubleBtn.disabled = true; 
+                skipDoubleBtn.disabled = false; 
+                doubleMessage.innerHTML += '<br>ダブルアップ上限に達しました。'; 
+              }
               updateAccumDisplay();
             } else {
               // failure: clear all rewards (including initial)
@@ -903,30 +976,23 @@
         closeCard(step2Card);
         openCard(step1Card);
         backToStep1Btn.style.display = 'none';
+        // restore goToFilesBtn appearance when returning to Step1
+        try {
+          const goBtn = document.getElementById('goToFilesBtn');
+          if (goBtn) {
+            goBtn.classList.remove('queried');
+            goBtn.classList.remove('loading');
+            goBtn.disabled = false;
+            if (!goBtn.textContent || goBtn.textContent.trim() === '') goBtn.textContent = 'ファイルを追加へ';
+          }
+        } catch(e) { console.error('restore goToFilesBtn error', e); }
       });
-      // Step2タイトルクリックでStep2を開く
-      step2Title.addEventListener('click', () => {
-        if (step2Content.classList.contains('closed')) {
-          closeCard(step1Card);
-          openCard(step2Card);
-          backToStep1Btn.style.display = '';
-          step2Card.scrollIntoView({behavior:'smooth', block:'start'});
-          const header = document.querySelector('header');
-          const headerHeight = header ? header.offsetHeight : 80;
-          window.scrollBy({top: -headerHeight, left: 0, behavior: 'smooth'});
-        }
+      // Step2タイトルクリックでStep2を開く → 無効化: ヘッダクリックでStep2を開かない
+      step2Title.addEventListener('click', (e) => {
+        // intentionally no-op to prevent opening Step2 by header click
+        e.preventDefault();
       });
-      // Step1→Step2 (既存ファイル側の「情報入力へ」ボタン) - ファイル側から情報側へ戻る動作
-      toStep2Btn.addEventListener('click', () => {
-  // ファイル側から情報入力へ
-  closeCard(step2Card);
-  openCard(step1Card);
-  backToStep1Btn.style.display = 'none';
-  step1Card.scrollIntoView({behavior:'smooth', block:'start'});
-        const header = document.querySelector('header');
-        const headerHeight = header ? header.offsetHeight : 80;
-        window.scrollBy({top: -headerHeight, left: 0, behavior: 'smooth'});
-      });
+      
 
       // meta (Step1) からファイル追加 (Step2) へ進むボタン（重複チェックを行ってから遷移）
       const goToFilesBtn = document.getElementById('goToFilesBtn');
@@ -1020,24 +1086,82 @@
           }
         }
 
+        // Case 3: user selected combined (問題＆解答/解説) while only one side exists
+        if (userContent === '問題＆解答/解説' && (hasQ || hasA) && !(hasAll || (hasQ && hasA))) {
+          // warn and allow user to change selection (to avoid creating a separate duplicate record)
+          return await new Promise(resolve => {
+            const overlay = document.createElement('div');
+            overlay.className = 'popup-overlay';
+            overlay.style = 'position:fixed;left:0;top:0;right:0;bottom:0;display:flex;align-items:center;justify-content:center;z-index:4000;background:rgba(0,0,0,0.45);';
+            overlay.innerHTML = `
+              <div style="background:#fff;padding:1rem;border-radius:10px;max-width:520px;width:94%;box-shadow:0 10px 40px rgba(0,0,0,0.25);">
+                <h3 style="margin:0 0 0.6rem 0;font-size:1.05rem;">一部の内容が既に登録されています</h3>
+                <p style="color:#444;margin:0 0 0.6rem 0;">問題または解答/解説の片方が既に登録されています。両方まとめて登録すると別レコードとして登録され、重複が発生する可能性があります。どうしますか？</p>
+                <div style="display:flex;flex-direction:column;gap:0.4rem;margin-bottom:0.6rem;">
+                  <label><input type="radio" name="dupContentChoice2" value="問題＆解答/解説"> そのまま（問題＆解答/解説）を登録する</label>
+                  <label><input type="radio" name="dupContentChoice2" value="問題のみ"> 問題のみを登録する（既存の解答/解説と組み合わせる）</label>
+                  <label><input type="radio" name="dupContentChoice2" value="解答/解説のみ"> 解答/解説のみを登録する（既存の問題と組み合わせる）</label>
+                </div>
+                <div style="display:flex;justify-content:flex-end;gap:0.6rem;\"><button id="dupCancel2" style="padding:0.5rem 0.8rem;border-radius:6px;border:1px solid #ccc;background:#fff;">キャンセル</button><button id="dupOk2" style="padding:0.5rem 0.8rem;border-radius:6px;border:0;background:#0071e3;color:#fff;">続行</button></div>
+              </div>`;
+            document.body.appendChild(overlay);
+            // set sensible default: combined
+            try { overlay.querySelector(`input[value="問題＆解答/解説"]`).checked = true; } catch(e){}
+            overlay.querySelector('#dupCancel2').addEventListener('click', () => { overlay.remove(); resolve({ok:false, chosenContent:userContent}); });
+            overlay.querySelector('#dupOk2').addEventListener('click', () => {
+              const sel = overlay.querySelector('input[name="dupContentChoice2"]:checked');
+              const chosen = sel ? sel.value : userContent;
+              overlay.remove();
+              resolve({ok:true, chosenContent: chosen});
+            });
+          });
+        }
+
         // default: allow
         return {ok:true, chosenContent: userContent};
       }
 
       if (goToFilesBtn) {
+        // add class for styling control
+        goToFilesBtn.classList.add('go-to-files');
         goToFilesBtn.addEventListener('click', async () => {
+          // validate required fields in Step1
+          if (!metaForm.checkValidity()) {
+            metaForm.reportValidity();
+            return;
+          }
+
+          const originalText = goToFilesBtn.textContent;
+          // show loading state
+          goToFilesBtn.classList.add('loading');
+          goToFilesBtn.disabled = true;
+          goToFilesBtn.innerHTML = '<span class="spinner" aria-hidden="true"></span> データベースを参照しています...';
+
           try {
             const res = await checkDuplicatesAndPrompt();
-            if (!res.ok) return;
+            if (!res.ok) {
+              // user cancelled or changed mind
+              goToFilesBtn.classList.remove('loading');
+              goToFilesBtn.disabled = false;
+              goToFilesBtn.textContent = originalText;
+              return;
+            }
             // if chosenContent changed, set it
             if (res.chosenContent) {
               const inputs = metaForm.querySelectorAll('input[name="contentType"]');
               inputs.forEach(i => { i.checked = (i.value === res.chosenContent); });
             }
+
             // proceed to file step
             closeCard(step1Card);
             openCard(step2Card);
             backToStep1Btn.style.display = '';
+            // mark the button as queried so we can restore later
+            goToFilesBtn.classList.remove('loading');
+            goToFilesBtn.classList.add('queried');
+            goToFilesBtn.disabled = true; // keep disabled while on Step2
+            goToFilesBtn.textContent = originalText;
+
             step2Card.scrollIntoView({behavior:'smooth', block:'start'});
             const header = document.querySelector('header');
             const headerHeight = header ? header.offsetHeight : 80;
@@ -1045,6 +1169,9 @@
           } catch (err) {
             console.error('duplicate check error', err);
             alert('重複チェックに失敗しました。ネットワークを確認して再度お試しください。');
+            goToFilesBtn.classList.remove('loading');
+            goToFilesBtn.disabled = false;
+            goToFilesBtn.textContent = originalText;
           }
         });
       }
@@ -1066,6 +1193,17 @@
         const header = document.querySelector('header');
         const headerHeight = header ? header.offsetHeight : 80;
         window.scrollBy({top: -headerHeight, left: 0, behavior: 'smooth'});
+        // when returning to Step1, restore goToFilesBtn appearance if it was changed
+        try {
+          const goBtn = document.getElementById('goToFilesBtn');
+          if (goBtn) {
+            goBtn.classList.remove('queried');
+            goBtn.classList.remove('loading');
+            goBtn.disabled = false;
+            // restore original label if not present
+            if (!goBtn.textContent || goBtn.textContent.trim() === '') goBtn.textContent = 'ファイルを追加へ';
+          }
+        } catch(e) { console.error('restore goToFilesBtn error', e); }
       });
   // 初期状態：Step1 情報入力 を開く
   openCard(step1Card);
@@ -1100,13 +1238,14 @@
       // Step2 情報入力フォーム送信時にPDF結合→アップロード
       metaForm.addEventListener('submit', async function(e) {
         e.preventDefault();
-        const btn = this.querySelector('.upload-btn');
-                  btn.disabled = true;
-          btn.classList.add('loading');
-          btn.textContent = 'タグデータ記録中...';
-          
-          // アップロード中フラグを設定
-          window.isUploading = true;
+        // Step2のアップロードボタンを明示的に取得
+        const btn = document.getElementById('startUploadBtn');
+        btn.disabled = true;
+        btn.classList.add('loading');
+        btn.textContent = 'タグデータ記録中...';
+        
+        // アップロード中フラグを設定
+        window.isUploading = true;
         message.style.display = 'none';
         if (!files.length) {
           btn.disabled = false;
@@ -1272,33 +1411,40 @@
             window.isUploading = false;
             btn.classList.remove('loading');
             btn.textContent = 'アップロード完了';
+            btn.style.display = 'none';
             
-            // アップロードボタンと説明文を非表示
-            const uploadButton = document.getElementById('uploadButton');
+            // アップロードボタンと説明文を非表示（Step2 側のボタンを操作）
+            const uploadButton = document.getElementById('startUploadBtn');
             const uploadInfo = document.getElementById('uploadInfo');
             if (uploadButton) uploadButton.style.display = 'none';
             if (uploadInfo) uploadInfo.style.display = 'none';
             
+            // 成功メッセージを表示（緑色）
             message.style.display = 'block';
-            message.textContent = 'アップロード成功　考査村が進歩しました。ご協力ありがとうございます。';
+            message.textContent = 'アップロードありがとうございます！考査村が進歩しました。';
             message.style.background = '#e0ffe0';
             message.style.color = '#166616';
             message.style.border = '1px solid #a0dca0';
+            message.style.padding = '1.2em';
+            message.style.borderRadius = '8px';
+            message.style.fontWeight = '500';
+            message.style.fontSize = '1em';
+            
             // フリーモード加算：まずは投稿で1時間付与
             let now = Date.now();
             let freeModeEnd = parseInt(localStorage.getItem('freeModeEnd') || '0');
             let newEnd = Math.max(now, freeModeEnd) + 1*60*60*1000; // 1時間
             localStorage.setItem('freeModeEnd', newEnd.toString());
             updateFreeModeStatus();
-            // カードゲームを表示して追加報酬を付与
-            try { showCardGameModal(); } catch(e){ console.error('card game show error', e); }
+            
             // ボタン表示
             const afterBtns = document.getElementById('afterUploadBtns');
             const fileViewLink = document.getElementById('fileViewLink');
             afterBtns.style.display = 'block';
             fileViewLink.style.display = 'inline-block';
-            fileViewLink.href = url || '#';
-            fileViewLink.download = filename;
+            
+            // 報酬選択ダイアログを表示
+            showRewardChoiceDialog();
           } catch (error) {
             throw new Error('アップロード失敗: ' + error.message);
           }
@@ -1317,19 +1463,25 @@
       });
       // 続けてアップロードボタンでリセット
       continueBtn.addEventListener('click', () => {
+        // Step1 フォームをリセット
         metaForm.reset();
+        
+        // Step2 ファイル関連をリセット
         files = [];
         renderFileList();
         updateFileBtnLabel();
-        closeCard(step2Card);
-        openCard(step1Card);
-        backToStep1Btn.style.display = 'none';
+        
+        // チェックボックスのリセット
+        const colorUploadCheckbox = document.getElementById('colorUploadCheckbox');
+        if (colorUploadCheckbox) colorUploadCheckbox.checked = false;
+        
+        // メッセージと完了ボタンを非表示
         message.style.display = 'none';
         document.getElementById('afterUploadBtns').style.display = 'none';
         fileViewLink.style.display = 'none';
         
-        // アップロードボタンと説明文を再表示
-        const uploadButton = document.getElementById('uploadButton');
+        // アップロードボタンと説明文を再表示・リセット
+        const uploadButton = document.getElementById('startUploadBtn');
         const uploadInfo = document.getElementById('uploadInfo');
         if (uploadButton) {
           uploadButton.style.display = 'block';
@@ -1338,13 +1490,34 @@
           uploadButton.textContent = 'アップロード';
         }
         if (uploadInfo) uploadInfo.style.display = 'block';
-    // reset card game UI so next upload starts fresh
-    try { restoreCardSlots();
-      const modal = document.getElementById('cardGameModal'); if (modal) modal.style.display = 'none';
-      const doubleArea = document.getElementById('doubleUpArea'); if (doubleArea) doubleArea.style.display = 'none';
-  // close button removed from modal
-      const endBtn = document.getElementById('endEarlyBtn'); if (endBtn) endBtn.style.display = 'none';
-    } catch(e){console.error('reset card game error',e);} 
+        
+        // goToFilesBtnのリセット
+        const goBtn = document.getElementById('goToFilesBtn');
+        if (goBtn) {
+          goBtn.classList.remove('queried');
+          goBtn.classList.remove('loading');
+          goBtn.disabled = false;
+          goBtn.textContent = 'ファイルを追加へ';
+        }
+        
+        // Step1に戻す
+        closeCard(step2Card);
+        openCard(step1Card);
+        backToStep1Btn.style.display = 'none';
+        
+        // reset card game UI so next upload starts fresh
+        try { 
+          restoreCardSlots();
+          const modal = document.getElementById('cardGameModal'); 
+          if (modal) modal.style.display = 'none';
+          const doubleArea = document.getElementById('doubleUpArea'); 
+          if (doubleArea) doubleArea.style.display = 'none';
+          const endBtn = document.getElementById('endEarlyBtn'); 
+          if (endBtn) endBtn.style.display = 'none';
+        } catch(e){console.error('reset card game error',e);} 
+        
+        // スクロール位置をトップに
+        step1Card.scrollIntoView({behavior:'smooth', block:'start'});
       });
       
       // 写真撮影時の注意ポップアップ機能
@@ -1504,6 +1677,52 @@
     // フリーモード表示を即座に更新
     updateFreeModeStatus();
     setInterval(updateFreeModeStatus, 1000);
+
+    // 報酬選択ダイアログ
+    function showRewardChoiceDialog() {
+      const overlay = document.createElement('div');
+      overlay.id = 'rewardChoiceOverlay';
+      overlay.style = 'position:fixed;left:0;top:0;right:0;bottom:0;display:flex;align-items:center;justify-content:center;z-index:5000;background:rgba(0,0,0,0.5);';
+      overlay.innerHTML = `
+        <div style="background:#fff;padding:1.5rem;border-radius:12px;max-width:540px;width:94%;box-shadow:0 10px 40px rgba(0,0,0,0.3);text-align:center;">
+          <h3 style="margin:0 0 1rem 0;font-size:1.2rem;color:#333;">報酬を選択してください</h3>
+          <p style="color:#666;margin:0 0 1.5rem 0;line-height:1.6;">アップロードありがとうございます！<br>以下の2つから報酬をお選びください。</p>
+          <div style="display:flex;flex-direction:column;gap:0.8rem;margin-bottom:1rem;">
+            <button id="rewardLuckyBtn" style="padding:1rem;border-radius:10px;border:2px solid #0071e3;background:#f7faff;color:#0071e3;font-weight:bold;cursor:pointer;font-size:1rem;transition:all 200ms;">
+              <div style="font-size:1.1rem;margin-bottom:0.3rem;">🎰 くじびきで報酬を獲得</div>
+              <div style="font-size:0.85rem;color:#666;">運に任せて豪華報酬を狙う</div>
+            </button>
+            <button id="rewardGuaranteedBtn" style="padding:1rem;border-radius:10px;border:2px solid #28a745;background:#f0fff4;color:#28a745;font-weight:bold;cursor:pointer;font-size:1rem;transition:all 200ms;">
+              <div style="font-size:1.1rem;margin-bottom:0.3rem;">⭐ 10分フリー＋チケット2枚を獲得</div>
+              <div style="font-size:0.85rem;color:#666;">サクッと終わらせたい方はこちら！</div>
+            </button>
+          </div>
+        </div>`;
+      document.body.appendChild(overlay);
+      
+      const luckyBtn = document.getElementById('rewardLuckyBtn');
+      const guaranteedBtn = document.getElementById('rewardGuaranteedBtn');
+      
+      luckyBtn.addEventListener('click', () => {
+        overlay.remove();
+        // show card game for lucky draw
+        try { showCardGameModal(); } catch(e){ console.error('card game show error', e); }
+      });
+      
+      guaranteedBtn.addEventListener('click', () => {
+        overlay.remove();
+        // apply guaranteed reward: 10 minutes + 2 tickets
+        const now = Date.now();
+        let freeModeEnd = parseInt(localStorage.getItem('freeModeEnd') || '0');
+        let newEnd = Math.max(now, freeModeEnd) + 10*60*1000; // 10 minutes
+        localStorage.setItem('freeModeEnd', newEnd.toString());
+        const currentTickets = parseInt(localStorage.getItem('viewTickets') || '0');
+        localStorage.setItem('viewTickets', String(currentTickets + 2));
+        updateFreeModeStatus();
+        // show confirmation
+        alert('10分フリー＋チケット2枚を獲得しました！ご利用ください。');
+      });
+    }
     
     document.addEventListener('DOMContentLoaded', () => {
       // アクセスカウント
