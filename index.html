@@ -53,7 +53,7 @@
           <li><a href="index.html" class="active"><i class="fa-solid fa-home"></i> ホーム</a></li>
           <li><a href="pages/table.html"><i class="fa-solid fa-list-check"></i> 考査一覧</a></li>
           <li><a href="pages/upload.html"><i class="fa-solid fa-upload"></i> アップロード</a></li>
-          <li><a href="pages/search.html"><i class="fa-solid fa-database"></i> 問題データベース</a></li>
+          <li><a href="pages/search.html"><i class="fa-solid fa-database"></i> 詳細検索</a></li>
           <li><a href="pages/share.html"><i class="fa-solid fa-share-nodes"></i> 共有・拡散</a></li>
           <li><a href="https://c.kuku.lu/hmc853pz" target="_blank"><i class="fa-solid fa-comments"></i> 匿名掲示板</a></li>
           <li><a href="https://forms.gle/ZWtQCvecH4eZtTEU7" target="_blank"><i class="fa-solid fa-envelope"></i> 報告・問い合わせ</a></li>
@@ -79,14 +79,30 @@
 
       <div class="card">
         <p style="margin-top:1.5rem;">問題をアップロードすると、広告フリーモードが24時間追加されます。</p>
+
+        <!-- 新規：横長ボタン「考査一覧」（新機能バッジ付き） -->
+        <div style="display:flex; justify-content:center; margin:1.2rem 0 0.6rem 0;">
+          <a href="pages/table.html" class="wide-cta">
+            <span class="wide-cta-badge">新機能</span>
+            <i class="fa-solid fa-list-check wide-cta-icon" aria-hidden="true"></i>
+            <div style="display:flex; flex-direction:column; align-items:flex-start; gap:6px;">
+              <span class="wide-cta-text">考査一覧</span>
+              <span class="wide-cta-sub">この画面からの投稿・検索がおすすめです。</span>
+              <span class="wide-cta-note">※理科と考査以外の問題は扱えません。「アップロード」「詳細検索」画面を利用してください。</span>
+            </div>
+          </a>
+        </div>
+
+        <!-- 推奨コメントはボタン内部に表示するため削除（スタイル側で表示） -->
+
         <div class="card-buttons">
           <a href="pages/upload.html">
             <i class="fa-solid fa-upload"></i>
-            <span>提供</span>
+            <span>アップロード</span>
           </a>
           <a href="pages/search.html">
             <i class="fa-solid fa-database"></i>
-            <span>検索</span>
+            <span>詳細検索</span>
           </a>
           <a href="https://c.kuku.lu/hmc853pz" target="_blank">
             <i class="fa-solid fa-comments"></i>
@@ -155,7 +171,9 @@
       <div class="dynamic-card" id="history-card">
         <div class="card-title">更新履歴</div>
         <ul class="history-list">
-          <li class="history-item"><span class="history-date">2025年後半</span><span class="history-desc">　ゲーム報酬導入</span></li>
+            <li class="history-item"><span class="history-date">2025年後半</span><span class="history-desc">　「考査一覧」画面の追加</span></li>
+            <li class="history-item"><span class="history-date">2025年後半</span><span class="history-desc">　投稿時の自動重複チェック</span></li>
+          <li class="history-item"><span class="history-date">2025年後半</span><span class="history-desc">　報酬の変更</span></li>
           <li class="history-item"><span class="history-date">2025年後半</span><span class="history-desc">　削除・編集機能</span></li>
           <li class="history-item"><span class="history-date">2025/08/05</span><span class="history-desc">　サーバー移行 新システムでの運用開始</span></li>
           <li class="history-item"><span class="history-date">2024/07/21</span><span class="history-desc">　評価システム導入</span></li>

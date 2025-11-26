@@ -136,6 +136,63 @@ h1 {
   margin-bottom: 5px;
   flex-shrink: 0;
 }
+  
+/* 大きな横長のCTA（考査一覧） */
+.wide-cta {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  /* set explicit width equal to three buttons plus gaps; keep from overflowing */
+  width: 512px;
+  max-width: 100%;
+  padding: 18px 22px 18px 28px; /* left padding to clear the badge */
+  min-height: 160px; /* match square button height */
+  box-sizing: border-box;
+  font-size: 1.06rem;
+  font-weight: 800;
+  background: var(--accent);
+  color: #fff;
+  border-radius: 20px;
+  text-decoration: none;
+  box-shadow: 0 6px 28px rgba(0,113,227,0.18);
+  border: none;
+  position: relative; /* for absolute badge */
+}
+.wide-cta:hover { background: #005bb5; transform: translateY(-2px); }
+.wide-cta-icon { font-size: 45px; color: #fff; flex-shrink: 0; margin-left: 6px; }
+.wide-cta-text { font-size: 1.2rem; }
+.wide-cta-sub { font-size: 0.95rem; font-weight:600; color: rgba(255,255,255,0.95); }
+.wide-cta-note { font-size: 0.78rem; font-weight:500; color: rgba(255,255,255,0.9); max-width: 360px; }
+.wide-cta-badge {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  background: #ff4d4f;
+  color: #fff;
+  font-size: 0.72rem;
+  padding: 6px 10px;
+  border-radius: 999px;
+  z-index: 3;
+}
+
+@media (max-width: 900px) {
+  /* card-buttons each ~152px, gap 19px -> total ~494px */
+  .wide-cta { width: 494px; min-height: 152px; padding: 16px 18px 16px 26px; }
+  .wide-cta-icon { font-size: 34px; }
+  .wide-cta-text { font-size: 1.06rem; }
+  .wide-cta-sub { font-size: 0.9rem; }
+  .wide-cta-note { font-size: 0.74rem; max-width: 300px; }
+  .wide-cta-badge { top: 8px; left: 8px; }
+}
+@media (max-width: 600px) {
+  /* card-buttons each ~128px, gap 11px -> total ~406px */
+  .wide-cta { width: 406px; min-height: 136px; padding: 12px 14px 12px 22px; border-radius: 16px; }
+  .wide-cta-icon { font-size: 26px; }
+  .wide-cta-text { font-size: 1rem; }
+  .wide-cta-sub { font-size: 0.86rem; }
+  .wide-cta-note { font-size: 0.72rem; max-width: 220px; }
+  .wide-cta-badge { top: 6px; left: 6px; padding: 5px 8px; font-size: 0.68rem; }
+}
 @media (max-width: 900px) {
   .card-buttons {
     gap: 19px;

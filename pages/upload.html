@@ -73,7 +73,7 @@
           <li><a href="../index.html"><i class="fa-solid fa-home"></i> ホーム</a></li>
           <li><a href="table.html"><i class="fa-solid fa-list-check"></i> 考査一覧</a></li>
           <li><a href="upload.html" class="active"><i class="fa-solid fa-upload"></i> アップロード</a></li>
-          <li><a href="search.html"><i class="fa-solid fa-database"></i> 問題データベース</a></li>
+          <li><a href="search.html"><i class="fa-solid fa-database"></i> 詳細検索</a></li>
           <li><a href="share.html"><i class="fa-solid fa-share-nodes"></i> 共有・拡散</a></li>
           <li><a href="https://c.kuku.lu/hmc853pz" target="_blank"><i class="fa-solid fa-comments"></i> 匿名掲示板</a></li>
           <li><a href="https://forms.gle/ZWtQCvecH4eZtTEU7" target="_blank"><i class="fa-solid fa-envelope"></i> 報告・問い合わせ</a></li>
@@ -123,7 +123,7 @@
                   <option value="">問題種類を選択</option>
                   <option>前期中間</option><option>前期期末</option><option>後期中間</option><option>後期期末</option><option>考査以外</option>
                 </select>
-                <div class="desc">「考査以外」を選択したときは、コメントに内容を入力してください。</div>
+                <div class="desc">「考査以外」を選択したときは、「コメント」に内容を入力してください。</div>
               </td>
             </tr>
             <tr>
@@ -175,12 +175,11 @@
             </tr>
           </table>
           <!-- Step1からファイル追加へ進むボタン（重複チェックを行う） -->
-          <button type="button" id="goToFilesBtn" class="upload-btn" style="margin-top:1.2em; margin-right:0.6em;">ファイルを追加へ</button>
+          <button type="button" id="goToFilesBtn" class="upload-btn" style="margin-top:1.2em; margin-right:0.6em;">ファイル追加へ</button>
         </form>
         <div style="background:#fff7d1; color:#bfa100; font-size:0.98em; border-radius:10px; padding:1.5em 1em; margin-top:1.5em; margin-bottom:0.05em; box-shadow:0 2px 8px rgba(191,161,0,0.06); line-height:1.7;">
           <ul style="list-style:none; margin:0; padding:0;">
-            <li style="text-indent:-1.2em; padding-left:1.2em; margin-bottom:0.3em;">・お手数をおかけしますが、あらかじめ同じ内容が既にアップされていないか検索をお願いします。（自動検索機能は開発中です）</li>
-            <li style="text-indent:-1.2em; padding-left:1.2em; margin-bottom:0.3em;">・問題・解説・解答のいずれかだけでもOK！次のステップで内容選択の項目があります。</li>
+            <li style="text-indent:-1.2em; padding-left:1.2em; margin-bottom:0.3em;">・データベースを自動で参照し、同じ内容が既に収蔵されている場合には警告が表示されます。</li>
           </ul>
         </div>
       </div>
