@@ -516,11 +516,11 @@ class AuthManager {
     if (!timerDisplay) return;
     
     let timeLeft = seconds;
-    timerDisplay.textContent = `${timeLeft}秒後に問題を更新`;
+    timerDisplay.textContent = `${timeLeft}秒後に問題チェンジ`;
     
     this.timerInterval = setInterval(() => {
       timeLeft--;
-      timerDisplay.textContent = `${timeLeft}秒後に問題を更新`;
+      timerDisplay.textContent = `${timeLeft}秒後に問題チェンジ`;
       
       if (timeLeft <= 0) {
         clearInterval(this.timerInterval);
@@ -839,13 +839,13 @@ class AuthManager {
     // パスワードガイドと入力欄（必要時のみ）を選択肢の下に追加
     if (this.requirePassword) {
       const pwGuide = document.createElement('p');
-      pwGuide.textContent = '生徒手帳49ページのタイトルを入力';
+      pwGuide.textContent = '問い合わせ画面より管理者からパスワードを受け取って下さい';
       pwGuide.style.cssText = `margin: ${isMobile ? '8px 0 10px 0' : '6px 0 8px 0'}; color:#333; font-size:${isMobile ? '16px' : '14px'};`;
 
       passwordInput = document.createElement('input');
       passwordInput.type = 'text';
       passwordInput.id = 'auth-password';
-      passwordInput.placeholder = '生徒手帳49ページのタイトル';
+      passwordInput.placeholder = 'パスワード';
       passwordInput.autocomplete = 'off';
       passwordInput.autocapitalize = 'off';
       passwordInput.spellcheck = false;

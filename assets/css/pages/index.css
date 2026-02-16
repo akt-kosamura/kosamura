@@ -139,34 +139,50 @@ h1 {
   
 /* 大きな横長のCTA（考査一覧） */
 .wide-cta {
+  /* make the CTA a flex container so icon and text are vertically centered */
   display: flex;
   align-items: center;
-  gap: 14px;
-  /* set explicit width equal to three buttons plus gaps; keep from overflowing */
-  width: 512px;
+  justify-content: center;
+  /* keep overall width and add more vertical breathing room */
+  width: 576px;
   max-width: 100%;
-  padding: 18px 22px 18px 28px; /* left padding to clear the badge */
-  min-height: 160px; /* match square button height */
+  /* slightly increased inner spacing while keeping the overall height equal
+     to the three square buttons below for visual alignment */
+  padding: 18px 14px;
+  height: 160px; /* match .card-buttons a height on desktop */
+  min-height: 0;
   box-sizing: border-box;
   font-size: 1.06rem;
   font-weight: 800;
   background: var(--accent);
   color: #fff;
-  border-radius: 20px;
+  border-radius: 18px;
   text-decoration: none;
   box-shadow: 0 6px 28px rgba(0,113,227,0.18);
   border: none;
   position: relative; /* for absolute badge */
 }
 .wide-cta:hover { background: #005bb5; transform: translateY(-2px); }
-.wide-cta-icon { font-size: 45px; color: #fff; flex-shrink: 0; margin-left: 6px; }
-.wide-cta-text { font-size: 1.2rem; }
-.wide-cta-sub { font-size: 0.95rem; font-weight:600; color: rgba(255,255,255,0.95); }
-.wide-cta-note { font-size: 0.78rem; font-weight:500; color: rgba(255,255,255,0.9); max-width: 360px; }
+.wide-cta-icon {
+  font-size: 42px;
+  color: #fff;
+  flex-shrink: 0;
+  margin: 0;
+  line-height: 1;
+  /* make the icon visually thinner: slightly smaller and lighter opacity
+     (true stroke weight is controlled by Font Awesome style; see note) */
+  transform: translateY(0);
+  font-weight: 300;
+  opacity: 0.95;
+  -webkit-font-smoothing: antialiased;
+}
+.wide-cta-text { font-size: 1.28rem; line-height: 1.45; font-weight:900; }
+.wide-cta-sub { font-size: 0.98rem; font-weight:600; color: rgba(255,255,255,0.95); line-height: 1.35; }
+.wide-cta-note { font-size: 0.75rem; font-weight:500; color: rgba(255,255,255,0.92); max-width: 460px; line-height: 1.35; }
 .wide-cta-badge {
   position: absolute;
   top: 8px;
-  left: 8px;
+  left: 10px;
   background: #ff4d4f;
   color: #fff;
   font-size: 0.72rem;
@@ -175,22 +191,49 @@ h1 {
   z-index: 3;
 }
 
+/* Layout for the CTA text column: center vertically and horizontally so it lines up with
+   the square buttons below. We added a class `wide-cta-content` in the markup to allow
+   overriding the previous inline flex styles. */
+.wide-cta .wide-cta-inner {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  box-sizing: border-box;
+  /* make inner fill the CTA so its children can be perfectly centered */
+  height: 100%;
+}
+.wide-cta .wide-cta-texts {
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* center texts horizontally */
+  justify-content: center;
+  gap: 10px; /* more vertical gap between title / sub / note */
+  text-align: center;
+  width: 100%;
+}
+.wide-cta .wide-cta-text,
+.wide-cta .wide-cta-sub,
+.wide-cta .wide-cta-note {
+  display: block;
+}
+
 @media (max-width: 900px) {
-  /* card-buttons each ~152px, gap 19px -> total ~494px */
-  .wide-cta { width: 494px; min-height: 152px; padding: 16px 18px 16px 26px; }
-  .wide-cta-icon { font-size: 34px; }
-  .wide-cta-text { font-size: 1.06rem; }
-  .wide-cta-sub { font-size: 0.9rem; }
-  .wide-cta-note { font-size: 0.74rem; max-width: 300px; }
+  /* card-buttons each ~152px, gap 19px -> increase CTA accordingly */
+  .wide-cta { width: 540px; height: 136px; min-height: 0; padding: 14px 14px; }
+  .wide-cta-icon { font-size: 38px; }
+  .wide-cta-text { font-size: 1.18rem; }
+  .wide-cta-sub { font-size: 0.94rem; }
+  .wide-cta-note { font-size: 0.76rem; max-width: 360px; }
   .wide-cta-badge { top: 8px; left: 8px; }
 }
 @media (max-width: 600px) {
-  /* card-buttons each ~128px, gap 11px -> total ~406px */
-  .wide-cta { width: 406px; min-height: 136px; padding: 12px 14px 12px 22px; border-radius: 16px; }
-  .wide-cta-icon { font-size: 26px; }
-  .wide-cta-text { font-size: 1rem; }
-  .wide-cta-sub { font-size: 0.86rem; }
-  .wide-cta-note { font-size: 0.72rem; max-width: 220px; }
+  /* card-buttons each ~128px, gap 11px -> make CTA narrower but still wider than before */
+  .wide-cta { width: 460px; height: 120px; min-height: 0; padding: 12px 12px; border-radius: 14px; }
+  .wide-cta-icon { font-size: 32px; }
+  .wide-cta-text { font-size: 1.06rem; }
+  .wide-cta-sub { font-size: 0.88rem; }
+  .wide-cta-note { font-size: 0.72rem; max-width: 300px; }
   .wide-cta-badge { top: 6px; left: 6px; padding: 5px 8px; font-size: 0.68rem; }
 }
 @media (max-width: 900px) {
@@ -785,4 +828,22 @@ main {
   .stat-label {
     font-size: 11px;
   }
-} 
+}
+
+/* ===== デスクトップ向けレイアウト調整 ===== */
+@media (min-width: 1024px) {
+  body {
+    /* デスクトップでは左右の余白をbodyではなくmain側で管理 */
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  main {
+    /* コンテンツ幅を中央に固定してデスクトップらしいレイアウトに */
+    max-width: 1120px;
+    margin: 6rem auto 3rem;
+    padding-left: 32px;
+    padding-right: 32px;
+    box-sizing: border-box;
+  }
+}
