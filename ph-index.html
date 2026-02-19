@@ -89,7 +89,7 @@
   </header>
 
   <!-- 流れるお知らせバー（スマホ版） -->
-  <div id="announcement-bar" class="announcement" style="display:block;">
+  <div id="announcement-bar" class="announcement">
     <p id="announcement-text">★大規模アップデートに合わせ、閲覧待ち時間のビデオを刷新しました。トップページからも見られるので、ご覧ください。　★後期期末考査お疲れ様でした！来年度もよろしくお願いします</p>
   </div>
    
@@ -397,68 +397,29 @@
   <script>
     document.title = '秋高考査村 - スマホ版';
 
-    // お知らせバー表示関数（スマホ版）
-    function showAnnouncement(text) {
-      const bar = document.getElementById('announcement-bar');
-      const p = document.getElementById('announcement-text');
-      if (!bar || !p) return;
-      if (text && text.trim() !== '') {
-        const spacer = '\u00A0\u00A0\u00A0';
-        p.textContent = text + spacer + text;
-        bar.style.display = 'block';
-
-        requestAnimationFrame(() => {
-          const containerW = bar.offsetWidth;
-          const off = containerW;
-          p.style.setProperty('--start-x', off + 'px');
-          p.style.animation = 'none';
-          void p.offsetWidth;
-          p.style.animation = '';
-        });
-      } else {
-        bar.style.display = 'none';
-      }
-    }
     
     // ページ読み込み時に最上部にスクロール
     window.addEventListener('load', function() {
       window.scrollTo(0, 0);
-      
-      // ヘッダー表示（load）
+      // ヘッダーを表示
       const header = document.querySelector('.header');
       if (header) {
         header.style.opacity = '1';
         header.style.visibility = 'visible';
         header.style.display = 'block';
-
-        // お知らせ位置調整（ナビバー直下、固定）
-        updateAnnouncementPosition();
       }
     });
 
-    // お知らせを常にヘッダー下に固定する
-    function updateAnnouncementPosition() {
-      const announcement = document.getElementById('announcement-bar');
+    // DOMContentLoadedでも念のためヘッダー表示のみ
+    document.addEventListener('DOMContentLoaded', function() {
+      window.scrollTo(0, 0);
       const header = document.querySelector('.header');
-      const nav = document.querySelector('nav');
-      const mainEl = document.getElementById('main-content');
-      if (!announcement) return;
-
-      let topOffset = 0;
-      if (nav) {
-        const navRect = nav.getBoundingClientRect();
-        topOffset = navRect.bottom + window.pageYOffset;
-      } else if (header) {
-        topOffset = header.offsetHeight + window.pageYOffset;
+      if (header) {
+        header.style.opacity = '1';
+        header.style.visibility = 'visible';
+        header.style.display = 'block';
       }
-      announcement.style.top = topOffset + 'px';
-      if (mainEl) {
-        mainEl.style.marginTop = (topOffset + announcement.offsetHeight + 16) + 'px';
-      }
-    }
-
-    // 画面サイズが変わった場合も再配置
-    window.addEventListener('resize', updateAnnouncementPosition);
+    });
     
     // DOMContentLoadedでも念のため実行
     document.addEventListener('DOMContentLoaded', function() {

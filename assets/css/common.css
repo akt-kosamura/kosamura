@@ -414,10 +414,6 @@ table.collection td:first-child {
     font-size: 2.5rem;
   }
   
-  /* モバイル時は固定ヘッダーが少し低いのでお知らせの位置を調整 */
-  .announcement {
-    top: 56px;
-  }
 }
 
 @media (max-width: 600px) {

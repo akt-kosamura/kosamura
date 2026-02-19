@@ -63,7 +63,7 @@
   </header>
 
   <!-- 流れるお知らせバー -->
-  <div id="announcement-bar" class="announcement" style="display:block;">
+  <div id="announcement-bar" class="announcement">
     <p id="announcement-text">●大規模アップデートに合わせ、閲覧待ち時間のビデオを刷新しました。トップページからも見られるので、ご覧ください。　　●後期期末考査お疲れ様でした！来年度もよろしくお願いします</p>
   </div>
 
@@ -341,54 +341,9 @@
         observer.observe(card);
       });
 
-      // ヘッダー高さに合わせてお知らせ位置とメイン余白を調整する
-      const announcement = document.getElementById('announcement-bar');
-      const header = document.querySelector('header');
-      const nav = document.querySelector('nav');
-      const mainEl = document.querySelector('main');
-      if (announcement) {
-        // ナビゲーションバーのすぐ下に配置したい
-        let topOffset = 0;
-        if (nav) {
-          const rect = nav.getBoundingClientRect();
-          topOffset = rect.bottom + window.pageYOffset; // 絶対位置
-        } else if (header) {
-          topOffset = header.offsetHeight;
-        }
-        announcement.style.top = topOffset + 'px';
-        if (mainEl) {
-          mainEl.style.marginTop = (topOffset + announcement.offsetHeight + 16) + 'px';
-        }
-      }
 
-      // お知らせバーを表示するには以下を使う。テキストが空なら自動で非表示。
-      // showAnnouncement('ここに流したいメッセージ');
     });
 
-    // お知らせバー表示ユーティリティ
-    function showAnnouncement(text) {
-      const bar = document.getElementById('announcement-bar');
-      const p = document.getElementById('announcement-text');
-      if (!bar || !p) return;
-      if (text && text.trim() !== '') {
-        const spacer = '\u00A0\u00A0\u00A0';
-        p.textContent = text + spacer + text;
-        bar.style.display = 'block';
-
-        // 右端に文字列末尾が来るように開始オフセットを設定
-        requestAnimationFrame(() => {
-          const containerW = bar.offsetWidth;
-          // start off screen to right so first char appears from edge
-          const off = containerW;
-          p.style.setProperty('--start-x', off + 'px');
-          p.style.animation = 'none';
-          void p.offsetWidth;
-          p.style.animation = '';
-        });
-      } else {
-        bar.style.display = 'none';
-      }
-    }
 
     // フリーモード管理（既存）
     function isInFreeMode() {
