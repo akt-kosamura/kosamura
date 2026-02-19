@@ -168,7 +168,7 @@ nav a.active {
 /* ===== メインコンテンツ共通スタイル ===== */
 main {
   max-width: 1200px;
-  margin: 96px auto 0;
+  margin: 136px auto 0; /* ヘッダー + お知らせバー分の余白を確保 */
   padding: 2rem 20px;
   min-height: auto;
 }
@@ -413,6 +413,11 @@ table.collection td:first-child {
   .hero-title {
     font-size: 2.5rem;
   }
+  
+  /* モバイル時は固定ヘッダーが少し低いのでお知らせの位置を調整 */
+  .announcement {
+    top: 56px;
+  }
 }
 
 @media (max-width: 600px) {
@@ -535,6 +540,36 @@ table.collection td:first-child {
   border-top: 1px solid var(--gray-200);
   margin-top: 0.5rem;
 } 
+
+/* ===== お知らせバー ===== */
+.announcement {
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 64px; /* ヘッダー高さを想定。必要に応じて調整 */
+  z-index: 1001; /* ヘッダー(1000)より上に表示 */
+  overflow: hidden;
+  background: #fffbe6;
+  color: #b8860b;
+  font-size: 1rem;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #ffe58f;
+  margin-top: 0;
+}
+.announcement p {
+  display: inline-block;
+  white-space: nowrap;
+  padding-left: 2rem;
+  --start-x: 0px;
+  animation: marquee 14s linear infinite;
+  animation-delay: 0s;
+}
+
+@keyframes marquee {
+  from { transform: translateX(var(--start-x)); }
+  to   { transform: translateX(calc(var(--start-x) - 100%)); }
+}
+
 
 /* ===== 認証用チェックボックス ===== */
 .auth-checkbox-checked::after {
