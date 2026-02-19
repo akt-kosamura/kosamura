@@ -387,6 +387,7 @@ h1 {
   text-decoration: none;
   box-shadow: 0 2px 11px rgba(0,0,0,0.10);
   transition: background var(--transition), color var(--transition);
+  margin: 0 auto;
 }
 .info-buttons a:hover {
   background: #d0e4fd;
@@ -731,6 +732,39 @@ main {
 }
 .pin-btn:hover {
   background: #e0e0e0;
+}
+
+/* Layout for bulletin-board buttons: top (2) above bottom (3)
+   Use a fixed max container width so the top two equal-width buttons
+   align with the left/right edges of the three bottom buttons. */
+.bbs-buttons {
+  width: min(720px, 100%);
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+.bbs-buttons-top {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin-bottom: 12px;
+}
+.bbs-buttons-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+.bbs-buttons-top .bbs-btn,
+.bbs-buttons-row .bbs-btn {
+  width: 100%;
+}
+
+@media (max-width: 600px) {
+  .bbs-buttons { width: 100%; padding-left: 8px; padding-right: 8px; }
+  .bbs-buttons-top,
+  .bbs-buttons-row {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
 }
 
 /* コピーライト */

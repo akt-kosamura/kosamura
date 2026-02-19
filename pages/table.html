@@ -40,7 +40,9 @@
   @media (max-width: 768px) {
     body { padding-left: 16px; padding-right: 16px; }
     h1 { font-size: 1.5rem; }
-    table.collection { min-width: 100%; font-size: 0.8rem; }
+    /* Keep table a fixed minimum width so horizontal scrolling is used
+       instead of shrinking columns to fit the viewport. */
+    table.collection { min-width: 1200px; font-size: 0.8rem; }
     table.collection th, table.collection td { padding: 0.3rem; }
     .year-content { padding: 0.4rem; }
   }
@@ -63,6 +65,27 @@
     .popup-menu .sep { border-top:1px dashed #eee; margin:0.5rem 0; }
     .muted { color:#777; font-size:0.9rem; }
     .loader { padding:1rem; text-align:center; color:#666; }
+    /* loading spinner (matching search.html) */
+    .loading-placeholder {
+      text-align: center;
+      padding: 28px 12px;
+      color: #64748b;
+    }
+
+    .loading-spinner {
+      width: 28px;
+      height: 28px;
+      border: 3px solid rgba(59, 130, 246, 0.12);
+      border-top: 3px solid #3b82f6;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 12px;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
   </style>
 </head>
 <body class="page-dark">
@@ -92,7 +115,10 @@
   </div>
   <div id="controls" style="margin-bottom:0.6rem;"></div>
   <div id="container">
-    <div class="loader">読み込み中…</div>
+    <div class="loading-placeholder">
+      <div class="loading-spinner"></div>
+      <p>読み込み中…</p>
+    </div>
   </div>
 
   <script src="../assets/js/api.js"></script>
@@ -143,7 +169,7 @@
       }
 
       function build() {
-        container.innerHTML = '<div class="loader">読み込み中…</div>';
+        container.innerHTML = '<div class="loading-placeholder"><div class="loading-spinner"></div><p>読み込み中…</p></div>';
         api.getData().then(data => {
           // Filter out '考査以外'
           const rows = (data || []).filter(r => (r.type || '').trim() !== '考査以外');

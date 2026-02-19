@@ -155,10 +155,10 @@
           <label><input type="checkbox" id="toggleDate" checked> 投稿時間表示</label>
           <label><input type="checkbox" id="toggleFormatCol"> ファイル形式表示</label>
           <label><input type="checkbox" id="toggleEval" checked> 評価表示</label>
-          <label>
+            <label>
             コメント表示：
             <select id="commentMode">
-              <option value="compact">1行表示</option>
+              <option value="compact">コンパクトビュー</option>
               <option value="lines3">3行表示</option>
               <option value="none">非表示</option>
             </select>
@@ -936,6 +936,9 @@ function showAdPopup(fileUrl) {
     
     // コメント表示制御（必要な場合のみ実行）
     if (commentMode !== 'none') {
+      // toggle compact table row spacing
+      const tbl = document.querySelector('.table-card');
+      if (tbl) tbl.classList.toggle('compact', commentMode === 'compact');
       document.querySelectorAll('.comment-cell .comment-text').forEach(box => {
         const td = box.parentElement;
         // 既存のリンクを削除
@@ -981,23 +984,24 @@ function showAdPopup(fileUrl) {
         
         if (shouldTruncate && raw.trim()) {
           const more = document.createElement('a');
-          more.href = '#'; 
-          more.textContent = '...もっと読む'; 
+          more.href = '#';
+          more.textContent = 'もっと見る';
           more.className = 'extra-link';
           more.onclick = e => {
             e.preventDefault();
+            // expand the comment area to full
             box.style.webkitLineClamp = 'none';
             box.style.maxHeight = 'none';
             box.style.overflow = 'visible';
             box.style.display = 'block';
             more.remove();
             const less = document.createElement('a');
-            less.href = '#'; 
-            less.textContent = '折りたたむ'; 
+            less.href = '#';
+            less.textContent = '折りたたむ';
             less.className = 'extra-link';
-            less.onclick = ev => { 
-              ev.preventDefault(); 
-              applyColumns(); 
+            less.onclick = ev => {
+              ev.preventDefault();
+              applyColumns();
             };
             td.appendChild(less);
           };

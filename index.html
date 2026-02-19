@@ -88,7 +88,7 @@
               <i class="fa-solid fa-border-all wide-cta-icon" aria-hidden="true"></i>
               <div class="wide-cta-texts">
                 <span class="wide-cta-text">考査一覧</span>
-                <span class="wide-cta-sub">この画面からの投稿・検索がおすすめ</span>
+                <span class="wide-cta-sub">考査はこの画面からの投稿・検索がおすすめ</span>
                 <span class="wide-cta-note">※理科と考査以外の問題は「アップロード」「詳細検索」からお願いします</span>
               </div>
             </div>
@@ -115,21 +115,16 @@
           <ul class="info-list">
             <li>
               <span class="info-icon"><i class="fa-regular fa-file-pdf"></i></span>
-              <span>PDFまたは画像で共有できます<span class="info-note">（Word・Excel・一太郎には順次対応予定）</span></span>
+              <span>PDFまたは画像を一つにまとめて投稿できます<span class="info-note">（Word・Excel・一太郎には順次対応予定）</span></span>
             </li>
             <li style="flex-direction: column; align-items: flex-start; gap: 0.3em;">
               <div style="display: flex; align-items: center; gap: 0.7em;">
                 <span class="info-icon"><i class="fa-solid fa-paper-plane"></i></span>
-                <span>アップロード画面から送信していただきたい試験例</span>
+                <span>アップロード画面から送信していただきたい試験</span>
               </div>
               <div class="info-examples">定期考査・実力テスト・確認テスト など</div>
             </li>
-            <li style="flex-direction: column; align-items: flex-start; gap: 0.3em;">
-              <div style="display: flex; align-items: center; gap: 0.7em;">
-                <span class="info-icon"><i class="fa-solid fa-comments"></i></span>
-                <span>週間テストや確認プリントなどは</span><span class="info-bold">掲示板</span>で！
-              </div>
-            </li>
+
           </ul>
         </div>
       </div>
@@ -192,31 +187,34 @@
           完全匿名ですぐに利用できます。<br><br>
           <strong class="info-highlight">★平均点の報告</strong><br>
           　クラス平均点100点を目指そう！<br>　高い平均点を報告してください。 <br><br>
-          <strong class="info-highlight">★テストの共有（写真投稿機能あり）</strong><br><br>
+          <strong class="info-highlight">★小テストの共有（写真投稿機能あり）</strong><br><br>
           <strong class="info-highlight">★過去問とほとんど一致している科目の情報交換</strong><br><br>
-          <strong class="info-highlight">★試験への対策について。</strong><br><br><br>
-          <strong class="info-highlight" style="text-align: center;">掲示板リンク</strong><br>
-          <div style="margin: 12px 0 0 0; display: flex; flex-direction: column; gap: 16px;">
-            <button class="bbs-btn" onclick="window.open('https://c.kuku.lu/hmc853pz', '_blank')">
-              <i class="fa-solid fa-comments"></i>
-              <span>全体の部屋</span>
-            </button>
-            <button class="bbs-btn" onclick="window.open('https://c.kuku.lu/wxamr3rk', '_blank')">
-              <i class="fa-solid fa-users"></i>
-              <span>３年生の部屋</span>
-            </button>
-            <button class="bbs-btn" onclick="window.open('https://c.kuku.lu/shwzzu7z', '_blank')">
-              <i class="fa-solid fa-users"></i>
-              <span>２年生の部屋</span>
-            </button>
-            <button class="bbs-btn" onclick="window.open('https://c.kuku.lu/xpgpbn7k', '_blank')">
-              <i class="fa-solid fa-users"></i>
-              <span>１年生の部屋</span>
-            </button>
-            <button class="bbs-btn" onclick="window.open('https://c.kuku.lu/rk6hxege', '_blank')">
-              <i class="fa-solid fa-user-tie"></i>
-              <span>運営者と話す部屋</span>
-            </button>
+          <strong class="info-highlight">★試験への対策について。</strong><br><br><br><br>
+          <div class="bbs-buttons">
+            <div class="bbs-buttons-top">
+              <button class="bbs-btn" onclick="window.open('https://c.kuku.lu/hmc853pz', '_blank')">
+                <i class="fa-solid fa-comments"></i>
+                <span>全体の部屋</span>
+              </button>
+              <button class="bbs-btn" onclick="window.open('https://c.kuku.lu/rk6hxege', '_blank')">
+                <i class="fa-solid fa-user-tie"></i>
+                <span>運営者と話す部屋</span>
+              </button>
+            </div>
+            <div class="bbs-buttons-row">
+              <button class="bbs-btn" onclick="window.open('https://c.kuku.lu/wxamr3rk', '_blank')">
+                <i class="fa-solid fa-users"></i>
+                <span>３年生の部屋</span>
+              </button>
+              <button class="bbs-btn" onclick="window.open('https://c.kuku.lu/shwzzu7z', '_blank')">
+                <i class="fa-solid fa-users"></i>
+                <span>２年生の部屋</span>
+              </button>
+              <button class="bbs-btn" onclick="window.open('https://c.kuku.lu/xpgpbn7k', '_blank')">
+                <i class="fa-solid fa-users"></i>
+                <span>１年生の部屋</span>
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -225,16 +223,11 @@
       <div class="dynamic-card" id="about-card" style="background:#f7fff7; border:1.5px solid #b5e6b5; margin-top:2.2rem;">
         <div class="card-title" style="color:#00a060;">このサイトについて</div>
         <div style="padding:1.2em 1.5em; text-align:justify; font-size:1.08em; line-height:1.8;">
-          サービス維持のため、ぜひ、過去問のアップロードやこのサイトの共有・拡散をお願いします。<br><br>
+          サービス維持のため、過去問のアップロードとサイトの共有・拡散をお願いします。<br><br>
         </div>
 
-        <a href="pages/develop.html">
-          <img src="assets/dev.png" alt="開発予定" style="width:300px; height:auto;">
-        </a>
-
-        <a href="pages/questions.html">
-          <img src="assets/faq.png" alt="よくある問い合わせ" style="width:300px; height:auto;">
-        </a>
+        <a href="pages/develop.html"><img src="assets/dev.png" alt="開発予定" style="width:300px; height:auto;"></a>
+        <a href="pages/questions.html"><img src="assets/faq.png" alt="よくある問い合わせ" style="width:300px; height:auto;"></a>
 
       </div>
 
@@ -270,10 +263,11 @@
         <div style="margin-top:1.5em; color:#888; font-size:0.98em;">
           ※元データもあるので、自由に編集、配布していただいて構いません。
         </div><br>
-        <!-- 共有・拡散コンテンツここまで -->
         <div class="info-buttons">
-          <a href="https://forms.gle/ZWtQCvecH4eZtTEU7" target="_blank"><i class="fa-solid fa-envelope"></i> 問い合わせフォーム</a><Br> 
+          <a href="https://forms.gle/ZWtQCvecH4eZtTEU7" target="_blank"><i class="fa-solid fa-envelope"></i> 問い合わせフォーム</a>
         </div>
+        <!-- 共有・拡散コンテンツここまで -->
+
     </div>
 
       <!-- 印刷用テンプレートモーダル -->

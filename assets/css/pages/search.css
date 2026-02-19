@@ -342,6 +342,14 @@ main {
   text-align: left;
 }
 
+/* compact mode: reduce row padding to make rows about half-height */
+.table-card.compact th, .table-card.compact td {
+  padding-top: 6px;
+  padding-bottom: 6px;
+}
+
+.table-card.compact .comment-text { line-height: 1.2; }
+
 .table-card th {
   background: #f7f7f9; 
   color: #666;
@@ -390,15 +398,15 @@ main {
 
 /* 内容列 - 適度な幅 */
 .table-card td.content-cell {
-  width: 50px;
-  min-width: 50px;
-  max-width: 60px;
+  width: 140px;
+  min-width: 120px;
+  max-width: 220px;
 }
 
 .table-card td.comment-cell { 
-  width: 120px; 
-  min-width: 100px;
-  max-width: 150px;
+  width: 260px;
+  min-width: 200px;
+  max-width: 360px;
   white-space: normal;
 }
 
@@ -702,9 +710,9 @@ th.hidden-col, td.hidden-col { display: none; }
   }
   
   .table-card td.comment-cell {
-    width: 200px;
-    min-width: 200px;
-    max-width: 200px;
+    width: 220px;
+    min-width: 180px;
+    max-width: 260px;
   }
 
   .popup-content {
